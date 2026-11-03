@@ -244,6 +244,9 @@ h1 { font-size: 10pt; line-height: 1.575; text-align: right; text-transform: upp
 .correction-label { position: absolute; right: 100%; bottom: 0; height: 4.9mm; line-height: 4.9mm; padding-right: 1.5mm; font-size: 10pt; white-space: nowrap; }
 .form-line { display: flex; align-items: flex-end; gap: 2.4pt; margin-top: 2.9pt; line-height: 9.7pt; }
 .form-label { white-space: nowrap; }
+.seller { align-items: flex-start; }
+.seller .form-label { padding-top: 4.5pt; }
+.cat-line { padding-left: 15.5pt; }
 .storage-note { margin-top: 3.5pt; line-height: 9.7pt; }
 .storage-rule { border-top: 0.7pt solid #111; margin: 2.4pt 0 0 117pt; }
 .line-value { flex: 1; border-bottom: 0.7pt solid #111; padding: 0 1pt 0.8pt; min-height: 8.5pt; }
@@ -287,7 +290,7 @@ table { border-collapse: collapse; }
 .cond-last p { break-after: auto; }
 .conditions-block .cond-value { border-bottom: 0.7pt solid #111; height: 9.7pt; margin: 0 0 3.5pt 0; }
 .conditions-block p + p { margin-top: 9.7pt; }
-.signatures-section { break-before: page; }
+.signatures-section { break-before: page; padding-left: 2pt; }
 .signatures-section .form-line { margin-top: 2.4pt; }
 .conditions-block, .signatures-section { font-family: Arial, 'Liberation Sans', sans-serif; }
 
@@ -334,27 +337,27 @@ table { border-collapse: collapse; }
 .signatures-section .page-label { margin: 2.3pt 0 3.8pt; }
 .signatures-section .form-line { margin-top: 0; }
 .text-block { height: 9.7pt; }
-.conclusion { margin-top: -0.1pt; line-height: 9.7pt; text-indent: 0; }
+.conclusion { margin-top: -0.9pt; line-height: 9.7pt; text-indent: 14.8pt; }
 .conclusion-label { margin-right: 4.4pt; }
 .sig-label { line-height: 9.7pt; margin-top: 2pt; }
 .sig-label { line-height: 9.7pt; margin-top: 2pt; }
-.sig-row { display: flex; gap: 4.8pt; width: 716.6pt; margin: 1.9pt 0 0 97.2pt; }
+.sig-row { display: flex; gap: 4.8pt; width: 716.6pt; margin: 1.9pt 0 0 95.2pt; }
 .sig-row span { border-bottom: 0.9pt solid #111; height: 0; }
 .sig-row .place { width: 311pt; }
 .sig-row .sign { width: 116.6pt; }
 .sig-row .decipher { width: 279.4pt; }
-.sig-row.rep { width: 813.25pt; margin-left: -2pt; }
+.sig-row.rep { width: 813.25pt; margin-left: -4pt; }
 .sig-row.rep .place { width: 353.3pt; }
 .sig-row.rep .sign { width: 132pt; }
 .sig-row.rep .decipher { width: 320.4pt; }
 .sig-row.acc { width: 400pt; margin-left: 123pt; }
 .sig-row.acc .sign { width: 82.4pt; }
 .sig-row.acc .decipher { width: 138.6pt; }
-.sig-captions { display: flex; font-family: Arial, sans-serif; font-size: 8pt; line-height: 9.7pt; margin: 1.4pt 0 0 97.2pt; width: 716.6pt; }
+.sig-captions { display: flex; font-family: Arial, sans-serif; font-size: 8pt; line-height: 9.7pt; margin: 1.4pt 0 0 95.2pt; width: 716.6pt; }
 .sig-captions .c-place { width: 311pt; text-align: center; }
 .sig-captions .c-sign { width: 116.6pt; margin-left: 4.8pt; text-align: center; }
 .sig-captions .c-decipher { width: 279.4pt; margin-left: 4.8pt; text-align: center; }
-.sig-captions.rep { width: 813.25pt; margin-left: -2pt; }
+.sig-captions.rep { width: 813.25pt; margin-left: -4pt; }
 .sig-captions.rep .c-place { width: 353.3pt; }
 .sig-captions.rep .c-sign { width: 132pt; }
 .sig-captions.rep .c-decipher { width: 315.4pt; }
@@ -363,8 +366,8 @@ table { border-collapse: collapse; }
 .sig-captions.acc .c-decipher { width: 138.6pt; }
 .doc-line { display: flex; align-items: flex-end; line-height: 9.7pt; margin-top: 1.5pt; }
 .doc-line .doc-value { flex: 1; border-bottom: 0.7pt solid #111; height: 8.5pt; margin: 0 3pt; }
-.doc-caption { margin-left: 111pt; font-family: Arial, sans-serif; line-height: 9.7pt; margin-top: 5.3pt; }
-.solution-line { border-bottom: 0.7pt solid #111; height: 9.7pt; width: 718pt; margin-left: 95pt; }
+.doc-caption { margin-left: 109pt; font-family: Arial, sans-serif; line-height: 9.7pt; margin-top: 5.3pt; }
+.solution-line { border-bottom: 0.7pt solid #111; height: 9.7pt; width: 718pt; margin-left: 93pt; }
 
 .disclaimer { margin-top: 2mm; font-size: 6.8pt; color: #333; }
 .meta-note { margin-top: 1.5mm; font-size: 6.2pt; color: #444; }
@@ -428,9 +431,9 @@ table { border-collapse: collapse; }
   <div class="form-caption" style="padding-left:88pt">(наименование, адрес, номер телефона)</div>
   ${line('Производитель', '', 'field-gap')}
   <div class="form-caption" style="padding-left:74pt">(наименование, адрес, номер телефона)</div>
-  ${line('Поставщик', partyMarkup(parties.seller), 'field-gap-sm').replace('class="form-line field-gap-sm"','class="form-line field-gap-sm" style="margin-top:-4.8pt"')}
+  ${line('Поставщик', partyMarkup(parties.seller), 'field-gap-sm seller').replace('class="form-line field-gap-sm seller"','class="form-line field-gap-sm seller" style="margin-top:1.6pt"')}
   <div class="form-caption" style="padding-left:60pt">(наименование, адрес, номер телефона)</div>
-  ${line('Страховая компания', partyMarkup(parties.insurer), 'field-gap').replace('class="form-line field-gap"','class="form-line field-gap" style="margin-top:8.4pt"')}
+  ${line('Страховая компания', partyMarkup(parties.insurer), 'field-gap').replace('class="form-line field-gap"','class="form-line field-gap" style="margin-top:0.5pt"')}
   <div class="form-caption" style="padding-left:103pt">(наименование, адрес, номер телефона)</div>
   ${line('Договор (контракт) на поставку товара №', '', 'field-gap')}
   <div class="form-line" style="margin-top:6.2pt"><span class="form-label">Дата отправления товара</span><span class="date-blank d1" style="margin-left:12.3pt;width:45.1pt"></span><span class="date-blank d2" style="margin-left:9.6pt;width:102.2pt"></span><span class="date-blank d3" style="margin-left:9.6pt;width:87.9pt"></span><span class="g">г.</span></div>
@@ -548,16 +551,15 @@ table { border-collapse: collapse; }
 
 <section class="signatures-section">
   <div class="page-label">3-я страница формы № ТОРГ-2</div>
-  <div class="form-line"><span class="form-label">Определение количества товара (продукции) проводилось</span><span class="line-value">${blank(inspection.shortageMethod)}</span></div>
-  <div class="form-caption" style="text-align:right;padding-right:223pt">(взвешиванием, счетом мест, обмером и т. п.,</div>
+  <div class="form-line" style="padding-left:14.8pt"><span class="form-label">Определение количества товара (продукции) проводилось</span><span class="line-value">${blank(inspection.shortageMethod)}</span></div>
+  <div class="form-caption" style="text-align:right;padding-right:190pt">(взвешиванием, счетом мест, обмером и т. п.,</div>
   <div class="form-caption">(место определения количества товара (продукции))</div>
   <div class="underlined"></div>
-  <p class="paragraph" style="margin-top:13.2pt">Взвешивание товаров (продукции) проводилось на исправных весах, проверенных в установленном порядке. Сведение об исправности весоизмерительных приборов (тип весов, год клеймения)</p>
+  <p class="paragraph" style="margin-top:13.2pt;text-indent:0">Взвешивание товаров (продукции) проводилось на исправных весах, проверенных в установленном порядке. Сведение об исправности весоизмерительных приборов (тип весов, год клеймения)</p>
   <div class="underlined" style="margin-top:9.1pt"></div>
-  ${line('Другие данные', blank(inspection.otherInfo))}
-  <div class="underlined"></div>
-  <p class="paragraph" style="margin-top:-7.5pt">По остальным товарно-материальным ценностям, перечисленным в сопроводительных документах поставщика, расхождений в количестве и качестве нет.</p>
-  <p class="paragraph" style="margin-top:3.5pt">Подробное описание дефектов (характер недостачи, излишков, ненадлежащего качества, брака, боя)<br>и мнение комиссии о причинах их образования</p>
+  ${line('Другие данные', blank(inspection.otherInfo), 'cat-line')}
+  <p class="paragraph" style="margin-top:5.9pt">По остальным товарно-материальным ценностям, перечисленным в сопроводительных документах поставщика, расхождений в количестве и качестве нет.</p>
+  <p class="paragraph" style="margin-top:3.6pt">Подробное описание дефектов (характер недостачи, излишков, ненадлежащего качества, брака, боя)<br>и мнение комиссии о причинах их образования</p>
   <div class="text-block"></div>
   <div class="conclusion"><span class="conclusion-label">Заключение комиссии</span> <span>${e(conclusion || model.event.description || '')}</span></div>
   <p class="paragraph" style="margin-top:5.1pt">Члены комиссии предупреждены об ответственности за подписание акта, содержащие данные, не соответствующие действительности.</p>
@@ -575,8 +577,8 @@ table { border-collapse: collapse; }
   <div class="sig-captions rep"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
   <div class="doc-line" style="margin-top:3pt"><span>Документ, удостоверяющий полномочия</span><span class="doc-value"></span></div>
   <div class="doc-caption">выдан</div>
-  <div class="doc-line" style="margin-top:4.5pt"><span>№</span><span class="doc-value"></span><span>от</span><span class="doc-value"></span><span>г.</span></div>
-  <div class="doc-line" style="margin-top:5.3pt"><span>Акт с приложением на</span><span class="doc-value">${e(attachments)}</span><span>листах получил</span></div>
+  <div class="doc-line" style="margin-top:4.5pt"><span>№</span><span class="doc-value" style="flex:0 0 89pt"></span><span>от</span><span class="doc-value" style="flex:0 0 120pt"></span><span class="doc-value" style="flex:0 0 90pt"></span><span>г.</span></div>
+  <div class="doc-line" style="margin-top:5.3pt"><span>Акт с приложением на</span><span class="doc-value" style="flex:0 0 76pt">${e(attachments)}</span><span>листах получил</span></div>
   <div class="sig-label" style="margin-top:5.6pt">Главный (старший) бухгалтер</div>
   <div class="sig-row acc"><span class="sign"></span><span class="decipher"></span></div>
   <div class="sig-captions acc"><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
