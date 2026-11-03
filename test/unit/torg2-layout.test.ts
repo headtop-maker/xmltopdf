@@ -44,7 +44,7 @@ describe('TORG-2 layout contract', () => {
 
   it('does not invent a conclusion, opening date or representative authority', () => {
     const html = render(xml);
-    expect(html).not.toContain('Заключение комиссии');
+    expect(html).toContain('Заключение комиссии');
     expect(html).toMatch(/Дата вскрытия тары[\s\S]{0,120}?<span class="line-value"><\/span>/);
     expect(html).toMatch(/Документ, удостоверяющий полномочия[\s\S]{0,160}?<span class="line-value"><\/span>/);
     // The signer's authority basis is shown only in the signer block, never in the representative line.
@@ -59,8 +59,6 @@ describe('TORG-2 layout contract', () => {
     expect(html).toContain('Заключение комиссии');
     expect(html).toContain('Комиссия подтверждает расхождения');
     expect(html).toContain('04.11.2026');
-    expect(html).toContain('Вид операции:');
-    expect(html).toContain('Приемка');
   });
 
   it('preserves decimal precision and distinguishes zero from absence', () => {

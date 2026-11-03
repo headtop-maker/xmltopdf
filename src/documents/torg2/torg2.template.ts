@@ -20,6 +20,12 @@ function partyText(party: PartyModel | undefined): string {
   return e([info.title, ...info.lines].filter(Boolean).join(', '));
 }
 
+function partyMarkup(party: PartyModel | undefined): string {
+  if (!party) return '';
+  const info = formatPartyForPrint(party);
+  return `<strong>${e(info.title)}</strong>${info.lines.length ? `, ${e(info.lines.join(', '))}` : ''}`;
+}
+
 
 
 function dateParts(value: string | undefined): [string, string, string] {
@@ -69,18 +75,17 @@ function decodedCode(labels: Record<string, string>, code: string | undefined): 
 
 export interface Torg2TemplateOptions {
   readonly fontCss: string;
+  /** Match the approved Saby-style blank: no appendix/signature service blocks. */
+  readonly exactReference?: boolean;
 }
 
 export function renderTorg2Html(model: Torg2PrintModel, options: Torg2TemplateOptions): string {
   const { meta, parties, basis, inspection, rows } = model;
+  const exact = options.exactReference === true;
   const [inspectionDay, inspectionMonth, inspectionYear] = dateParts(inspection.date);
   const accompanying = inspection.accompanyingDocuments
     .map((doc) => `${doc.name ?? ''}, ${doc.number ?? ''}, ${doc.date ?? ''}`)
     .join('; ');
-  const eventInfo = model.event.info
-    .map((item) => (item.id ? `${item.id}: ${item.value}` : item.value))
-    .join('; ');
-  const eventDescription = [model.event.description, eventInfo].filter(Boolean).join('; ');
   const conclusion = model.event.conclusion?.trim();
   const openingDate = inspection.openingDate?.trim();
   const longCharacteristics = rows.filter((row) => (row.characteristic?.length ?? 0) > 120);
@@ -123,13 +128,13 @@ ${discrepancyCells(row.shortage)}${discrepancyCells(row.surplus)}
     .map((doc) => `${doc.kind ?? ''} № ${doc.number ?? ''} от ${doc.date ?? ''}`)
     .join('; ');
   const extraRows = rows.filter((row) => row.positiveDelta || row.negativeDelta || row.info.length || row.marking.kiz.length || row.marking.packaging.length || row.marking.transportPackaging);
-  const longCharacteristicHtml = longCharacteristics.length
+  const longCharacteristicHtml = !exact && longCharacteristics.length
     ? `<section class="appendix"><h2>Характеристики товарных строк</h2><table class="grid">
 <thead><tr><th>№</th><th>Товар</th><th>Характеристика</th></tr></thead><tbody>
 ${longCharacteristics.map((row) => `<tr><td class="center">${row.number}</td><td>${e(row.name)}</td><td>${e(row.characteristic)}</td></tr>`).join('')}
 </tbody></table></section>`
     : '';
-  const extraHtml = extraRows.length
+  const extraHtml = !exact && extraRows.length
     ? `<section class="appendix"><h2>Дополнительные сведения о товарных строках</h2><table class="grid">
 <thead><tr><th>№</th><th>Товар</th><th>Сведения</th></tr></thead><tbody>
 ${extraRows.map((row) => {
@@ -145,7 +150,7 @@ ${extraRows.map((row) => {
 }).join('')}
 </tbody></table></section>`
     : '';
-  const appendixHtml = model.appendix.length
+  const appendixHtml = !exact && model.appendix.length
     ? `<section class="appendix"><h2>Приложение. Реквизиты исходного XML, не вошедшие в основной бланк</h2>
 ${model.appendix.map((group) => `<h3>${e(group.title)}</h3><table class="grid"><thead><tr><th>Реквизит</th><th>Путь</th><th>Значение</th></tr></thead><tbody>
 ${group.rows.map((row) => `<tr><td>${e(row.label)}</td><td>${e(row.path)}</td><td>${e(row.value)}</td></tr>`).join('')}
@@ -160,28 +165,33 @@ ${group.rows.map((row) => `<tr><td>${e(row.label)}</td><td>${e(row.path)}</td><t
 <style>
 ${options.fontCss}
 @page { size: A4 landscape; margin: 13mm 5mm 12mm 5mm; }
+@page goods { size: A4 landscape; margin: 1mm 5mm 12mm 5mm; }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
-body { font-family: 'Times New Roman', 'Liberation Serif', serif; font-size: 9pt; line-height: 1.22; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: 'Tahoma', 'Arial', 'Liberation Sans', sans-serif; font-size: 8pt; line-height: 1.22; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .form-page { break-after: page; }
 .goods-section { break-before: page; }
-.conditions-block { break-inside: avoid; }
+.conditions-block { break-inside: avoid; margin-top: -6mm;  }
+.conditions-block .section-space { margin-top: 8.6mm; }
 .signatures-section { break-inside: avoid; }
+.signatures-section .form-line { margin-top: 0.7mm; }
+.signatures-section .section-space { margin-top: 1.2mm; }
 .text-block { border-bottom: 0.6pt solid #111; padding: 1mm 0; min-height: 4mm; white-space: pre-wrap; }
 .section-space { break-inside: avoid; }
 .form-page:last-child { break-after: auto; }
 .center { text-align: center; }
 .num { text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.small { font-size: 6.8pt; }
+.small { font-size: 7pt; font-family: Arial, sans-serif; }
 .muted { color: #444; }
-.source-id { width: 66%; font-size: 7.6pt; overflow-wrap: anywhere; }
+.source-id { width: 62%; font-size: 7.6pt; overflow-wrap: anywhere; }
 .underlined { border-bottom: 0.6pt solid #111; min-height: 3.3mm; }
-.caption { text-align: center; font-size: 6.2pt; }
+.caption { text-align: center; font-size: 7pt; font-family: Arial, sans-serif; }
 .party-line { margin: 0.6mm 0 0; }
+.party-header { width: 48%; text-align: center; }
 .party-line .label { font-weight: bold; }
 .party-line .underlined { padding: 0 1mm; }
-.title-block { display: grid; grid-template-columns: 1fr 61mm; gap: 5mm; align-items: center; width: 71%; margin: 1.6mm 0 -4mm 5.3%; }
-h1 { font-size: 10.2pt; line-height: 1.25; text-align: center; text-transform: uppercase; margin: 0; }
+.title-block { display: grid; grid-template-columns: 1fr 61mm; gap: 5mm; align-items: center; width: 71%; margin: -4.8mm 0 -0.8mm 7.2%; }
+h1 { font-size: 10pt; line-height: 1.25; text-align: center; text-transform: uppercase; margin: 0; }
 .document-number { border-collapse: collapse; width: 61mm; }
 .document-number td { border: 0.7pt solid #111; padding: 1.1mm; text-align: center; }
 .document-number .head { font-size: 7.2pt; }
@@ -194,27 +204,36 @@ h1 { font-size: 10.2pt; line-height: 1.25; text-align: center; text-transform: u
 .date-cell.year { width: 23mm; }
 table { border-collapse: collapse; width: 100%; }
 .grid th, .grid td { border: 0.55pt solid #111; padding: 0.7mm 0.8mm; vertical-align: middle; }
-.grid th { text-align: center; font-weight: normal; font-size: 6.9pt; line-height: 1.15; overflow-wrap: break-word; }
+.grid th { text-align: center; font-weight: normal; font-size: 7pt; line-height: 1.15; overflow-wrap: break-word; font-family: Tahoma, Arial, sans-serif; }
 .grid thead { display: table-header-group; }
 .grid tbody tr { break-inside: avoid; }
 .grid .numbers td { text-align: center; font-size: 6.6pt; }
-.grid .data-row td { font-size: 8pt; }
+.grid .data-row td { font-size: 8pt; font-family: Tahoma, Arial, sans-serif; }
 .section-space { margin-top: 1.8mm; }
 .page-label { text-align: right; margin-bottom: 4mm; }
+.goods-section .page-label, .signatures-section .page-label { position: static; margin: 0 0 2mm; }
+.goods-section { padding-top: 7mm; margin-top: -6mm; page: goods; }
 .goods { table-layout: fixed; }
-.goods th { font-size: 6.4pt; padding: 0.5mm; line-height: 1.12; }
-.goods th.qty { font-size: 6pt; }
-.goods .data-row td { padding: 0.7mm 0.7mm; font-size: 8pt; line-height: 1.2; overflow-wrap: break-word; }
+.goods th { font-size: 7pt; padding: 0.5mm; line-height: 1.12; }
+.goods th.qty { font-size: 7pt; }
+.goods .data-row td { padding: 1.1mm 0.7mm; font-size: 8pt; line-height: 1.2; overflow-wrap: break-word; font-family: Tahoma, Arial, sans-serif; }
+.goods thead tr:nth-child(1) { height: 34pt; }
+.goods thead tr:nth-child(2) { height: 87pt; }
+.goods thead tr.numbers { height: 10pt; }
 .discrepancies { table-layout: fixed; }
-.discrepancies th { font-size: 6.3pt; padding: 0.5mm; line-height: 1.12; }
-.discrepancies .data-row td { padding: 0.7mm 0.7mm; font-size: 8pt; line-height: 1.2; overflow-wrap: break-word; }
-.timeline td, .timeline th { height: 12mm; }
+.discrepancies th { font-size: 7pt; padding: 0.5mm; line-height: 1.12; }
+.discrepancies .data-row td { padding: 1.5mm 0.7mm; font-size: 8pt; line-height: 1.2; overflow-wrap: break-word; font-family: Tahoma, Arial, sans-serif; }
+.discrepancies thead tr:nth-child(1) { height: 20pt; }
+.discrepancies thead tr:nth-child(2) { height: 34pt; }
+.discrepancies thead tr:nth-child(3) { height: 32pt; }
+.discrepancies thead tr.numbers { height: 10pt; }
+.timeline td, .timeline th { height: 11mm; }
 .transport th { font-size: 6.6pt; }
-.transport .data-row td { height: 10mm; }
+.transport .data-row td { height: 8mm; }
 .transport .numbers td { height: 4mm; }
-.signature-grid td { border: none; border-bottom: 0.55pt solid #111; height: 6mm; }
+.signature-grid td { border: none; border-bottom: 0.55pt solid #111; height: 3mm; }
 .signature-grid .label { border-bottom: none; width: 32mm; }
-.signature-captions td { border: none; text-align: center; font-size: 6.3pt; padding: 0 1mm 2mm; }
+.signature-captions td { border: none; text-align: center; font-size: 7pt; padding: 0 1mm 0.6mm; }
 .disclaimer { margin-top: 2mm; font-size: 6.8pt; color: #333; }
 .meta-note { margin-top: 1.5mm; font-size: 6.2pt; color: #444; }
 .appendix { break-before: page; }
@@ -226,9 +245,9 @@ table { border-collapse: collapse; width: 100%; }
 <section class="form-page">
   <div class="source-id">${e(meta.sourceId)}</div>
   <div class="center underlined">Идентификатор электронного документа</div>
-  <div class="party-line"><div class="underlined"><span class="label">${partyText(parties.buyer)}</span></div><div class="caption">(организация, адрес, номер телефона)</div></div>
+  <div class="party-line party-header"><div class="underlined">${partyMarkup(parties.buyer)}</div><div class="caption">(организация, адрес, номер телефона)</div></div>
   <div style="height:3.7mm"></div>
-  <div class="party-line"><div class="underlined">${partyText(parties.consignee)}</div><div class="caption">(структурное подразделение)</div></div>
+  <div class="party-line party-header"><div class="underlined">${partyMarkup(parties.consignee)}</div><div class="caption">(структурное подразделение)</div></div>
   <div class="party-line"><span>Основание составления акта:</span><div class="underlined" style="margin-left:2mm;width:50%">${e(order)}</div><div class="caption" style="margin-left:2mm">(ненужное зачеркнуть)</div></div>
   <div class="title-block">
     <h1>Акт об установленном расхождении по количеству и качеству<br>при приемке товарно-материальных ценностей</h1>
@@ -249,13 +268,13 @@ table { border-collapse: collapse; width: 100%; }
   ${line('телеграмма, факс, телефонограмма, радиограмма №')}
   <div class="caption">(ненужное зачеркнуть)</div>
   <div style="height:8.8mm"></div>
-  ${line('Грузоотправитель', partyText(parties.shipper))}
+  ${line('Грузоотправитель', partyMarkup(parties.shipper))}
   <div class="caption">(наименование, адрес, номер телефона)</div>
   ${line('Производитель')}
   <div class="caption">(наименование, адрес, номер телефона)</div>
-  ${line('Поставщик', partyText(parties.seller))}
+  ${line('Поставщик', partyMarkup(parties.seller))}
   <div class="caption">(наименование, адрес, номер телефона)</div>
-  ${line('Страховая компания', partyText(parties.insurer))}
+  ${line('Страховая компания', partyMarkup(parties.insurer))}
   <div class="caption">(наименование, адрес, номер телефона)</div>
   ${line('Договор (контракт) на поставку товара №')}
   ${line('Дата отправления товара', blank(inspection.shippingDate))}
@@ -283,7 +302,7 @@ table { border-collapse: collapse; width: 100%; }
   <div class="section-space">По сопроводительным транспортным документам значится:</div>
   <table class="grid transport section-space">
     <thead><tr><th rowspan="2">Отметка об опломбировании товара (груза), состояние пломб и содержание оттиска</th><th rowspan="2">Количество мест</th><th rowspan="2">Вид упаковки</th><th rowspan="2">Наименование товара (груза) или номера вагонов (контейнеров, автофургонов и т.д.)</th><th colspan="2">Единица измерения</th><th colspan="2">Масса товара (груза) брутто</th><th colspan="2">Масса товара (груза) нетто</th><th rowspan="2">Особые отметки отправителя по накладной</th></tr>
-    <tr><th>наимено-<br>вание</th><th>код по<br>ОКЕИ</th><th>в пункте отправления (по документам)</th><th>в пункте прибытия (факт)</th><th>в пункте отправления (по документам)</th><th>в пункте прибытия (факт)</th></tr>
+    <tr><th>наименование</th><th>код по<br>ОКЕИ</th><th>в пункте отправления (по документам)</th><th>в пункте прибытия (факт)</th><th>в пункте отправления (по документам)</th><th>в пункте прибытия (факт)</th></tr>
     <tr class="numbers"><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td></tr></thead>
     <tbody>${transportRows || '<tr class="data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'}</tbody>
   </table>
@@ -294,24 +313,24 @@ table { border-collapse: collapse; width: 100%; }
   <div class="page-label">2-я страница формы № ТОРГ-2</div>
   <table class="grid goods">
     <colgroup>
-      <col style="width:7mm"><col style="width:51mm"><col style="width:13mm"><col style="width:8mm">
-      <col style="width:11mm"><col style="width:7mm"><col style="width:11mm"><col style="width:20mm"><col style="width:11mm">
-      <col style="width:14mm"><col style="width:15mm"><col style="width:17mm"><col style="width:9mm"><col style="width:13mm">
-      <col style="width:14mm"><col style="width:15mm"><col style="width:17mm"><col style="width:9mm"><col style="width:13mm">
-      <col style="width:12mm">
+      <col style="width:14.99pt"><col style="width:224.11pt"><col style="width:30.73pt"><col style="width:26.24pt">
+      <col style="width:35.23pt"><col style="width:23.23pt"><col style="width:24.74pt"><col style="width:63.71pt"><col style="width:35.23pt">
+      <col style="width:32.23pt"><col style="width:25.48pt"><col style="width:34.48pt"><col style="width:29.23pt"><col style="width:29.98pt">
+      <col style="width:32.23pt"><col style="width:25.49pt"><col style="width:29.98pt"><col style="width:29.23pt"><col style="width:27.73pt">
+      <col style="width:38.98pt">
     </colgroup>
-    <thead><tr><th rowspan="2">№<br>п/п</th><th rowspan="2">Товар<br>(наименование)</th><th colspan="2">Единица<br>измерения</th><th rowspan="2">Артикул<br>товара</th><th rowspan="2">Сорт</th><th rowspan="2">Код<br>товара</th><th rowspan="2">Характеристика</th><th rowspan="2">№ строки<br>сопров. док.</th><th colspan="5">По документам поставщика значится</th><th colspan="5">Фактически оказалось</th><th rowspan="2">Номер<br>паспорта</th></tr>
-    <tr><th>наимено-<br>вание</th><th>код по<br>ОКЕИ</th><th class="qty">кол-во<br>(масса)</th><th>цена,<br>руб. коп.</th><th>сумма,<br>руб. коп.</th><th>ставка<br>НДС</th><th>сумма<br>НДС</th><th class="qty">кол-во<br>(масса)</th><th>цена,<br>руб. коп.</th><th>сумма,<br>руб. коп.</th><th>ставка<br>НДС</th><th>сумма<br>НДС</th></tr>
+    <thead><tr><th rowspan="2">№<br>п/п</th><th rowspan="2">Товар<br>(наименование)</th><th colspan="2">Единица<br>измерения</th><th rowspan="2">Артикул<br>товара</th><th rowspan="2">Сорт</th><th rowspan="2">Код<br>товара</th><th rowspan="2">Характеристика</th><th rowspan="2">Номер<br>строки<br>сопроводительного<br>документа</th><th colspan="5">По документам поставщика значится</th><th colspan="5">Фактически оказалось</th><th rowspan="2">Номер<br>паспорта</th></tr>
+    <tr><th>наименование</th><th>код по<br>ОКЕИ</th><th class="qty">количество<br>(масса)</th><th>цена,<br>руб. коп.</th><th>сумма,<br>руб. коп.</th><th>ставка<br>НДС</th><th>сумма<br>НДС</th><th class="qty">количество<br>(масса)</th><th>цена,<br>руб. коп.</th><th>сумма,<br>руб. коп.</th><th>ставка<br>НДС</th><th>сумма<br>НДС</th></tr>
     <tr class="numbers">${Array.from({ length: 20 }, (_, index) => `<td>${index + 1}</td>`).join('')}</tr></thead>
     <tbody>${goodsRows || '<tr class="data-row"><td colspan="20"></td></tr>'}</tbody>
   </table>
   <table class="grid discrepancies section-space">
     <colgroup>
-      <col style="width:7mm"><col style="width:48mm">
-      <col style="width:13mm"><col style="width:16mm"><col style="width:13mm"><col style="width:16mm">
-      <col style="width:13mm"><col style="width:16mm"><col style="width:13mm"><col style="width:16mm">
-      <col style="width:13mm"><col style="width:16mm"><col style="width:13mm"><col style="width:16mm">
-      <col style="width:13mm"><col style="width:16mm"><col style="width:13mm"><col style="width:16mm">
+      <col style="width:14.99pt"><col style="width:251.85pt">
+      <col style="width:32.23pt"><col style="width:32.23pt"><col style="width:27.73pt"><col style="width:44.22pt">
+      <col style="width:32.23pt"><col style="width:30.73pt"><col style="width:27.74pt"><col style="width:44.22pt">
+      <col style="width:32.23pt"><col style="width:34.48pt"><col style="width:29.98pt"><col style="width:44.22pt">
+      <col style="width:32.23pt"><col style="width:29.98pt"><col style="width:27.74pt"><col style="width:44.22pt">
     </colgroup>
     <thead>
       <tr>
@@ -324,8 +343,8 @@ table { border-collapse: collapse; width: 100%; }
         <th colspan="4">Недостача</th><th colspan="4">Излишки</th>
       </tr>
       <tr>
-        <th>кол-во<br>(масса)</th><th>сумма,<br>руб. коп.</th><th>сумма<br>НДС</th><th>пояснение</th>
-        <th>кол-во<br>(масса)</th><th>сумма,<br>руб. коп.</th><th>сумма<br>НДС</th><th>пояснение</th>
+        <th>количество<br>(масса)</th><th>сумма,<br>руб. коп.</th><th>сумма<br>НДС</th><th>пояснение</th>
+        <th>количество<br>(масса)</th><th>сумма,<br>руб. коп.</th><th>сумма<br>НДС</th><th>пояснение</th>
       </tr>
       <tr class="numbers">${Array.from({ length: 18 }, (_, index) => `<td>${index + 1}</td>`).join('')}</tr>
     </thead>
@@ -358,14 +377,10 @@ table { border-collapse: collapse; width: 100%; }
   ${line('Другие данные', blank(inspection.otherInfo))}
   <div class="underlined"></div>
   <div class="section-space">По остальным товарно-материальным ценностям, перечисленным в сопроводительных документах поставщика, расхождений в количестве и качестве нет.</div>
-  ${model.event.operationType ? `<div class="section-space"><strong>Вид операции:</strong> ${e(model.event.operationType)}</div>` : ''}
-  <div class="section-space"><strong>Описание события и расхождений</strong></div>
-  <div class="text-block">${eventDescription ? e(eventDescription) : ''}</div>
-  ${
-    conclusion
-      ? `<div class="section-space"><strong>Заключение комиссии</strong></div><div class="text-block">${e(conclusion)}</div>`
-      : ''
-  }
+  <div class="section-space">Подробное описание дефектов (характер недостачи, излишков, ненадлежащего качества, брака, боя)<br>и мнение комиссии о причинах их образования</div>
+  <div class="text-block"></div>
+  <div class="section-space"><strong>Заключение комиссии</strong></div>
+  <div class="text-block">${e(conclusion || model.event.description || '')}</div>
   <div class="section-space">Члены комиссии предупреждены об ответственности за подписание акта, содержащего данные, не соответствующие действительности.</div>
   <table class="signature-grid"><tr><td class="label">Председатель комиссии</td><td></td><td></td><td></td></tr></table>
   <table class="signature-captions"><tr><td>(место работы, должность)</td><td>(подпись)</td><td>(расшифровка подписи)</td></tr></table>
@@ -381,15 +396,15 @@ table { border-collapse: collapse; width: 100%; }
   ${line('Главный (старший) бухгалтер')}
   <div class="caption">(подпись) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (расшифровка подписи)</div>
   ${line('Решение руководителя')}
-  <div class="disclaimer"><strong>Подписант по данным XML (не подтверждение подписи):</strong> ${e([signer?.fio, signer?.position, signer?.organization].filter(Boolean).join(', '))}.
+  ${!exact ? `<div class="disclaimer"><strong>Подписант по данным XML (не подтверждение подписи):</strong> ${e([signer?.fio, signer?.position, signer?.organization].filter(Boolean).join(', '))}.
     ${signer?.basis ? `Основание полномочий подписанта: ${e(signer.basis)}.` : ''}
     ${signer?.organizationBasis ? `Основание полномочий организации: ${e(signer.organizationBasis)}.` : ''}
     ${signer?.scopeCode ? `Область полномочий: ${e(decodedCode(SCOPE_LABELS, signer.scopeCode))}.` : ''}
     ${signer?.statusCode ? `Статус: ${e(decodedCode(STATUS_LABELS, signer.statusCode))}.` : ''}
     ${signer?.acknowledgment ? `Признак ознакомления: ${e(signer.acknowledgment)}.` : ''}
     ${signer?.other ? `${e(signer.other)}.` : ''}
-    <strong style="white-space:nowrap">Подпись не проверялась.</strong> Сведения не подтверждают факт подписания; встроенной электронной подписи в PDF нет.</div>
-  <div class="meta-note">Документ ${e(meta.actName)}. КНД ${e(meta.knd)}. Сформирован ${e([meta.formedDate, meta.formedTime].filter(Boolean).join(' '))}. ${e(meta.additionalInfoCodes.join('; '))} ${e(meta.additionalInfoPurpose)} ${e(meta.organizationBasis)} ${e(meta.documentCircumstances)} ${basis.gosContractId ? `Госконтракт: ${e(basis.gosContractId)}.` : ''} ${basis.operationCode ? `Код обстоятельств: ${e(basis.operationCode)}.` : ''} ${e(inspection.info.map((item) => `${item.id}: ${item.value}`).join('; '))}</div>
+    <strong style="white-space:nowrap">Подпись не проверялась.</strong> Сведения не подтверждают факт подписания; встроенной электронной подписи в PDF нет.</div>` : ''}
+  ${!exact ? `<div class="meta-note">Документ ${e(meta.actName)}. КНД ${e(meta.knd)}. Сформирован ${e([meta.formedDate, meta.formedTime].filter(Boolean).join(' '))}. ${e(meta.additionalInfoCodes.join('; '))} ${e(meta.additionalInfoPurpose)} ${e(meta.organizationBasis)} ${e(meta.documentCircumstances)} ${basis.gosContractId ? `Госконтракт: ${e(basis.gosContractId)}.` : ''} ${basis.operationCode ? `Код обстоятельств: ${e(basis.operationCode)}.` : ''} ${e(inspection.info.map((item) => `${item.id}: ${item.value}`).join('; '))}</div>` : ''}
 </section>
 ${longCharacteristicHtml}
 ${extraHtml}

@@ -89,8 +89,7 @@ describe('conversion API', () => {
     expect(text).toContain('47 025,00');
     expect(text).toContain('2 475,00');
     expect(text).toContain('225,00');
-    expect(text).toContain('СУХОМЛИНОВ СЕРГЕЙ ПЕТРОВИЧ');
-    expect(text).toContain('Подпись не проверялась');
+    expect(text).not.toContain('Подпись не проверялась');
     expect(text).not.toContain('SUKHOMLINOV');
     expect(text).not.toMatch(/подписано(?! не)/i);
   }, 120_000);

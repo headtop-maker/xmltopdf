@@ -69,7 +69,7 @@ export class Torg2Adapter implements PrintAdapter<Torg2PrintModel> {
   }
 
   async render(model: Torg2PrintModel): Promise<Buffer> {
-    const html = renderTorg2Html(model, { fontCss: this.renderer.fontStyles() });
+    const html = renderTorg2Html(model, { fontCss: this.renderer.fontStyles(), exactReference: true });
     return this.renderer.render(html, {
       sourceSha256: model.meta.sourceSha256,
       documentLabel: `TORG-2 ${model.meta.documentNumber}`,
