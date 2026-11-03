@@ -235,7 +235,7 @@ body { font-family: 'Tahoma', 'Arial', 'Liberation Sans', sans-serif; font-size:
 .osn-value { flex: 1; margin-left: 2.2pt; border-bottom: 0.7pt solid #111; text-align: center; padding: 0 2pt 0.8pt; }
 .osn-caption { width: 405.6pt; text-align: center; font-family: Arial, sans-serif; line-height: 9.7pt; }
 .title-block { display: grid; grid-template-columns: 135.8mm 63.5mm; gap: 1.3mm; align-items: center; width: 200.6mm; margin: 2.7pt 0 1.5pt 7.2%; }
-h1 { font-size: 10pt; line-height: 1.575; text-align: right; text-transform: uppercase; margin: 0; position: relative; top: -0.25pt; }
+h1 { font-size: 10pt; line-height: 1.575; text-align: center; text-transform: uppercase; margin: 0; position: relative; top: -0.25pt; }
 .document-number-wrap { position: relative; }
 .document-number { border-collapse: collapse; width: 63.5mm; table-layout: fixed; }
 .document-number td { width: 50%; border: 0.7pt solid #111; padding: 0.85mm; text-align: center; line-height: 9.7pt; }
@@ -286,8 +286,6 @@ table { border-collapse: collapse; }
 .conditions-block { break-inside: auto; margin-top: 14.7pt; }
 .conditions-block p { margin: 0; break-inside: auto; text-indent: 14.8pt; width: 390pt; }
 .cond-item { break-inside: avoid; }
-.cond-last { break-inside: auto; }
-.cond-last p { break-after: auto; }
 .conditions-block .cond-value { border-bottom: 0.7pt solid #111; height: 9.7pt; margin: 0 0 3.5pt 0; }
 .conditions-block p + p { margin-top: 9.7pt; }
 .signatures-section { break-before: page; padding-left: 2pt; }
