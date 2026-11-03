@@ -1,5 +1,5 @@
 import { Controller, Get, Inject, UseGuards } from '@nestjs/common';
-import { ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { APP_CONFIG, type AppConfig } from '../config';
 import { ApiKeyGuard } from '../access/api-key.guard';
 import { DocumentRegistry } from '../document-registry/document-registry.service';
@@ -17,7 +17,6 @@ export class FormatsController {
 
   @Get()
   @UseGuards(ApiKeyGuard)
-  @ApiHeader({ name: 'X-API-Key', required: true })
   @ApiOperation({
     summary: 'Implemented document formats, schemas, signing profile and limits',
     description:

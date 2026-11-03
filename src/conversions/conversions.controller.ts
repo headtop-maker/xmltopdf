@@ -36,7 +36,6 @@ export class ConversionsController {
   })
   @ApiConsumes('application/octet-stream', 'application/xml', 'text/xml')
   @ApiProduces('application/json')
-  @ApiHeader({ name: 'X-API-Key', required: true })
   @ApiHeader({
     name: 'Idempotency-Key',
     required: false,
@@ -74,7 +73,6 @@ export class ConversionsController {
     summary: 'Read artifact metadata and obtain a fresh short-lived download link',
     description: 'Returns 410 ARTIFACT_EXPIRED for the owner after expiry; other principals receive 404.',
   })
-  @ApiHeader({ name: 'X-API-Key', required: true })
   @ApiResponse({ status: 200, type: ConversionResponseDto })
   @ApiResponse({ status: 404, description: 'Unknown artifact or a different owner' })
   @ApiResponse({ status: 410, description: 'Artifact expired' })
