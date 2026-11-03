@@ -72,6 +72,7 @@ export function configureApp(app: NestExpressApplication, config: AppConfig): vo
       )
       .setVersion(config.appVersion)
       .addApiKey({ type: 'apiKey', in: 'header', name: 'X-API-Key' }, 'api-key')
+      .addSecurityRequirements('api-key')
       .build();
     const document = SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup('docs', app, document, {
