@@ -44,6 +44,27 @@ function line(label: string, value = '', className = ''): string {
   return `<div class="form-line ${className}"><span>${e(label)}</span><span class="line-value">${value}</span></div>`;
 }
 
+const SCOPE_LABELS: Record<string, string> = {
+  '1': 'лицо, принявшее ценности',
+  '2': 'лицо, принявшее ценности и ответственное за оформление события (операции)',
+  '3': 'лицо, ответственное за оформление события (операции)',
+  '7': 'председатель комиссии',
+  '8': 'член комиссии',
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  '3': 'работник иной уполномоченной организации',
+  '4': 'уполномоченное физическое лицо (в том числе индивидуальный предприниматель)',
+  '5': 'работник организации-покупателя',
+  '6': 'работник организации — составителя файла обмена информации покупателя',
+};
+
+function decodedCode(labels: Record<string, string>, code: string | undefined): string {
+  if (!code) return '';
+  const label = labels[code.trim()];
+  return label ? `${label} (код ${code.trim()})` : `код ${code.trim()}`;
+}
+
 export interface Torg2TemplateOptions {
   readonly fontCss: string;
 }
@@ -250,7 +271,10 @@ table { border-collapse: collapse; width: 100%; }
   <div class="section-space">Сведения о лице, принявшем товар (получившем груз) (в том числе на ответственное хранение)</div>
   <div class="form-line"><span class="line-value">${blank(inspection.acceptedBy?.fio)}</span><span class="line-value">${blank(inspection.acceptedBy?.position)}</span><span class="line-value">${blank(inspection.acceptedBy?.basis)}</span></div>
   <div class="form-line" style="margin-top:0"><span class="line-value caption" style="border:none">фамилия, имя, отчество</span><span class="line-value caption" style="border:none">должность</span><span class="line-value caption" style="border:none">основание полномочий (доверие)</span></div>
-  ${inspection.acceptedBy ? `<div class="small muted">${e(inspection.acceptedBy.role)}${inspection.acceptedBy.other ? `; ${e(inspection.acceptedBy.other)}` : ''}</div>` : ''}
+  ${inspection.acceptedBy ? `<div class="small muted">${e(inspection.acceptedBy.role)}</div>` : ''}
+  ${inspection.acceptedBy?.organization ? line('Уполномоченная организация', e(inspection.acceptedBy.organization)) : ''}
+  ${inspection.acceptedBy?.organization && inspection.acceptedBy?.other ? line('На основании', e(inspection.acceptedBy.other)) : ''}
+  ${!inspection.acceptedBy?.organization && inspection.acceptedBy?.other ? line('Иные сведения', e(inspection.acceptedBy.other)) : ''}
   <div class="section-space">По сопроводительным транспортным документам значится:</div>
   <table class="grid transport section-space">
     <thead><tr><th rowspan="2">Отметка об опломбировании товара (груза), состояние пломб и содержание оттиска</th><th rowspan="2">Количество мест</th><th rowspan="2">Вид упаковки</th><th rowspan="2">Наименование товара (груза) или номера вагонов (контейнеров, автофургонов и т.д.)</th><th colspan="2">Единица измерения</th><th colspan="2">Масса товара (груза) брутто</th><th colspan="2">Масса товара (груза) нетто</th><th rowspan="2">Особые отметки отправителя по накладной</th></tr>
@@ -353,7 +377,8 @@ table { border-collapse: collapse; width: 100%; }
   <div class="disclaimer"><strong>Подписант по данным XML (не подтверждение подписи):</strong> ${e([signer?.fio, signer?.position, signer?.organization].filter(Boolean).join(', '))}.
     ${signer?.basis ? `Основание полномочий подписанта: ${e(signer.basis)}.` : ''}
     ${signer?.organizationBasis ? `Основание полномочий организации: ${e(signer.organizationBasis)}.` : ''}
-    ${signer?.statusCode || signer?.scopeCode ? `Коды формата: статус ${e(signer?.statusCode)}, область полномочий ${e(signer?.scopeCode)}.` : ''}
+    ${signer?.scopeCode ? `Область полномочий: ${e(decodedCode(SCOPE_LABELS, signer.scopeCode))}.` : ''}
+    ${signer?.statusCode ? `Статус: ${e(decodedCode(STATUS_LABELS, signer.statusCode))}.` : ''}
     ${signer?.acknowledgment ? `Признак ознакомления: ${e(signer.acknowledgment)}.` : ''}
     ${signer?.other ? `${e(signer.other)}.` : ''}
     <strong style="white-space:nowrap">Подпись не проверялась.</strong> Сведения не подтверждают факт подписания; встроенной электронной подписи в PDF нет.</div>

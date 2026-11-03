@@ -5,6 +5,7 @@ export function formatPartyForPrint(party: PartyModel): { title: string; lines: 
   const registration = [
     party.inn ? `ИНН ${party.inn}` : undefined,
     party.kpp ? `КПП ${party.kpp}` : undefined,
+    party.okpo ? `ОКПО ${party.okpo}` : undefined,
     party.ogrn ? `${party.kind === 'ИП' ? 'ОГРНИП' : 'ОГРН'} ${party.ogrn}` : undefined,
   ]
     .filter(Boolean)

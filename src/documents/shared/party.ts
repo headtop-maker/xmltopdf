@@ -10,6 +10,7 @@ export interface PartyModel {
   readonly name: string;
   readonly inn?: string;
   readonly kpp?: string;
+  readonly okpo?: string;
   readonly ogrn?: string;
   readonly foreignId?: string;
   readonly otherInfo?: string;
@@ -80,6 +81,7 @@ export function readParty(accessor: XmlAccessor, participant: XmlNode): PartyMod
 
   if (!party) return undefined;
 
+  const okpo = accessor.attr(participant, 'ОКПО');
   const address = readAddress(accessor, participant.child('Адрес'));
   const contact = participant.child('Контакт');
   const phone = contact
@@ -106,7 +108,7 @@ export function readParty(accessor: XmlAccessor, participant: XmlNode): PartyMod
       ]) || undefined;
   }
 
-  return { ...party, address, phone, email, bank };
+  return { ...party, okpo, address, phone, email, bank };
 }
 
 export function partyKindLabel(kind: PartyKind): string {
