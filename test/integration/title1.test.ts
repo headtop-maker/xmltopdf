@@ -49,7 +49,7 @@ describe('second titles', () => {
   }
 
   it('prints the TORG-2 additional-information title without recreating the buyer title', async () => {
-    const response = await convert(torg2Title1, '?documentType=Torg2');
+    const response = await convert(torg2Title1);
     expect(response.status).toBe(201);
     expect(response.body.document).toMatchObject({
       family: 'Torg2',
@@ -79,7 +79,7 @@ describe('second titles', () => {
   }, 120_000);
 
   it('prints the UPD buyer confirmation without recreating the seller table', async () => {
-    const response = await convert(updTitle1, '?documentType=UniversalTransferDocument');
+    const response = await convert(updTitle1);
     expect(response.status).toBe(201);
     expect(response.body.document).toMatchObject({
       family: 'UniversalTransferDocument',
@@ -106,9 +106,4 @@ describe('second titles', () => {
     expect(text).not.toContain('49 500,00');
   }, 120_000);
 
-  it('rejects the Invoice hint on the buyer title', async () => {
-    const response = await convert(updTitle1, '?documentType=Invoice');
-    expect(response.status).toBe(422);
-    expect(response.body.code).toBe('DOCUMENT_TYPE_MISMATCH');
-  });
 });

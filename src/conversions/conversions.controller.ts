@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, HttpCode, Param, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, HttpCode, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 import {
   ApiBody,
   ApiConsumes,
@@ -16,7 +16,7 @@ import type { Principal } from '../access/api-key.guard';
 import { errors } from '../common/errors';
 import { sha256Hex } from '../common/hash';
 import { ConversionsService } from './conversions.service';
-import { ConversionResponseDto, ConvertQueryDto } from './conversions.dto';
+import { ConversionResponseDto } from './conversions.dto';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -51,7 +51,6 @@ export class ConversionsController {
   async create(
     @Req() request: AuthenticatedRequest,
     @Body() body: unknown,
-    @Query() query: ConvertQueryDto,
     @Res({ passthrough: true }) response: Response,
     @CurrentPrincipal() principal: Principal,
   ): Promise<ConversionResponseDto> {
@@ -60,7 +59,6 @@ export class ConversionsController {
       ownerId: principal.ownerId,
       body,
       contentType: request.header('content-type'),
-      documentType: query.documentType,
       idempotencyKey: idempotencyKey ?? undefined,
     });
     response.setHeader('Location', `/api/v1/conversions/${result.artifactId}`);

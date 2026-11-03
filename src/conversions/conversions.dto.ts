@@ -1,19 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
-import { DOCUMENT_TYPE_HINTS, type DocumentTypeHint } from '../document-registry/document-registry.service';
-
-export class ConvertQueryDto {
-  @ApiPropertyOptional({
-    enum: DOCUMENT_TYPE_HINTS,
-    description:
-      'Optional print-type hint. It can only disambiguate, never bypass XSD validation. ' +
-      'Invoice refers to the СЧФ function of the universal transfer document format.',
-  })
-  @IsOptional()
-  @IsIn(DOCUMENT_TYPE_HINTS as unknown as string[])
-  documentType?: DocumentTypeHint;
-}
-
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 export class IdempotencyHeaderDto {
   @ApiPropertyOptional({ maxLength: 128 })
   @IsOptional()

@@ -117,20 +117,6 @@ describe('UPD title 0 conversions', () => {
     expect(text).not.toContain('НОМЕР СЧЁТА-ФАКТУРЫ');
   }, 120_000);
 
-  it('validates the documentType hint against the actual function', async () => {
-    const invoice = await convert(fixtures.schf, '?documentType=Invoice');
-    expect(invoice.status).toBe(201);
-    expect(invoice.body.document.function).toBe('СЧФ');
-
-    const wrongFamily = await convert(fixtures.schf, '?documentType=Torg2');
-    expect(wrongFamily.status).toBe(422);
-    expect(wrongFamily.body.code).toBe('DOCUMENT_TYPE_MISMATCH');
-
-    const invoiceOnUtd = await convert(fixtures.schfdop, '?documentType=Invoice');
-    expect(invoiceOnUtd.status).toBe(422);
-    expect(invoiceOnUtd.body.code).toBe('DOCUMENT_TYPE_MISMATCH');
-  }, 120_000);
-
   it('rejects unknown and missing functions with UNSUPPORTED_FUNCTION', async () => {
     const unknown = asUtf8(fixtures.schfdop).replace('Функция="СЧФДОП"', 'Функция="СвИС"');
     const unsupported = await convert(Buffer.from(unknown, 'utf8'));

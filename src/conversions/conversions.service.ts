@@ -8,7 +8,6 @@ import type { Artifact } from '../artifacts/artifact.types';
 import {
   DocumentRegistry,
   extractMetadata,
-  type DocumentTypeHint,
   type SchemaDescriptor,
   type XmlMetadata,
 } from '../document-registry/document-registry.service';
@@ -33,7 +32,6 @@ export interface ConvertInput {
   readonly ownerId: string;
   readonly body: unknown;
   readonly contentType: string | undefined;
-  readonly documentType?: DocumentTypeHint;
   readonly idempotencyKey?: string;
 }
 
@@ -45,7 +43,6 @@ interface Prepared {
   readonly metadata: XmlMetadata;
   readonly descriptor: SchemaDescriptor;
   readonly adapter: PrintAdapter;
-  readonly hint?: DocumentTypeHint;
   readonly idempotencyKeyHash?: string;
   readonly fingerprint: string;
   readonly startedAt: number;
@@ -101,14 +98,12 @@ export class ConversionsService {
 
     const metadata = extractMetadata(parsed);
     const descriptor = this.registry.detect(metadata);
-    this.registry.assertHintCompatible(descriptor, input.documentType, metadata);
     const adapter = this.adapters.get(descriptor);
 
     const sourceSha256 = sha256Hex(input.body);
     const fingerprint = sha256Hex(
       [
         sourceSha256,
-        input.documentType ?? '',
         descriptor.id,
         adapter.templateVersion,
         RENDER_PROFILE,
@@ -126,7 +121,6 @@ export class ConversionsService {
       metadata,
       descriptor,
       adapter,
-      hint: input.documentType,
       idempotencyKeyHash,
       fingerprint,
       startedAt,

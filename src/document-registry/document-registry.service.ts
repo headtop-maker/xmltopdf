@@ -7,9 +7,6 @@ import { AppError } from '../common/errors';
 import type { ParsedXml } from '../xml-security/xml-tree';
 
 export type DocumentFamily = 'Torg2' | 'UniversalTransferDocument' | 'Invoice';
-export const DOCUMENT_TYPE_HINTS = ['Torg2', 'UniversalTransferDocument', 'Invoice'] as const;
-export type DocumentTypeHint = (typeof DOCUMENT_TYPE_HINTS)[number];
-
 export interface SchemaDescriptor {
   readonly id: string;
   readonly family: DocumentFamily;
@@ -248,39 +245,6 @@ export class DocumentRegistry {
     return descriptor;
   }
 
-  assertHintCompatible(
-    descriptor: SchemaDescriptor,
-    hint: DocumentTypeHint | undefined,
-    metadata: XmlMetadata,
-  ): void {
-    if (!hint) return;
-    let compatible: boolean;
-    switch (hint) {
-      case 'Torg2':
-        compatible = descriptor.family === 'Torg2';
-        break;
-      case 'UniversalTransferDocument':
-        compatible = descriptor.family === 'UniversalTransferDocument';
-        break;
-      case 'Invoice':
-        compatible =
-          descriptor.family === 'UniversalTransferDocument' &&
-          descriptor.titleIndex === 0 &&
-          metadata.documentFunction === 'СЧФ';
-        break;
-      default:
-        compatible = false;
-    }
-    if (!compatible) {
-      throw new AppError(422, 'DOCUMENT_TYPE_MISMATCH', 'documentType does not match the XML document', {
-        details: [
-          {
-            message: `Requested "${hint}", detected ${descriptor.family} (${descriptor.schemaRevision})`,
-          },
-        ],
-      });
-    }
-  }
 
   prefixHint(descriptor: SchemaDescriptor, sourceId: string | undefined): boolean {
     if (!sourceId) return false;

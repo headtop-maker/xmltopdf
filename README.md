@@ -87,7 +87,7 @@ npm start
 
 | Метод | Путь | Назначение |
 | --- | --- | --- |
-| POST | `/api/v1/conversions?documentType=Torg2` | Конвертация; тело — XML-байты; ответ JSON с `downloadUrl` |
+| POST | `/api/v1/conversions` | Конвертация; тело — XML-байты; тип документа определяется по XML/КНД; ответ JSON с `downloadUrl` |
 | GET | `/api/v1/conversions/:artifactId` | Метаданные и новая короткоживущая ссылка (владелец) |
 | GET | `/api/v1/downloads/:token` | Точные сохранённые байты PDF по capability-token |
 | GET | `/api/v1/formats` | Реализованные форматы, ревизии XSD, лимиты, подписной профиль |
