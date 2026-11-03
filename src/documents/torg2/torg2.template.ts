@@ -190,11 +190,14 @@ body { font-family: 'Tahoma', 'Arial', 'Liberation Sans', sans-serif; font-size:
 .party-header { width: 48%; text-align: center; }
 .party-line .label { font-weight: bold; }
 .party-line .underlined { padding: 0 1mm; }
-.title-block { display: grid; grid-template-columns: 1fr 61mm; gap: 5mm; align-items: center; width: 71%; margin: -4.8mm 0 -0.8mm 7.2%; }
-h1 { font-size: 10pt; line-height: 1.25; text-align: center; text-transform: uppercase; margin: 0; }
-.document-number { border-collapse: collapse; width: 61mm; }
-.document-number td { border: 0.7pt solid #111; padding: 1.1mm; text-align: center; }
-.document-number .head { font-size: 7.2pt; }
+.title-block { display: grid; grid-template-columns: 135.8mm 63.5mm; gap: 1.3mm; align-items: center; width: 69.9%; margin: -2.5mm 0 -0.75mm 7.2%; }
+h1 { font-size: 10pt; line-height: 1.575; text-align: right; text-transform: uppercase; margin: 0; position: relative; top: -0.45pt; }
+.document-number-wrap { position: relative; }
+.document-number { border-collapse: collapse; width: 63.5mm; table-layout: fixed; }
+.document-number td { width: 50%; border: 0.7pt solid #111; padding: 1.1mm; text-align: center; }
+.document-number .head { font-size: 8pt; line-height: 1.1; }
+.document-number tr.correction td { height: 4.9mm; padding: 0 1.1mm; }
+.correction-label { position: absolute; right: 100%; bottom: 0; height: 4.9mm; line-height: 4.9mm; padding-right: 1.5mm; font-size: 10pt; white-space: nowrap; }
 .form-line { display: flex; align-items: flex-end; gap: 1.5mm; margin-top: 1.4mm; min-height: 3.5mm; }
 .line-value { flex: 1; border-bottom: 0.6pt solid #111; padding: 0 1mm; min-height: 3.3mm; }
 .line-value.empty { min-width: 35mm; }
@@ -251,12 +254,14 @@ table { border-collapse: collapse; width: 100%; }
   <div class="party-line"><span>Основание составления акта:</span><div class="underlined" style="margin-left:2mm;width:50%">${e(order)}</div><div class="caption" style="margin-left:2mm">(ненужное зачеркнуть)</div></div>
   <div class="title-block">
     <h1>Акт об установленном расхождении по количеству и качеству<br>при приемке товарно-материальных ценностей</h1>
-    <table class="document-number">
-      <tr class="head"><td>Номер<br>документа</td><td>Дата<br>составления</td></tr>
-      <tr><td>${e(meta.documentNumber)}</td><td>${e(meta.documentDate)}</td></tr>
-      <tr><td colspan="2" style="border-bottom:none;padding-bottom:0">Исправление</td></tr>
-      <tr><td>${blank(meta.correctionNumber)}</td><td>${blank(meta.correctionDate)}</td></tr>
-    </table>
+    <div class="document-number-wrap">
+      <table class="document-number">
+        <tr class="head"><td>Номер<br>документа</td><td>Дата<br>составления</td></tr>
+        <tr><td>${e(meta.documentNumber)}</td><td>${e(meta.documentDate)}</td></tr>
+        <tr class="correction"><td>${blank(meta.correctionNumber)}</td><td>${blank(meta.correctionDate)}</td></tr>
+      </table>
+      <span class="correction-label">Исправление</span>
+    </div>
   </div>
   ${line('Место приемки товара', blank(inspection.place))}
   <div class="form-line"><span>Настоящий акт составлен комиссией, которая установила:</span><div class="commission-date"><span class="date-cell">${inspectionDay}</span><span class="date-cell">${inspectionMonth}</span><span class="date-cell year">${inspectionYear}</span><span>г.</span></div></div>
