@@ -4,7 +4,7 @@ import { mkdtemp, readdir, readFile, rm, writeFile, mkdir } from 'node:fs/promis
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { APP_CONFIG, type AppConfig } from '../config';
-import { AppError, errors } from '../common/errors';
+import { AppError } from '../common/errors';
 import { logger } from '../common/logger';
 
 /**
@@ -78,7 +78,7 @@ export class VislibRendererService {
       let stderr = '';
       const timer = setTimeout(() => {
         child.kill('SIGKILL');
-        reject(new AppError(504, 'RENDER_TIMEOUT', 'The external renderer timed out'));
+        reject(new AppError(504, 'RENDERER_TIMEOUT', 'The external renderer timed out'));
       }, this.config.vislib.timeoutMs);
       child.stderr.on('data', (chunk: Buffer) => {
         stderr = (stderr + chunk.toString('utf8')).slice(-8000);

@@ -20,12 +20,7 @@ function partyText(party: PartyModel | undefined): string {
   return e([info.title, ...info.lines].filter(Boolean).join(', '));
 }
 
-/** Header block of the act: reference Saby prints the subject without bank/contact lines. */
-function partyHeaderText(party: PartyModel | undefined): string {
-  if (!party) return '';
-  const info = formatPartyForPrint(party);
-  return e([info.title, ...info.lines.filter((line) => !line.startsWith('р/с') && !line.startsWith('тел.'))].filter(Boolean).join(', '));
-}
+
 
 function dateParts(value: string | undefined): [string, string, string] {
   const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value ?? '');
@@ -167,7 +162,7 @@ ${options.fontCss}
 @page { size: A4 landscape; margin: 6mm 5mm 12mm 5mm; }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
-body { font-family: 'Tahoma', 'Arial', 'Liberation Sans', sans-serif; font-size: 8.2pt; line-height: 1.22; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: 'Times New Roman', 'Liberation Serif', serif; font-size: 9pt; line-height: 1.22; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .form-page { break-after: page; }
 .goods-section { break-before: page; }
 .conditions-block { break-inside: avoid; }
@@ -185,7 +180,7 @@ body { font-family: 'Tahoma', 'Arial', 'Liberation Sans', sans-serif; font-size:
 .party-line { margin: 0.6mm 0 0; }
 .party-line .label { font-weight: bold; }
 .party-line .underlined { padding: 0 1mm; }
-.title-block { display: grid; grid-template-columns: 1fr 61mm; gap: 5mm; align-items: center; margin: 6.4mm 0 1mm; }
+.title-block { display: grid; grid-template-columns: 1fr 61mm; gap: 5mm; align-items: center; margin: 12mm 0 1mm; }
 h1 { font-size: 11pt; line-height: 1.25; text-align: center; text-transform: uppercase; margin: 0; }
 .document-number { border-collapse: collapse; width: 61mm; }
 .document-number td { border: 0.7pt solid #111; padding: 1.1mm; text-align: center; }
@@ -231,8 +226,8 @@ table { border-collapse: collapse; width: 100%; }
 <section class="form-page">
   <div class="source-id">${e(meta.sourceId)}</div>
   <div class="center underlined">Идентификатор электронного документа</div>
-  <div class="party-line"><div class="underlined"><span class="label">${partyHeaderText(parties.buyer)}</span></div><div class="caption">(организация, адрес, номер телефона)</div></div>
-  <div class="party-line"><div class="underlined">${partyHeaderText(parties.consignee)}</div><div class="caption">(структурное подразделение)</div></div>
+  <div class="party-line"><div class="underlined"><span class="label">${partyText(parties.buyer)}</span></div><div class="caption">(организация, адрес, номер телефона)</div></div>
+  <div class="party-line"><div class="underlined">${partyText(parties.consignee)}</div><div class="caption">(структурное подразделение)</div></div>
   <div class="party-line"><span>Основание составления акта:</span><div class="underlined" style="margin-left:2mm;width:50%">${e(order)}</div><div class="caption" style="margin-left:2mm">(ненужное зачеркнуть)</div></div>
   <div class="title-block">
     <h1>Акт об установленном расхождении по количеству и качеству<br>при приемке товарно-материальных ценностей</h1>
@@ -294,6 +289,7 @@ table { border-collapse: collapse; width: 100%; }
 </section>
 
 <section class="goods-section">
+  <div class="page-label">2-я страница формы № ТОРГ-2</div>
   <table class="grid goods">
     <colgroup>
       <col style="width:7mm"><col style="width:51mm"><col style="width:13mm"><col style="width:8mm">
@@ -351,6 +347,7 @@ table { border-collapse: collapse; width: 100%; }
 </section>
 
 <section class="signatures-section">
+  <div class="page-label">3-я страница формы № ТОРГ-2</div>
   ${line('Определение количества товара (продукции) проводилось', blank(inspection.shortageMethod))}
   <div class="caption">(взвешиванием, счетом мест, обмером и т. п.,<br>место определения количества товара (продукции))</div>
   <div class="underlined section-space"></div>

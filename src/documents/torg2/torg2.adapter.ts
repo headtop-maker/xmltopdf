@@ -73,6 +73,7 @@ export class Torg2Adapter implements PrintAdapter<Torg2PrintModel> {
     return this.renderer.render(html, {
       sourceSha256: model.meta.sourceSha256,
       documentLabel: `TORG-2 ${model.meta.documentNumber}`,
+      showPageNumber: false,
     });
   }
 }

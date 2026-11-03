@@ -17,6 +17,8 @@ export interface RenderOptions {
   readonly documentLabel: string;
   /** Technical source hash in the page footer; off by default. */
   readonly showSourceHash?: boolean;
+  /** Page numbering footer; TORG-2 matches the approved blank without it. */
+  readonly showPageNumber?: boolean;
 }
 
 /**
@@ -198,7 +200,7 @@ export class PdfRendererService implements OnModuleInit, OnModuleDestroy {
         landscape: true,
         printBackground: true,
         preferCSSPageSize: true,
-        displayHeaderFooter: true,
+        displayHeaderFooter: options.showPageNumber !== false,
         headerTemplate: '<div></div>',
         footerTemplate: footer,
         margin: { top: '9mm', right: '10mm', bottom: '14mm', left: '10mm' },
