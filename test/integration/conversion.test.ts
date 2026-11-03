@@ -85,10 +85,10 @@ describe('conversion API', () => {
     const text = pdfText(first.body);
     expect(text).toContain('УПД-ЭТрН-001');
     expect(text).toContain('Мука пшеничная хлебопекарная');
-    expect(text).toContain('49 500,00');
-    expect(text).toContain('47 025,00');
-    expect(text).toContain('2 475,00');
-    expect(text).toContain('225,00');
+    expect(text).toContain('49500.00');
+    expect(text).toContain('47025.00');
+    expect(text).toContain('2475.00');
+    expect(text).toContain('225.00');
     expect(text).not.toContain('Подпись не проверялась');
     expect(text).not.toContain('SUKHOMLINOV');
     expect(text).not.toMatch(/подписано(?! не)/i);

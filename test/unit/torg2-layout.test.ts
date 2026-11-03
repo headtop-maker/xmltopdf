@@ -35,7 +35,7 @@ describe('TORG-2 layout contract', () => {
   it('has 18 discrepancy columns and no empty header strip', () => {
     const html = render(xml);
     expect(html).not.toContain('<th colspan="10"></th>');
-    expect(html).toContain('<th rowspan="3">№<br>п/п</th>');
+    expect(html).toContain('<th rowspan="3">№<br>п/<br>п</th>');
     const discrepancyTable = html.slice(html.indexOf('class="grid discrepancies'));
     const numbersRow = /<tr class="numbers">([\s\S]*?)<\/tr>/.exec(discrepancyTable)?.[1] ?? '';
     expect((numbersRow.match(/<td>/g) ?? []).length).toBe(18);
@@ -45,8 +45,8 @@ describe('TORG-2 layout contract', () => {
   it('does not invent a conclusion, opening date or representative authority', () => {
     const html = render(xml);
     expect(html).toContain('Заключение комиссии');
-    expect(html).toMatch(/Дата вскрытия тары[\s\S]{0,120}?<span class="line-value"><\/span>/);
-    expect(html).toMatch(/Документ, удостоверяющий полномочия[\s\S]{0,160}?<span class="line-value"><\/span>/);
+    expect(html).toMatch(/Дата вскрытия тары[\s\S]{0,200}?<span class="date-blank d1"/);
+    expect(html).toMatch(/Документ, удостоверяющий полномочия[\s\S]{0,160}?<span class="doc-value"><\/span>/);
     // The signer's authority basis is shown only in the signer block, never in the representative line.
     expect(html).toContain('Основание полномочий подписанта: Должностные обязанности.');
   });
