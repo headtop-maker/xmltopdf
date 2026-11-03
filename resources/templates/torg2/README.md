@@ -29,3 +29,11 @@ default.
 - Extracted: field contract and layout geometry.
 - Next: compiled renderer (fixed blocks + repeating tables), calibrated against
   the vislib/Saby reference PDFs, behind a feature flag.
+
+## Geometry prototype (experimental)
+
+`scripts/render-torg2-layout-preview.mjs` renders the compiled row ranges with
+visible `${...}` placeholders. It is a geometry check only, not a production
+renderer: the Excel template uses 197 narrow columns and many merges, and the
+first preview exposed overlapping text/table borders. Do not enable it in the
+service until the scaling and merge model is calibrated.
