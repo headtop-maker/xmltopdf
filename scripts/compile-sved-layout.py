@@ -143,18 +143,32 @@ def compile_layout(sved: Path, sheet_name: str) -> dict[str, Any]:
                     max_col = max(max_col, cell.column)
                     max_row = max(max_row, cell.row)
 
+        # openpyxl stores a single ColumnDimension for a whole range
+        # (e.g. B:197 width=0.67). Resolve the ranges explicitly instead of
+        # reading ws.column_dimensions[letter], which falls back to default 13.
+        width_by_col: dict[int, float] = {}
+        hidden_by_col: dict[int, bool] = {}
+        for dim in ws.column_dimensions.values():
+            start = dim.min or 1
+            end = min(dim.max or start, max_col)
+            if end < start or start > max_col:
+                continue
+            width = dim.width if dim.width is not None else 8.43
+            for index in range(start, end + 1):
+                width_by_col[index] = float(width)
+                hidden_by_col[index] = bool(dim.hidden)
+
         columns = []
         for index in range(1, max_col + 1):
             letter = get_column_letter(index)
-            dim = ws.column_dimensions[letter]
-            width = dim.width if dim.width is not None else 8.43
+            width = width_by_col.get(index, 8.43)
             columns.append({
                 "index": index,
                 "letter": letter,
-                "widthChars": round(float(width), 3),
-                "widthPx": round(px_from_width(float(width)), 2),
-                "widthMm": round(px_from_width(float(width)) * MM_PER_INCH / 96.0, 3),
-                "hidden": bool(dim.hidden),
+                "widthChars": round(width, 3),
+                "widthPx": round(px_from_width(width), 2),
+                "widthMm": round(px_from_width(width) * MM_PER_INCH / 96.0, 3),
+                "hidden": hidden_by_col.get(index, False),
             })
 
         rows = []
