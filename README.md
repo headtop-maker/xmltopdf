@@ -63,6 +63,7 @@ curl --fail-with-body \
 ```
 
 Swagger UI: <http://localhost:3000/docs>, машинный контракт: <http://localhost:3000/openapi.json>.
+Нажмите **Authorize** и введите ключ из `API_KEYS` — дальше ключ подставляется автоматически.
 Swagger умеет отправлять бинарное тело: выберите файл XML в `POST /api/v1/conversions`.
 
 Контейнер работает под non-root, Chromium запускается без `--no-sandbox`, сеть для renderer запрещена.
@@ -93,8 +94,16 @@ npm start
 | GET | `/api/v1/formats` | Реализованные форматы, ревизии XSD, лимиты, подписной профиль |
 | GET | `/health/live`, `/health/ready` | Liveness и readiness |
 
+Тип документа определяется автоматически: `Файл/@ВерсФорм` → `Документ/@КНД` → для УПД
+`Документ/@Функция`. Параметра выбора типа нет; устаревший `?documentType=…` игнорируется.
+Определённый титул проверяется по закреплённой XSD.
+
 Заголовки конвертации: `X-API-Key`, `Content-Type: application/octet-stream | application/xml | text/xml`,
 необязательный `Idempotency-Key` (≤ 128 символов).
+
+Идемпотентность: тот же ключ и те же байты → тот же `artifactId` и тот же PDF; тот же ключ с другим
+XML → `409 IDEMPOTENCY_CONFLICT`; без заголовка каждый запрос создаёт новый артефакт.
+Подробный контракт, коды ошибок и лимиты — [`docs/api.md`](docs/api.md).
 
 Ответ `201` содержит `artifactId`, `sourceSha256`, `pdfSha256`, `pageCount`, `downloadUrl`,
 `signingTarget: "pdf"`, `signatureProfile: "external-detached"`, `signatureStatus: "not-provided"`,
@@ -168,7 +177,7 @@ resources/
 ## Тесты
 
 ```bash
-npm test                              # 54 теста: unit + integration (реальный Chromium, реальные XSD)
+npm test                              # 60 тестов: unit + integration (реальный Chromium, реальные XSD)
 npm run test:e2e                      # интеграционный набор
 ./scripts/convert-sample.sh           # прогон образца ТОРГ-2
 node scripts/verify-sample.mjs test-output/generated.txt
@@ -180,13 +189,18 @@ node scripts/load-test.mjs test/fixtures/upd-schfdop.xml 2 20
 полный цикл HTTP → PDF → скачивание, одинаковые байты при повторном скачивании, изоляцию владельцев,
 идемпотентность, отсутствие подписных утверждений и наличие дисклеймера.
 
+Ручные сценарии (Swagger, четыре образца заказчика, идемпотентность, ошибки, лимиты, перезапуск) —
+[`docs/manual-testing.md`](docs/manual-testing.md).
+
 Дополнительно: `test/golden/` — 15 страниц эталонов (ТОРГ-2 0/1, УПД 0/1, все три функции),
 `docs/reports/load-test.md` — измерения p50/p95 и поведения очереди на 2 CPU / 2 GiB.
 
 ## Ограничения
 
-- Печать ТОРГ-2 не воспроизводит официальный бланк построчно; композиция основана на образце Saby и
-  карте полей. Нормативная приёмка — вне этого репозитория.
+- Печать ТОРГ-2 сверена с эталоном `all_1-4.pdf`: совпадают шрифты, сетки таблиц, формат чисел,
+  пагинация 4/4/5/4 и координаты ключевых элементов. Остаточные отличия — блок условий заканчивается
+  на 15–20 pt ниже, у РС-74035 на странице условий две строки вместо одной, в банковских реквизитах
+  эталон печатает «р/с … в БАНК», у нас — «р/с …, БАНК». Нормативная приёмка бланка — вне репозитория.
 - УПД титул 0 реализован, но нормативная сверка формы счёта-фактуры (в т.ч. изменений с 01.04.2026)
   не завершена; реальные обезличенные образцы УПД не предоставлены.
 - Реальные обезличенные образцы вторых титулов (особенно ТОРГ-2 титул 1) не предоставлены; для них
@@ -201,6 +215,10 @@ node scripts/load-test.mjs test/fixtures/upd-schfdop.xml 2 20
 
 ## Документация
 
+- [`docs/api.md`](docs/api.md) — HTTP-контракт: автоопределение типа, идемпотентность, коды ошибок, лимиты.
+- [`docs/manual-testing.md`](docs/manual-testing.md) — ручные тест-кейсы и чек-лист приёмки.
+- [`docs/reports/torg2-examples-diff.md`](docs/reports/torg2-examples-diff.md) — сверка четырёх образцов
+  с `all_1-4.pdf`, координаты и остаточные отличия.
 - [`docs/reports/torg2-sample-comparison.md`](docs/reports/torg2-sample-comparison.md) — прогон образца
   и сверка с эталонным PDF.
 - [`docs/field-maps/torg2-title0.md`](docs/field-maps/torg2-title0.md) — карта XML → печатная форма ТОРГ-2.
