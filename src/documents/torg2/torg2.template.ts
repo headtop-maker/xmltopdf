@@ -20,6 +20,13 @@ function partyText(party: PartyModel | undefined): string {
   return e([info.title, ...info.lines].filter(Boolean).join(', '));
 }
 
+/** Header block of the act: reference Saby prints the subject without bank/contact lines. */
+function partyHeaderText(party: PartyModel | undefined): string {
+  if (!party) return '';
+  const info = formatPartyForPrint(party);
+  return e([info.title, ...info.lines.filter((line) => !line.startsWith('р/с') && !line.startsWith('тел.'))].filter(Boolean).join(', '));
+}
+
 function dateParts(value: string | undefined): [string, string, string] {
   const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value ?? '');
   return match ? [match[1], match[2], match[3]] : ['', '', ''];
@@ -160,7 +167,7 @@ ${options.fontCss}
 @page { size: A4 landscape; margin: 6mm 5mm 12mm 5mm; }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
-body { font-family: 'PT Sans', 'DejaVu Sans', sans-serif; font-size: 8.2pt; line-height: 1.22; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: 'Tahoma', 'Arial', 'Liberation Sans', sans-serif; font-size: 8.2pt; line-height: 1.22; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .form-page { break-after: page; }
 .goods-section { break-before: page; }
 .conditions-block { break-inside: avoid; }
@@ -175,10 +182,10 @@ body { font-family: 'PT Sans', 'DejaVu Sans', sans-serif; font-size: 8.2pt; line
 .source-id { width: 66%; font-size: 7.6pt; overflow-wrap: anywhere; }
 .underlined { border-bottom: 0.6pt solid #111; min-height: 3.3mm; }
 .caption { text-align: center; font-size: 6.2pt; }
-.party-line { margin: 1.1mm 0 0; }
+.party-line { margin: 0.6mm 0 0; }
 .party-line .label { font-weight: bold; }
 .party-line .underlined { padding: 0 1mm; }
-.title-block { display: grid; grid-template-columns: 1fr 61mm; gap: 5mm; align-items: center; margin: 4mm 0 2mm; }
+.title-block { display: grid; grid-template-columns: 1fr 61mm; gap: 5mm; align-items: center; margin: 2.4mm 0 1.4mm; }
 h1 { font-size: 11pt; line-height: 1.25; text-align: center; text-transform: uppercase; margin: 0; }
 .document-number { border-collapse: collapse; width: 61mm; }
 .document-number td { border: 0.7pt solid #111; padding: 1.1mm; text-align: center; }
@@ -206,10 +213,11 @@ table { border-collapse: collapse; width: 100%; }
 .discrepancies { table-layout: fixed; }
 .discrepancies th { font-size: 6.3pt; padding: 0.5mm; line-height: 1.12; }
 .discrepancies .data-row td { padding: 0.7mm 0.7mm; font-size: 8pt; line-height: 1.2; overflow-wrap: break-word; }
-.timeline td, .timeline th { height: 9mm; }
+.timeline td, .timeline th { height: 12mm; }
 .transport th { font-size: 6.6pt; }
+.transport .data-row td { height: 18mm; }
 .transport .numbers td { height: 4mm; }
-.signature-grid td { border: none; border-bottom: 0.55pt solid #111; height: 6mm; }
+.signature-grid td { border: none; border-bottom: 0.55pt solid #111; height: 8mm; }
 .signature-grid .label { border-bottom: none; width: 32mm; }
 .signature-captions td { border: none; text-align: center; font-size: 6.3pt; padding: 0 1mm 2mm; }
 .disclaimer { margin-top: 2mm; font-size: 6.8pt; color: #333; }
@@ -223,7 +231,7 @@ table { border-collapse: collapse; width: 100%; }
 <section class="form-page">
   <div class="source-id">${e(meta.sourceId)}</div>
   <div class="center underlined">Идентификатор электронного документа</div>
-  <div class="party-line"><div class="underlined"><span class="label">${partyText(parties.buyer)}</span></div><div class="caption">(организация, адрес, номер телефона)</div></div>
+  <div class="party-line"><div class="underlined"><span class="label">${partyHeaderText(parties.buyer)}</span></div><div class="caption">(организация, адрес, номер телефона)</div></div>
   <div class="party-line"><div class="underlined">${partyText(parties.consignee)}</div><div class="caption">(структурное подразделение)</div></div>
   <div class="party-line"><span>Основание составления акта:</span><div class="underlined" style="margin-left:2mm;width:50%">${e(order)}</div><div class="caption" style="margin-left:2mm">(ненужное зачеркнуть)</div></div>
   <div class="title-block">
