@@ -159,7 +159,7 @@ ${group.rows.map((row) => `<tr><td>${e(row.label)}</td><td>${e(row.path)}</td><t
 <title>ТОРГ-2 ${e(meta.documentNumber)} от ${e(meta.documentDate)}</title>
 <style>
 ${options.fontCss}
-@page { size: A4 landscape; margin: 6mm 5mm 12mm 5mm; }
+@page { size: A4 landscape; margin: 13mm 5mm 12mm 5mm; }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body { font-family: 'Times New Roman', 'Liberation Serif', serif; font-size: 9pt; line-height: 1.22; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -180,7 +180,7 @@ body { font-family: 'Times New Roman', 'Liberation Serif', serif; font-size: 9pt
 .party-line { margin: 0.6mm 0 0; }
 .party-line .label { font-weight: bold; }
 .party-line .underlined { padding: 0 1mm; }
-.title-block { display: grid; grid-template-columns: 1fr 61mm; gap: 5mm; align-items: center; margin: 12mm 0 1mm; }
+.title-block { display: grid; grid-template-columns: 1fr 61mm; gap: 5mm; align-items: center; width: 71%; margin: 1.6mm 0 -4mm 5.3%; }
 h1 { font-size: 11pt; line-height: 1.25; text-align: center; text-transform: uppercase; margin: 0; }
 .document-number { border-collapse: collapse; width: 61mm; }
 .document-number td { border: 0.7pt solid #111; padding: 1.1mm; text-align: center; }
@@ -210,9 +210,9 @@ table { border-collapse: collapse; width: 100%; }
 .discrepancies .data-row td { padding: 0.7mm 0.7mm; font-size: 8pt; line-height: 1.2; overflow-wrap: break-word; }
 .timeline td, .timeline th { height: 12mm; }
 .transport th { font-size: 6.6pt; }
-.transport .data-row td { height: 18mm; }
+.transport .data-row td { height: 10mm; }
 .transport .numbers td { height: 4mm; }
-.signature-grid td { border: none; border-bottom: 0.55pt solid #111; height: 8mm; }
+.signature-grid td { border: none; border-bottom: 0.55pt solid #111; height: 6mm; }
 .signature-grid .label { border-bottom: none; width: 32mm; }
 .signature-captions td { border: none; text-align: center; font-size: 6.3pt; padding: 0 1mm 2mm; }
 .disclaimer { margin-top: 2mm; font-size: 6.8pt; color: #333; }
@@ -227,6 +227,7 @@ table { border-collapse: collapse; width: 100%; }
   <div class="source-id">${e(meta.sourceId)}</div>
   <div class="center underlined">Идентификатор электронного документа</div>
   <div class="party-line"><div class="underlined"><span class="label">${partyText(parties.buyer)}</span></div><div class="caption">(организация, адрес, номер телефона)</div></div>
+  <div style="height:3.7mm"></div>
   <div class="party-line"><div class="underlined">${partyText(parties.consignee)}</div><div class="caption">(структурное подразделение)</div></div>
   <div class="party-line"><span>Основание составления акта:</span><div class="underlined" style="margin-left:2mm;width:50%">${e(order)}</div><div class="caption" style="margin-left:2mm">(ненужное зачеркнуть)</div></div>
   <div class="title-block">
@@ -247,6 +248,7 @@ table { border-collapse: collapse; width: 100%; }
   ${line('доставлен товар. Документ о вызове представителя грузоотправителя, поставщика, производителя:')}
   ${line('телеграмма, факс, телефонограмма, радиограмма №')}
   <div class="caption">(ненужное зачеркнуть)</div>
+  <div style="height:8.8mm"></div>
   ${line('Грузоотправитель', partyText(parties.shipper))}
   <div class="caption">(наименование, адрес, номер телефона)</div>
   ${line('Производитель')}
