@@ -28,4 +28,7 @@ export interface PrintAdapter<TModel = unknown> {
   map(parsed: ParsedXml, context: AdapterContext): MappedDocument<TModel>;
 
   render(model: TModel): Promise<Buffer>;
+
+  /** Optional source-aware renderer for external template engines. */
+  renderSource?(source: Buffer, model: TModel): Promise<Buffer>;
 }

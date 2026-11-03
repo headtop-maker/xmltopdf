@@ -44,6 +44,13 @@ export interface AppConfig {
     readonly queueLimit: number;
     readonly browserPath?: string;
   };
+  readonly vislib: {
+    readonly enabled: boolean;
+    readonly jar?: string;
+    readonly templatesDir?: string;
+    readonly javaPath: string;
+    readonly timeoutMs: number;
+  };
   readonly appVersion: string;
   readonly rendererVersion: string;
 }
@@ -145,6 +152,13 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       maxConcurrent: readInt(env, 'MAX_CONCURRENT_RENDERS', 2),
       queueLimit: readInt(env, 'RENDER_QUEUE_LIMIT', 10),
       browserPath: env.CHROMIUM_EXECUTABLE_PATH || undefined,
+    },
+    vislib: {
+      enabled: readBool(env, 'VISLIB_ENABLED', false),
+      jar: env.VISLIB_JAR ? resolveFromCwd(env.VISLIB_JAR) : undefined,
+      templatesDir: env.VISLIB_TEMPLATES_DIR ? resolveFromCwd(env.VISLIB_TEMPLATES_DIR) : undefined,
+      javaPath: env.VISLIB_JAVA_PATH || 'java',
+      timeoutMs: readInt(env, 'VISLIB_TIMEOUT_MS', 30_000),
     },
     appVersion: env.APP_VERSION ?? '0.1.0',
     rendererVersion: env.RENDERER_VERSION ?? 'chromium-playwright',

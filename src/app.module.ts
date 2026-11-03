@@ -18,6 +18,7 @@ import { HealthService } from './health/health.service';
 import { FieldLabelsService } from './mapping/field-labels.service';
 import { PdfInspectorService } from './rendering/pdf-inspector.service';
 import { PdfRendererService } from './rendering/pdf-renderer.service';
+import { VislibRendererService } from './rendering/vislib-renderer.service';
 import { XsdValidatorService } from './validation/xsd-validator.service';
 import { XmlParserService } from './xml-security/xml-parser.service';
 
@@ -31,6 +32,7 @@ import { XmlParserService } from './xml-security/xml-parser.service';
     DocumentRegistry,
     FieldLabelsService,
     PdfRendererService,
+    VislibRendererService,
     PdfInspectorService,
     ArtifactsService,
     Torg2Adapter,

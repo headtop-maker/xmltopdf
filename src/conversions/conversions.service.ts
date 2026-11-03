@@ -205,7 +205,9 @@ export class ConversionsService {
     }
 
     checkDeadline();
-    const pdf = await prepared.adapter.render(mapped.model);
+    const pdf = prepared.adapter.renderSource
+      ? await prepared.adapter.renderSource(prepared.raw, mapped.model)
+      : await prepared.adapter.render(mapped.model);
     checkDeadline();
 
     const inspection = await this.inspector.inspect(pdf);
