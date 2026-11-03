@@ -296,11 +296,11 @@ table { border-collapse: collapse; width: 100%; }
 <section class="goods-section">
   <table class="grid goods">
     <colgroup>
-      <col style="width:7mm"><col style="width:45mm"><col style="width:12mm"><col style="width:8mm">
-      <col style="width:10mm"><col style="width:7mm"><col style="width:10mm"><col style="width:17mm"><col style="width:10mm">
-      <col style="width:13mm"><col style="width:14mm"><col style="width:16mm"><col style="width:9mm"><col style="width:13mm">
-      <col style="width:13mm"><col style="width:14mm"><col style="width:16mm"><col style="width:9mm"><col style="width:13mm">
-      <col style="width:11mm">
+      <col style="width:7mm"><col style="width:51mm"><col style="width:13mm"><col style="width:8mm">
+      <col style="width:11mm"><col style="width:7mm"><col style="width:11mm"><col style="width:20mm"><col style="width:11mm">
+      <col style="width:14mm"><col style="width:15mm"><col style="width:17mm"><col style="width:9mm"><col style="width:13mm">
+      <col style="width:14mm"><col style="width:15mm"><col style="width:17mm"><col style="width:9mm"><col style="width:13mm">
+      <col style="width:12mm">
     </colgroup>
     <thead><tr><th rowspan="2">№<br>п/п</th><th rowspan="2">Товар<br>(наименование)</th><th colspan="2">Единица<br>измерения</th><th rowspan="2">Артикул<br>товара</th><th rowspan="2">Сорт</th><th rowspan="2">Код<br>товара</th><th rowspan="2">Характеристика</th><th rowspan="2">№ строки<br>сопров. док.</th><th colspan="5">По документам поставщика значится</th><th colspan="5">Фактически оказалось</th><th rowspan="2">Номер<br>паспорта</th></tr>
     <tr><th>наимено-<br>вание</th><th>код по<br>ОКЕИ</th><th class="qty">кол-во<br>(масса)</th><th>цена,<br>руб. коп.</th><th>сумма,<br>руб. коп.</th><th>ставка<br>НДС</th><th>сумма<br>НДС</th><th class="qty">кол-во<br>(масса)</th><th>цена,<br>руб. коп.</th><th>сумма,<br>руб. коп.</th><th>ставка<br>НДС</th><th>сумма<br>НДС</th></tr>
@@ -309,15 +309,15 @@ table { border-collapse: collapse; width: 100%; }
   </table>
   <table class="grid discrepancies section-space">
     <colgroup>
-      <col style="width:7mm"><col style="width:40mm">
-      <col style="width:12mm"><col style="width:15mm"><col style="width:13mm"><col style="width:14mm">
-      <col style="width:12mm"><col style="width:15mm"><col style="width:13mm"><col style="width:14mm">
-      <col style="width:12mm"><col style="width:15mm"><col style="width:13mm"><col style="width:14mm">
-      <col style="width:12mm"><col style="width:15mm"><col style="width:13mm"><col style="width:14mm">
+      <col style="width:7mm"><col style="width:48mm">
+      <col style="width:13mm"><col style="width:16mm"><col style="width:13mm"><col style="width:16mm">
+      <col style="width:13mm"><col style="width:16mm"><col style="width:13mm"><col style="width:16mm">
+      <col style="width:13mm"><col style="width:16mm"><col style="width:13mm"><col style="width:16mm">
+      <col style="width:13mm"><col style="width:16mm"><col style="width:13mm"><col style="width:16mm">
     </colgroup>
     <thead>
       <tr>
-        <th rowspan="4">№<br>п/п</th><th rowspan="4">Товар<br>(наименование)</th>
+        <th rowspan="3">№<br>п/п</th><th rowspan="3">Товар<br>(наименование)</th>
         <th colspan="4">Брак</th><th colspan="4">Бой</th><th colspan="8">Отклонения</th>
       </tr>
       <tr>
