@@ -35,7 +35,7 @@ describe('TORG-2 layout contract', () => {
   it('has 18 discrepancy columns and no empty header strip', () => {
     const html = render(xml);
     expect(html).not.toContain('<th colspan="10"></th>');
-    expect(html).toContain('<th rowspan="4">№<br>п/п</th>');
+    expect(html).toContain('<th rowspan="3">№<br>п/п</th>');
     const discrepancyTable = html.slice(html.indexOf('class="grid discrepancies'));
     const numbersRow = /<tr class="numbers">([\s\S]*?)<\/tr>/.exec(discrepancyTable)?.[1] ?? '';
     expect((numbersRow.match(/<td>/g) ?? []).length).toBe(18);
