@@ -435,7 +435,7 @@ table { border-collapse: collapse; }
   <div class="form-caption" style="padding-left:60pt">(наименование, адрес, номер телефона)</div>
   ${line('Страховая компания', partyMarkup(parties.insurer), 'field-gap').replace('class="form-line field-gap"','class="form-line field-gap" style="margin-top:0.5pt"')}
   <div class="form-caption" style="padding-left:103pt">(наименование, адрес, номер телефона)</div>
-  ${line('Договор (контракт) на поставку товара №', '', 'field-gap')}
+  <div class="form-line field-gap"><span class="form-label">Договор (контракт) на поставку товара №</span><span class="line-value"></span><span class="g">от</span><span class="date-blank" style="width:37.5pt;margin-left:2.4pt"></span><span class="date-blank" style="width:107pt;margin-left:7.2pt"></span><span class="date-blank" style="width:84pt;margin-left:7.2pt"></span><span class="g">г.</span></div>
   <div class="form-line" style="margin-top:6.2pt"><span class="form-label">Дата отправления товара</span><span class="date-blank d1" style="margin-left:12.3pt;width:45.1pt"></span><span class="date-blank d2" style="margin-left:9.6pt;width:102.2pt"></span><span class="date-blank d3" style="margin-left:9.6pt;width:87.9pt"></span><span class="g">г.</span></div>
   ${line('со станции (пристани, порта) отправления', '', 'field-gap-sm').replace('class="form-line field-gap-sm"','class="form-line field-gap-sm" style="margin-top:5pt"')}
   <div class="form-caption" style="padding-left:172pt">(наименование)</div>
@@ -577,7 +577,7 @@ table { border-collapse: collapse; }
   <div class="sig-captions rep"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
   <div class="doc-line" style="margin-top:3pt"><span>Документ, удостоверяющий полномочия</span><span class="doc-value"></span></div>
   <div class="doc-caption">выдан</div>
-  <div class="doc-line" style="margin-top:4.5pt"><span>№</span><span class="doc-value" style="flex:0 0 89pt"></span><span>от</span><span class="doc-value" style="flex:0 0 120pt"></span><span class="doc-value" style="flex:0 0 90pt"></span><span>г.</span></div>
+  <div class="doc-line" style="margin-top:4.5pt"><span>№</span><span class="doc-value" style="flex:0 0 73.5pt"></span><span class="doc-value" style="flex:0 0 248pt"></span><span>г.</span></div>
   <div class="doc-line" style="margin-top:5.3pt"><span>Акт с приложением на</span><span class="doc-value" style="flex:0 0 76pt">${e(attachments)}</span><span>листах получил</span></div>
   <div class="sig-label" style="margin-top:5.6pt">Главный (старший) бухгалтер</div>
   <div class="sig-row acc"><span class="sign"></span><span class="decipher"></span></div>
