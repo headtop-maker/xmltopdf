@@ -1,0 +1,77 @@
+{
+  "generatedAt": "2026-11-03T07:47:31.952Z",
+  "fonts": [
+    {
+      "file": "fonts/PT_Sans-Web-Regular.ttf",
+      "sha256": "9cc831490532009bae2b3ce0d39c62adfc889060beb421593bfd9d2396d0f10a"
+    },
+    {
+      "file": "fonts/PT_Sans-Web-Bold.ttf",
+      "sha256": "3128bd5ecf01816e59a23d54c57a7a6b14615b07db53ff277c77376010265b05"
+    },
+    {
+      "file": "fonts/PT_Sans-Web-Italic.ttf",
+      "sha256": "5a90fe2d0cd798700935240580bdcc12c0ffc9102c0c7163b3418e13bc21debd"
+    },
+    {
+      "file": "fonts/OFL.txt",
+      "sha256": "2758cf7a872827f39661cf8cc24188113c030447aefb5ca7145993650076ca8c"
+    }
+  ],
+  "dictionaries": [
+    {
+      "file": "dictionaries/torg2-title0.json",
+      "sha256": "d02da7ca47586991c79ec5a5806f07a90119c2e39dd8cf52976469356636889b",
+      "generatedFrom": "resources/schemas/torg2/torg2_05_01_01/DP_PRIRASXPRIN_1_994_01_05_01_04.xsd"
+    },
+    {
+      "file": "dictionaries/upd-title0.json",
+      "sha256": "197b927af3c8ff45b7d8993ffafcb82ad5a356ac9923233cdcda9f25c5319c48",
+      "generatedFrom": "resources/schemas/upd/utd970_05_03_01/ON_NSCHFDOPPR_1_997_01_05_03_05.xsd"
+    },
+    {
+      "file": "dictionaries/torg2-title1.json",
+      "sha256": "255a138b900d57630476c1252bac50bf46d6869f7aa46a2d40a61d526c37442c",
+      "generatedFrom": "resources/schemas/torg2/torg2_05_01_01/DP_PRIRASXDOP_1_994_02_05_01_01.xsd"
+    },
+    {
+      "file": "dictionaries/upd-title1.json",
+      "sha256": "fe7d64dea2d83e8dffeec3ddd289f41b79075e50b29e64de7675dc3724851d7d",
+      "generatedFrom": "resources/schemas/upd/utd970_05_03_01/ON_NSCHFDOPPOK_1_997_02_05_03_01.xsd"
+    }
+  ],
+  "templates": [
+    {
+      "id": "torg2-title0-v1",
+      "file": "src/documents/torg2/torg2.template.ts",
+      "pageSize": "A4",
+      "orientation": "landscape",
+      "baseFont": "PT Sans",
+      "minBodyPt": 9
+    },
+    {
+      "id": "upd-title0-v1",
+      "file": "src/documents/upd/upd.template.ts",
+      "pageSize": "A4",
+      "orientation": "landscape",
+      "baseFont": "PT Sans",
+      "minBodyPt": 9
+    },
+    {
+      "id": "torg2-title1-v1",
+      "file": "src/documents/torg2/torg2-title1.template.ts",
+      "pageSize": "A4",
+      "orientation": "portrait",
+      "baseFont": "PT Sans",
+      "minBodyPt": 9
+    },
+    {
+      "id": "upd-title1-v1",
+      "file": "src/documents/upd/upd-title1.template.ts",
+      "pageSize": "A4",
+      "orientation": "portrait",
+      "baseFont": "PT Sans",
+      "minBodyPt": 9
+    }
+  ]
+}

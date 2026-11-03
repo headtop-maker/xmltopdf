@@ -1,0 +1,59 @@
+{
+  "name": "xmltopdf",
+  "version": "0.1.0",
+  "private": true,
+  "description": "XML -> PDF converter for formalized Russian documents (TORG-2, UPD) prepared for external PDF signing",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/main.js",
+    "dev": "node --watch --enable-source-maps -r ts-node/register src/main.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "vitest run test/integration",
+    "pdf:inspect": "node scripts/inspect-pdf.mjs",
+    "schemas:check": "node scripts/check-schemas.mjs",
+    "sample": "./scripts/convert-sample.sh",
+    "verify:sample": "node scripts/verify-sample.mjs test-output/generated.txt",
+    "signing:roundtrip": "./scripts/signing-roundtrip.sh docs/reports/torg2-sample-generated.pdf",
+    "load-test": "node scripts/load-test.mjs",
+    "visual": "./scripts/visual-regression.sh",
+    "goldens": "./scripts/visual-regression.sh --update",
+    "heavy-fixture": "node scripts/make-heavy-fixture.mjs"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.6",
+    "@nestjs/core": "^11.1.6",
+    "@nestjs/platform-express": "^11.1.6",
+    "@nestjs/swagger": "^11.2.0",
+    "better-sqlite3": "^12.4.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "decimal.js": "^10.6.0",
+    "dotenv": "^17.2.3",
+    "pdf-lib": "^1.17.1",
+    "playwright": "^1.56.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "saxes": "^6.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^11.2.8",
+    "@swc/core": "^1.16.21",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.9.1",
+    "@types/pngjs": "^6.0.5",
+    "@types/supertest": "^6.0.3",
+    "pixelmatch": "^8.0.0",
+    "pngjs": "^7.0.0",
+    "supertest": "^7.1.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "unplugin-swc": "^2.0.0",
+    "vitest": "^3.2.4"
+  }
+}

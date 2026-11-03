@@ -1,0 +1,14 @@
+node_modules/
+dist/
+data/
+.env
+.env.local
+.playwright-browsers/
+coverage/
+test-output/
+*.log
+.DS_Store
+.docker/
+
+vislib13012026/
+torg2-current.pdf

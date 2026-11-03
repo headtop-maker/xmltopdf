@@ -1,0 +1,99 @@
+{
+  "generatedAt": "2026-11-03T07:33:05.304Z",
+  "schemas": [
+    {
+      "id": "torg2_05_01_01_title0",
+      "family": "Torg2",
+      "formatVersion": "5.01",
+      "operatorVersion": "torg2_05_01_01",
+      "titleIndex": 0,
+      "knd": "1175014",
+      "schemaRevision": "DP_PRIRASXPRIN_1_994_01_05_01_04",
+      "file": "torg2/torg2_05_01_01/DP_PRIRASXPRIN_1_994_01_05_01_04.xsd",
+      "sha256": "6139596b95a3f4635ea0eab34fab33ce4e0f4fbebe4282fac043760884d36084",
+      "sourceUrl": "https://developer.kontur.ru/doc/diadoc-api/_downloads/f3f316f11a623e686c6b0d72e8b5256a/DP_PRIRASXPRIN_1_994_01_05_01_04.xsd",
+      "titleLabel": "Титул покупателя: акт об установленном расхождении (ТОРГ-2)",
+      "implemented": true,
+      "templateVersion": "torg2-title0-v1",
+      "functions": [],
+      "supportedFunctions": []
+    },
+    {
+      "id": "torg2_05_01_01_title1",
+      "family": "Torg2",
+      "formatVersion": "5.01",
+      "operatorVersion": "torg2_05_01_01",
+      "titleIndex": 1,
+      "knd": "1175015",
+      "schemaRevision": "DP_PRIRASXDOP_1_994_02_05_01_01",
+      "file": "torg2/torg2_05_01_01/DP_PRIRASXDOP_1_994_02_05_01_01.xsd",
+      "sha256": "0bf55f20c8fef1c48356cceeb7c9533c172adcd9a4ad2041fd24d9183642185d",
+      "sourceUrl": "https://developer.kontur.ru/doc/diadoc-api/_downloads/c31eb86fc3a8c6456bdc8a4593bc0a22/DP_PRIRASXDOP_1_994_02_05_01_01.xsd",
+      "titleLabel": "Титул продавца: дополнительные сведения (ТОРГ-2)",
+      "implemented": true,
+      "templateVersion": "torg2-title1-v1",
+      "functions": [
+        "WithAdditionalInfo"
+      ],
+      "supportedFunctions": [
+        "WithAdditionalInfo"
+      ]
+    },
+    {
+      "id": "utd970_05_03_01_title0",
+      "family": "UniversalTransferDocument",
+      "formatVersion": "5.03",
+      "operatorVersion": "utd970_05_03_01",
+      "titleIndex": 0,
+      "knd": "1115131",
+      "schemaRevision": "ON_NSCHFDOPPR_1_997_01_05_03_05",
+      "file": "upd/utd970_05_03_01/ON_NSCHFDOPPR_1_997_01_05_03_05.xsd",
+      "sha256": "f98a1ac91cb840ff341976f7636d8a98d51a43e9b1cbbf3e97386551aacdb49a",
+      "sourceUrl": "https://developer.kontur.ru/doc/diadoc-api/_downloads/0b1399ca5ad7c850733f8ef413b97db0/ON_NSCHFDOPPR_1_997_01_05_03_05.xsd",
+      "titleLabel": "Титул продавца (УПД, УКД, счёт-фактура)",
+      "implemented": true,
+      "templateVersion": "upd-title0-v1",
+      "functions": [
+        "СЧФ",
+        "ДОП",
+        "СЧФДОП",
+        "СвРК",
+        "СвЗК"
+      ],
+      "supportedFunctions": [
+        "СЧФ",
+        "ДОП",
+        "СЧФДОП",
+        "СвРК",
+        "СвЗК"
+      ]
+    },
+    {
+      "id": "utd970_05_03_01_title1",
+      "family": "UniversalTransferDocument",
+      "formatVersion": "5.03",
+      "operatorVersion": "utd970_05_03_01",
+      "titleIndex": 1,
+      "knd": "1115132",
+      "schemaRevision": "ON_NSCHFDOPPOK_1_997_02_05_03_01",
+      "file": "upd/utd970_05_03_01/ON_NSCHFDOPPOK_1_997_02_05_03_01.xsd",
+      "sha256": "41f04bd6d880fda4d00f2d4cf685fe1be733eedba759df930ea9a9b27179ccdf",
+      "sourceUrl": "https://developer.kontur.ru/doc/diadoc-api/_downloads/6e4d7704fe585d25b263fced738f137e/ON_NSCHFDOPPOK_1_997_02_05_03_01.xsd",
+      "titleLabel": "Титул покупателя (УПД)",
+      "implemented": true,
+      "templateVersion": "upd-title1-v1",
+      "functions": [
+        "СЧФ",
+        "ДОП",
+        "СЧФДОП"
+      ],
+      "supportedFunctions": [
+        "СЧФ",
+        "ДОП",
+        "СЧФДОП",
+        "СвРК",
+        "СвЗК"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+services:
+  api:
+    build:
+      context: .
+    image: xmltopdf:local
+    init: true
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DATA_DIR: /app/data
+      RESOURCE_DIR: /app/resources
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      # Set PUBLIC_BASE_URL in .env; links must never be derived from Host.
+    volumes:
+      - xmltopdf-data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    shm_size: 256m
+    mem_limit: 2g
+    cpus: 2.0
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+
+volumes:
+  xmltopdf-data:

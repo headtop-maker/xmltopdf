@@ -1,0 +1,108 @@
+{
+  "generatedAt": "2026-11-03T07:47:32.006Z",
+  "note": "Fixtures are provided by the customer for local acceptance. The XML is windows-1251 and is never modified in place.",
+  "fixtures": [
+    {
+      "file": "test/fixtures/torg2.xml",
+      "origin": "customer",
+      "received": "2026-11-02",
+      "bytes": 2622,
+      "sha256": "3e3edc1fb6e31dbdb226b51ccd360ae86c75f427d320623f6e64db13d9b237e9",
+      "encoding": "windows-1251",
+      "family": "Torg2",
+      "titleIndex": 0,
+      "description": "Акт о расхождениях № УПД-ЭТрН-001 от 02.11.2026"
+    },
+    {
+      "file": "test/fixtures/torg2-reference.pdf",
+      "origin": "customer, print form produced by Saby",
+      "received": "2026-11-02",
+      "bytes": 95325,
+      "sha256": "ae0eb642872369e2ec38ba4b7d19b7515012a72dd25dac91a00272b091ff79bb",
+      "description": "Reference composition and values; not a byte-for-byte target"
+    },
+    {
+      "file": "test/fixtures/upd-schfdop.xml",
+      "origin": "synthetic: anonymized from customer-provided UPD samples",
+      "bytes": 5309,
+      "sha256": "6245d11848060ce96f8deed58ec182f58bc89405fc136f049e1af683d9319ba9",
+      "encoding": "UTF-8",
+      "family": "UniversalTransferDocument",
+      "titleIndex": 0,
+      "function": "СЧФДОП",
+      "description": "Синтетический СЧФДОП: две строки, ставки 22% и 10%, отгрузка, банковские реквизиты, подписант"
+    },
+    {
+      "file": "test/fixtures/upd-schf.xml",
+      "origin": "synthetic: anonymized from customer-provided UPD samples",
+      "bytes": 4707,
+      "sha256": "c0ad917901c1723c36147be3849a4fb4a336ad1b008e236b90b7ba312e8274fd",
+      "encoding": "UTF-8",
+      "family": "UniversalTransferDocument",
+      "titleIndex": 0,
+      "function": "СЧФ",
+      "description": "Синтетический СЧФ: счёт-фактура без раздела отгрузки"
+    },
+    {
+      "file": "test/fixtures/upd-dop.xml",
+      "origin": "synthetic: anonymized from customer-provided UPD samples",
+      "bytes": 4382,
+      "sha256": "6e293f7f3643962091b0db54af31e63d971f812fb4368fecbd9d939bcadb062c",
+      "encoding": "UTF-8",
+      "family": "UniversalTransferDocument",
+      "titleIndex": 0,
+      "function": "ДОП",
+      "description": "Синтетический ДОП: документ об отгрузке без основания-документа"
+    },
+    {
+      "file": "test/fixtures/torg2-title1.xml",
+      "origin": "synthetic: constructed from the pinned XSD",
+      "bytes": 1698,
+      "sha256": "d26d2b21c3cb16e0c5da202801fb0717e945270d75b62e1672e1a9bb4d646e87",
+      "encoding": "UTF-8",
+      "family": "Torg2",
+      "titleIndex": 1,
+      "knd": "1175015",
+      "description": "Дополнительные сведения продавца: ссылка на файл покупателя, итоги приёмки, подписант"
+    },
+    {
+      "file": "test/fixtures/upd-title1.xml",
+      "origin": "synthetic: anonymized from a customer-provided UPD buyer sample",
+      "bytes": 1301,
+      "sha256": "1b0c175c8fb6a924e7f1bb6dafccdc0e9e1403239ca7f7d248e8dddc8f722eb5",
+      "encoding": "UTF-8",
+      "family": "UniversalTransferDocument",
+      "titleIndex": 1,
+      "function": "СЧФДОП",
+      "knd": "1115132",
+      "description": "Информация покупателя: ссылка на файл продавца, приёмка без расхождений, подписант"
+    },
+    {
+      "file": "test/fixtures/upd-svrk.xml",
+      "origin": "synthetic: derived from the anonymized UPD fixture",
+      "bytes": 4616,
+      "sha256": "91eeb8bfdecaccd7c2d9ff41f0eca2b325ea33462ff6295a36d67d6adb79459f",
+      "encoding": "UTF-8",
+      "family": "UniversalTransferDocument",
+      "titleIndex": 0,
+      "function": "СвРК",
+      "description": "Синтетический СвРК: реализация комиссионером товаров комитента, информационное поле комитента"
+    },
+    {
+      "file": "test/fixtures/upd-svzk.xml",
+      "origin": "synthetic: derived from the anonymized UPD fixture",
+      "bytes": 4618,
+      "sha256": "85a268feab776e9bdbdab33246a30bfedc3e49d4615828c773bd0ef1f71092ae",
+      "encoding": "UTF-8",
+      "family": "UniversalTransferDocument",
+      "titleIndex": 0,
+      "function": "СвЗК",
+      "description": "Синтетический СвЗК: закупка комиссионером товаров для комитента"
+    }
+  ],
+  "missing": [
+    "СвРК and СвЗК UPD functions have pinned schema support but no verified print form; the service returns 422 UNSUPPORTED_FUNCTION.",
+    "The target signing provider and its CMS/CAdES/PAdES profile are not selected.",
+    "Real (non-anonymized) acceptance of the print forms by the customer is still required for both second titles."
+  ]
+}
