@@ -181,7 +181,7 @@ body { font-family: 'Times New Roman', 'Liberation Serif', serif; font-size: 9pt
 .party-line .label { font-weight: bold; }
 .party-line .underlined { padding: 0 1mm; }
 .title-block { display: grid; grid-template-columns: 1fr 61mm; gap: 5mm; align-items: center; width: 71%; margin: 1.6mm 0 -4mm 5.3%; }
-h1 { font-size: 11pt; line-height: 1.25; text-align: center; text-transform: uppercase; margin: 0; }
+h1 { font-size: 10.2pt; line-height: 1.25; text-align: center; text-transform: uppercase; margin: 0; }
 .document-number { border-collapse: collapse; width: 61mm; }
 .document-number td { border: 0.7pt solid #111; padding: 1.1mm; text-align: center; }
 .document-number .head { font-size: 7.2pt; }
