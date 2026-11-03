@@ -234,12 +234,13 @@ body { font-family: 'Tahoma', 'Arial', 'Liberation Sans', sans-serif; font-size:
 .osn-label { white-space: nowrap; }
 .osn-value { flex: 1; margin-left: 2.2pt; border-bottom: 0.7pt solid #111; text-align: center; padding: 0 2pt 0.8pt; }
 .osn-caption { width: 405.6pt; text-align: center; font-family: Arial, sans-serif; line-height: 9.7pt; }
-.title-block { display: grid; grid-template-columns: 135.8mm 63.5mm; gap: 1.3mm; align-items: center; width: 200.6mm; margin: 2.7pt 0 1.5pt 7.2%; }
-h1 { font-size: 10pt; line-height: 1.575; text-align: center; text-transform: uppercase; margin: 0; position: relative; top: -0.25pt; }
+.title-block { display: grid; grid-template-columns: 135.13mm 63.5mm; gap: 1.3mm; align-items: center; width: 199.93mm; margin: 2.7pt 0 1.5pt 7.2%; }
+h1 { font-size: 10pt; line-height: 1.575; text-align: right; text-transform: uppercase; margin: 0; position: relative; top: -0.25pt; }
 .document-number-wrap { position: relative; }
 .document-number { border-collapse: collapse; width: 63.5mm; table-layout: fixed; }
 .document-number td { width: 50%; border: 0.7pt solid #111; padding: 0.85mm; text-align: center; line-height: 9.7pt; }
 .document-number .head { font-size: 8pt; line-height: 1.1; }
+.document-number tr.data td { height: 16pt; }
 .document-number tr.correction td { height: 4.6mm; padding: 0 0.85mm; }
 .correction-label { position: absolute; right: 100%; bottom: 0; height: 4.9mm; line-height: 4.9mm; padding-right: 1.5mm; font-size: 10pt; white-space: nowrap; }
 .form-line { display: flex; align-items: flex-end; gap: 2.4pt; margin-top: 2.9pt; line-height: 9.7pt; }
@@ -394,7 +395,7 @@ table { border-collapse: collapse; }
     <div class="document-number-wrap">
       <table class="document-number">
         <tr class="head"><td>Номер<br>документа</td><td>Дата<br>составления</td></tr>
-        <tr><td>${e(meta.documentNumber)}</td><td>${e(meta.documentDate)}</td></tr>
+        <tr class="data"><td>${e(meta.documentNumber)}</td><td>${e(meta.documentDate)}</td></tr>
         <tr class="correction"><td>${blank(meta.correctionNumber)}</td><td>${blank(meta.correctionDate)}</td></tr>
       </table>
       <span class="correction-label">Исправление</span>
