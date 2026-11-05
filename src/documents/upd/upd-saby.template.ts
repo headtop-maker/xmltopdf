@@ -147,16 +147,16 @@ body { font-family: 'Tahoma', 'Liberation Sans', Arial, sans-serif; font-size: 7
 .title { left: 85.3pt; top: 19.75pt; font-size: 9pt; font-weight: bold; }
 .correction { left: 85.3pt; top: 31.45pt; font-size: 7pt; }
 .row-label { left: 84.5pt; font-size: 7pt; }
-.row-label.wrap { font-size: 4.6pt; line-height: 5.2pt; }
+.row-label.wrap { font-size: 4.2pt; line-height: 4.8pt; }
 .row-value { left: 230.8pt; font-size: 7pt; }
 .row-marker { left: 807pt; font-size: 6pt; text-align: right; width: 10pt; }
 .small-caption { font-size: 6pt; color: #000; }
 .underline { border-bottom: 0.6pt solid #000; }
 table.items { position: absolute; left: 14pt; top: 190.3pt; width: 805pt; table-layout: fixed; border-collapse: collapse; }
 table.items th, table.items td { border: 0.75pt solid #000; padding: 1pt 1.5pt; vertical-align: middle; }
-table.items th { font-weight: normal; font-size: 6pt; line-height: 7.4pt; text-align: center; }
-table.items tr.h1 th { height: 42pt; }
-table.items tr.h2 th { height: 27.8pt; }
+table.items th { font-weight: normal; font-size: 6pt; line-height: 7.4pt; text-align: center; vertical-align: top; padding-top: 2pt; }
+table.items tr.h1 th { height: 44.8pt; }
+table.items tr.h2 th { height: 25pt; }
 table.items td { font-size: 7pt; }
 table.items td.c { text-align: center; }
 table.items td.n { text-align: right; white-space: nowrap; }
@@ -212,7 +212,7 @@ table.items tr.totals td { font-weight: bold; }
   <div class="abs row-value" style="top:102.8pt">${shipment ? `${e(shipment.kind ?? shipment.name ?? '')}, № ${e(shipment.number ?? '')} от ${e(shipment.date ?? '')}` : '-'}</div>
   <div class="abs row-marker" style="top:102.8pt">(5а)</div>
 
-  <div class="abs row-label wrap" style="top:111pt;width:146pt">К счету-фактуре (счетам-фактурам), выставленному при получении оплаты, частичной оплаты в счет предстоящих поставок товаров (выполнения работ, оказания услуг), передачи имущественных прав</div>
+  <div class="abs row-label wrap" style="top:112pt;width:146pt">К счету-фактуре (счетам-фактурам), выставленному при получении оплаты, частичной оплаты в счет предстоящих поставок товаров (выполнения работ, оказания услуг), передачи имущественных прав</div>
   <div class="abs row-value" style="top:112pt">-</div>
   <div class="abs row-marker" style="top:112pt">(5б)</div>
 
@@ -240,7 +240,7 @@ table.items tr.totals td { font-weight: bold; }
     <colgroup>${TABLE_COLUMNS.map((width) => `<col style="width:${width}pt">`).join('')}</colgroup>
     <thead>
       <tr class="h1">
-        <th rowspan="2">Код товара/<br>работ,<br>услуг</th>
+        <th rowspan="2">Код<br>товара/<br>работ,<br>услуг</th>
         <th rowspan="2">№<br>п/п</th>
         <th rowspan="2">Наименование товара<br>(описание выполненных работ,<br>оказанных услуг),<br>имущественного права</th>
         <th rowspan="2">Код<br>вида<br>товара</th>
@@ -284,8 +284,8 @@ table.items tr.totals td { font-weight: bold; }
   <div class="abs" style="left:87.5pt;top:303.3pt;width:340pt;font-size:6.4pt;line-height:7.6pt">
     <div>Руководитель организации<br>или иное уполномоченное лицо</div>
     <div style="position:relative;height:1pt;margin-top:2pt">
-      <span style="position:absolute;left:142pt;width:100pt;border-bottom:0.7pt solid #000"></span>
-      <span style="position:absolute;left:252pt;width:110pt;border-bottom:0.7pt solid #000"></span>
+      <span style="position:absolute;left:142pt;width:60pt;border-bottom:0.7pt solid #000"></span>
+      <span style="position:absolute;left:252pt;width:70pt;border-bottom:0.7pt solid #000"></span>
     </div>
     <div style="position:relative;height:6pt;font-size:5.6pt;margin-top:1pt">
       <span style="position:absolute;left:168pt">(подпись)</span>
@@ -295,8 +295,8 @@ table.items tr.totals td { font-weight: bold; }
   <div class="abs" style="left:461.9pt;top:303.3pt;width:340pt;font-size:6.4pt;line-height:7.6pt">
     <div>Главный бухгалтер<br>или иное уполномоченное лицо</div>
     <div style="position:relative;height:1pt;margin-top:2pt">
-      <span style="position:absolute;left:142pt;width:100pt;border-bottom:0.7pt solid #000"></span>
-      <span style="position:absolute;left:252pt;width:110pt;border-bottom:0.7pt solid #000"></span>
+      <span style="position:absolute;left:142pt;width:60pt;border-bottom:0.7pt solid #000"></span>
+      <span style="position:absolute;left:252pt;width:70pt;border-bottom:0.7pt solid #000"></span>
     </div>
     <div style="position:relative;height:6pt;font-size:5.6pt;margin-top:1pt">
       <span style="position:absolute;left:168pt">(подпись)</span>
@@ -307,8 +307,8 @@ table.items tr.totals td { font-weight: bold; }
   <div class="abs" style="left:87.5pt;top:329.6pt;width:340pt;font-size:6.4pt;line-height:7.6pt">
     <div>Индивидуальный предприниматель<br>или иное уполномоченное лицо</div>
     <div style="position:relative;height:9pt;margin-top:2pt">
-      <span style="position:absolute;left:142pt;width:100pt;border-bottom:0.7pt solid #000;height:9pt"></span>
-      <span style="position:absolute;left:252pt;width:110pt;border-bottom:0.7pt solid #000;height:9pt;font-size:5.6pt;text-align:center;line-height:8pt">${seller?.kind === 'ИП' ? dash(signer?.fio ?? seller.name) : ''}</span>
+      <span style="position:absolute;left:142pt;width:60pt;border-bottom:0.7pt solid #000;height:9pt"></span>
+      <span style="position:absolute;left:252pt;width:70pt;border-bottom:0.7pt solid #000;height:9pt;font-size:5.6pt;text-align:center;line-height:8pt">${seller?.kind === 'ИП' ? dash(signer?.fio ?? seller.name) : ''}</span>
     </div>
     <div style="position:relative;height:6pt;font-size:5.6pt;margin-top:1pt">
       <span style="position:absolute;left:168pt">(подпись)</span>
