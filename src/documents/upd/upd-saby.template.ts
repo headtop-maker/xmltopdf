@@ -336,42 +336,26 @@ table.items tr.totals td { font-weight: normal; }
     <div style="font-size:6pt">(транспортная накладная, поручение экспедитору, экспедиторская/складская расписка и др./масса нетто/брутто груза, если не приведены ссылки на транспортные документы, содержащие эти сведения)</div>
   </div>
 
-  <div class="abs" style="left:14pt;top:406pt;width:395pt">
-    <div>Товар (груз) передал/услуги, результаты работ, права сдал</div>
-    <div style="position:relative;height:11.5pt;margin-top:2pt">
-      <span style="position:absolute;left:63.6pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
-      <span style="position:absolute;left:205.9pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
-      <span style="position:absolute;left:292.5pt;width:110pt;border-bottom:0.7pt solid #000;height:9.5pt;font-size:7pt;text-align:left;line-height:8pt;white-space:nowrap">${transfer?.person?.fio ? e(transfer.person.fio) : ''}</span>
-    </div>
-    <div style="position:relative;height:6pt;font-size:6pt">
-      <span style="position:absolute;left:63.6pt">(должность)</span>
-      <span style="position:absolute;left:205.9pt">(подпись)</span>
-      <span style="position:absolute;left:326.6pt">(ф.и.о.)</span>
-    </div>
-    <div style="margin-top:4pt;display:flex;align-items:baseline;gap:4pt">
-      <span style="white-space:nowrap;width:188pt;display:inline-block">Дата отгрузки, передачи (сдачи)</span>
-      <span>« ${transferDay || '&nbsp;&nbsp;'} » ${transferMonth || '____________'} 20${transferYear || '__'} г.</span>
-    </div>
+  <div class="abs" style="left:17.8pt;top:404.6pt;font-size:7pt">Товар (груз) передал/услуги, результаты работ, права сдал</div>
+  <div class="abs" style="left:306.53pt;top:417.99pt;font-size:7pt;white-space:nowrap">${transfer?.person?.fio ? e(transfer.person.fio) : ''}</div>
+  <div class="abs" style="left:15.5pt;top:425.13pt;width:158.3pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:194.06pt;top:425.13pt;width:78.77pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:292.34pt;top:425.13pt;width:117.78pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:77.59pt;top:427.35pt;font-size:6pt">(должность)</div>
+  <div class="abs" style="left:219.75pt;top:427.35pt;font-size:6pt">(подпись)</div>
+  <div class="abs" style="left:340.58pt;top:427.35pt;font-size:6pt">(ф.и.о.)</div>
+  <div class="abs" style="left:17.8pt;top:436.05pt;font-size:7pt;white-space:nowrap">Дата отгрузки, передачи (сдачи)</div>
+  <div class="abs" style="left:206pt;top:436.05pt;font-size:7pt;white-space:nowrap">« ${transferDay || '&nbsp;&nbsp;'} » ${transferMonth || '____________'} 20${transferYear || '__'} г.</div>
 
-  </div>
-  <div class="abs" style="left:420pt;top:406pt;width:395pt">
-    <div>Товар (груз) получил/услуги, результаты работ, права принял</div>
-    <div style="position:relative;height:11.5pt;margin-top:2pt">
-      <span style="position:absolute;left:61.2pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
-      <span style="position:absolute;left:196pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
-      <span style="position:absolute;left:321.6pt;width:92pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
-    </div>
-    <div style="position:relative;height:6pt;font-size:6pt">
-      <span style="position:absolute;left:61.2pt">(должность)</span>
-      <span style="position:absolute;left:196pt">(подпись)</span>
-      <span style="position:absolute;left:321.6pt">(ф.и.о.)</span>
-    </div>
-    <div style="margin-top:4pt;display:flex;align-items:baseline;gap:4pt">
-      <span style="white-space:nowrap;width:170pt;display:inline-block">Дата получения (приемки)</span>
-      <span>« &nbsp;&nbsp; » ____________ 20__ г.</span>
-    </div>
-
-  </div>
+  <div class="abs" style="left:426.3pt;top:404.6pt;font-size:7pt">Товар (груз) получил/услуги, результаты работ, права принял</div>
+  <div class="abs" style="left:424.38pt;top:425.13pt;width:148.54pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:591.68pt;top:425.13pt;width:76.52pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:686.96pt;top:425.13pt;width:131.29pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:481.2pt;top:427.35pt;font-size:6pt">(должность)</div>
+  <div class="abs" style="left:616pt;top:427.35pt;font-size:6pt">(подпись)</div>
+  <div class="abs" style="left:741.6pt;top:427.35pt;font-size:6pt">(ф.и.о.)</div>
+  <div class="abs" style="left:420pt;top:436.05pt;font-size:7pt;white-space:nowrap">Дата получения (приемки)</div>
+  <div class="abs" style="left:593.6pt;top:436.05pt;font-size:7pt;white-space:nowrap">« &nbsp;&nbsp; » ____________ 20__ г.</div>
 
   <div class="abs" style="left:17pt;top:446pt;width:360pt;font-size:7pt">Иные сведения об отгрузке, передаче</div>
   <div class="abs" style="left:425.5pt;top:446pt;width:390pt;font-size:7pt">Иные сведения о получении, приемке</div>
@@ -385,32 +369,23 @@ table.items tr.totals td { font-weight: normal; }
   <div class="abs" style="left:14pt;top:489pt;width:395pt;font-size:6pt;text-align:center">(банковские реквизиты продавца)</div>
   <div class="abs" style="left:420pt;top:489pt;width:395pt;font-size:6pt;text-align:center">(банковские реквизиты покупателя)</div>
 
-  <div class="abs" style="left:14pt;top:502.1pt;width:395pt">
-    <div>Ответственный за правильность оформления факта хозяйственной жизни</div>
-    <div style="position:relative;height:11.5pt;margin-top:2pt">
-      <span style="position:absolute;left:16pt;width:120pt;border-bottom:0.7pt solid #000;height:9.5pt;font-size:6.5pt;line-height:8pt;text-align:center;white-space:nowrap">Индивидуальный предприниматель</span>
-      <span style="position:absolute;left:205.9pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
-      <span style="position:absolute;left:292.5pt;width:110pt;border-bottom:0.7pt solid #000;height:9.5pt;font-size:7pt;text-align:left;line-height:8pt;white-space:nowrap">${dash(signer?.fio ?? seller?.name)}</span>
-    </div>
-    <div style="position:relative;height:6pt;font-size:6pt">
-      <span style="position:absolute;left:63.6pt">(должность)</span>
-      <span style="position:absolute;left:205.9pt">(подпись)</span>
-      <span style="position:absolute;left:326.6pt">(ф.и.о.)</span>
-    </div>
-  </div>
-  <div class="abs" style="left:420pt;top:502.1pt;width:395pt">
-    <div>Ответственный за правильность оформления факта хозяйственной жизни</div>
-    <div style="position:relative;height:11.5pt;margin-top:2pt">
-      <span style="position:absolute;left:61.2pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
-      <span style="position:absolute;left:196pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
-      <span style="position:absolute;left:321.6pt;width:92pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
-    </div>
-    <div style="position:relative;height:6pt;font-size:6pt">
-      <span style="position:absolute;left:61.2pt">(должность)</span>
-      <span style="position:absolute;left:196pt">(подпись)</span>
-      <span style="position:absolute;left:321.6pt">(ф.и.о.)</span>
-    </div>
-  </div>
+  <div class="abs" style="left:14pt;top:500.7pt;font-size:7pt">Ответственный за правильность оформления факта хозяйственной жизни</div>
+  <div class="abs" style="left:36.62pt;top:514.7pt;font-size:7pt;white-space:nowrap">Индивидуальный предприниматель</div>
+  <div class="abs" style="left:306.53pt;top:514.7pt;font-size:7pt;white-space:nowrap">${dash(signer?.fio ?? seller?.name)}</div>
+  <div class="abs" style="left:15.5pt;top:521.91pt;width:158.3pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:194.06pt;top:521.91pt;width:78.77pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:292.34pt;top:521.91pt;width:117.78pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:77.59pt;top:524.05pt;font-size:6pt">(должность)</div>
+  <div class="abs" style="left:219.75pt;top:524.05pt;font-size:6pt">(подпись)</div>
+  <div class="abs" style="left:340.58pt;top:524.05pt;font-size:6pt">(ф.и.о.)</div>
+
+  <div class="abs" style="left:420pt;top:500.7pt;font-size:7pt">Ответственный за правильность оформления факта хозяйственной жизни</div>
+  <div class="abs" style="left:424.38pt;top:521.91pt;width:132.79pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:573.67pt;top:521.91pt;width:72.77pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:662.95pt;top:521.91pt;width:155.3pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:473.36pt;top:524.05pt;font-size:6pt">(должность)</div>
+  <div class="abs" style="left:596.16pt;top:524.05pt;font-size:6pt">(подпись)</div>
+  <div class="abs" style="left:729.64pt;top:524.05pt;font-size:6pt">(ф.и.о.)</div>
 
   <div class="abs" style="left:14pt;top:532.2pt;width:395pt;font-size:6pt">
     <div>Наименование экономического субъекта — составителя документа (в т. ч. комиссионера/агента)</div>
