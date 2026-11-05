@@ -287,44 +287,28 @@ table.items tr.totals td { font-weight: normal; }
     Документ<br>составлен на<br><span style="display:inline-block;border-bottom:0.6pt solid #000;min-width:26pt">&nbsp;</span> листах
   </div>
 
-  <div class="abs" style="left:87.5pt;top:303.3pt;width:340pt;font-size:6.4pt;line-height:7.6pt">
-    <div>Руководитель организации<br>или иное уполномоченное лицо</div>
-    <div style="position:relative;height:1pt;margin-top:2pt">
-      <span style="position:absolute;left:142pt;width:60pt;border-bottom:0.7pt solid #000"></span>
-      <span style="position:absolute;left:252pt;width:70pt;border-bottom:0.7pt solid #000"></span>
-    </div>
-    <div style="position:relative;height:6pt;font-size:5.6pt;margin-top:1pt">
-      <span style="position:absolute;left:168pt">(подпись)</span>
-      <span style="position:absolute;left:284pt">(ф.и.о.)</span>
-    </div>
-  </div>
-  <div class="abs" style="left:461.9pt;top:303.3pt;width:340pt;font-size:6.4pt;line-height:7.6pt">
-    <div>Главный бухгалтер<br>или иное уполномоченное лицо</div>
-    <div style="position:relative;height:1pt;margin-top:2pt">
-      <span style="position:absolute;left:142pt;width:60pt;border-bottom:0.7pt solid #000"></span>
-      <span style="position:absolute;left:252pt;width:70pt;border-bottom:0.7pt solid #000"></span>
-    </div>
-    <div style="position:relative;height:6pt;font-size:5.6pt;margin-top:1pt">
-      <span style="position:absolute;left:168pt">(подпись)</span>
-      <span style="position:absolute;left:284pt">(ф.и.о.)</span>
-    </div>
-  </div>
+  <div class="abs" style="left:87.5pt;top:304pt;font-size:6.4pt;line-height:7.6pt">Руководитель организации<br>или иное уполномоченное лицо</div>
+  <div class="abs" style="left:241.9pt;top:320.2pt;width:64.8pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:327.4pt;top:320.2pt;width:113.7pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:260.8pt;top:322.55pt;font-size:5.6pt">(подпись)</div>
+  <div class="abs" style="left:373.6pt;top:322.55pt;font-size:5.6pt">(ф.и.о.)</div>
 
-  <div class="abs" style="left:87.5pt;top:329.6pt;width:340pt;font-size:6.4pt;line-height:7.6pt">
-    <div>Индивидуальный предприниматель<br>или иное уполномоченное лицо</div>
-    <div style="position:relative;height:9pt;margin-top:2pt">
-      <span style="position:absolute;left:142pt;width:60pt;border-bottom:0.7pt solid #000;height:9pt"></span>
-      <span style="position:absolute;left:252pt;width:90pt;border-bottom:0.7pt solid #000;height:9pt;font-size:7pt;text-align:center;line-height:8pt;white-space:nowrap">${seller?.kind === 'ИП' ? dash(signer?.fio ?? seller.name) : ''}</span>
-    </div>
-    <div style="position:relative;height:6pt;font-size:5.6pt;margin-top:1pt">
-      <span style="position:absolute;left:168pt">(подпись)</span>
-      <span style="position:absolute;left:284pt">(ф.и.о.)</span>
-    </div>
-  </div>
-  <div class="abs" style="left:461.9pt;top:337.1pt;width:300pt">
-    <div style="font-size:6.6pt">${seller?.kind === 'ИП' ? ogrnText(seller) : ''}</div>
-    <div style="font-size:5.6pt;line-height:6.4pt;margin-top:2pt">(основной государственный регистрационный номер индивидуального предпринимателя и дата присвоения такого номера)</div>
-  </div>
+  <div class="abs" style="left:461.9pt;top:304pt;font-size:6.4pt;line-height:7.6pt">Главный бухгалтер<br>или иное уполномоченное лицо</div>
+  <div class="abs" style="left:609.6pt;top:320.2pt;width:67.7pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:699.8pt;top:320.2pt;width:114.8pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:629.9pt;top:322.55pt;font-size:5.6pt">(подпись)</div>
+  <div class="abs" style="left:746.5pt;top:322.55pt;font-size:5.6pt">(ф.и.о.)</div>
+
+  <div class="abs" style="left:87.5pt;top:330.3pt;font-size:6.4pt;line-height:7.6pt">Индивидуальный предприниматель<br>или иное уполномоченное лицо</div>
+  <div class="abs" style="left:339.5pt;top:345.95pt;font-size:7pt;white-space:nowrap">${seller?.kind === 'ИП' ? dash(signer?.fio ?? seller.name) : ''}</div>
+  <div class="abs" style="left:241.9pt;top:353.3pt;width:64.8pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:327.4pt;top:353.3pt;width:113.7pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:260.8pt;top:355.55pt;font-size:5.6pt">(подпись)</div>
+  <div class="abs" style="left:373.6pt;top:355.55pt;font-size:5.6pt">(ф.и.о.)</div>
+
+  <div class="abs" style="left:461.9pt;top:337.9pt;font-size:6.6pt">${seller?.kind === 'ИП' ? ogrnText(seller) : ''}</div>
+  <div class="abs" style="left:459.8pt;top:353.3pt;width:354.8pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:461.9pt;top:355.55pt;font-size:5.6pt;line-height:6.4pt">(основной государственный регистрационный номер индивидуального предпринимателя и дата присвоения такого номера)</div>
 
   <div class="abs" style="left:14pt;top:367.1pt;width:790pt">
     <div class="line-row" style="font-size:7pt"><span style="white-space:nowrap">Основание передачи (сдачи)/получения приемки</span><span class="grow" style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${basisText(transfer)}</span></div>
