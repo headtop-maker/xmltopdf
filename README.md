@@ -216,7 +216,8 @@ node scripts/load-test.mjs test/fixtures/upd-schfdop.xml 2 20
 ## Документация
 
 - [`docs/api.md`](docs/api.md) — HTTP-контракт: автоопределение типа, идемпотентность, коды ошибок, лимиты.
-- [`docs/manual-testing.md`](docs/manual-testing.md) — ручные тест-кейсы и чек-лист приёмки.
+- [`docs/manual-testing.md`](docs/manual-testing.md) — ручные тест-кейсы сервиса и чек-лист приёмки.
+- [`docs/manual-testing-upd.md`](docs/manual-testing-upd.md) — ручной тест-кейс УПД: шапка, таблица, суммы, подписи, запрещённые элементы.
 - [`docs/reports/torg2-examples-diff.md`](docs/reports/torg2-examples-diff.md) — сверка четырёх образцов
   с `all_1-4.pdf`, координаты и остаточные отличия.
 - [`docs/reports/torg2-sample-comparison.md`](docs/reports/torg2-sample-comparison.md) — прогон образца
