@@ -24,6 +24,7 @@ export default defineConfig({
       API_KEYS: 'test-key:test-owner,other-key:other-owner',
       DATA_DIR: './data/test',
       PUBLIC_BASE_URL: 'http://localhost:3000',
+      UPD_SABY_LAYOUT: 'false',
     },
   },
 });

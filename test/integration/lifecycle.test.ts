@@ -124,14 +124,12 @@ describe('artifact lifecycle', () => {
     expect(existsSync(path.join(dataDir, 'artifacts', artifact.id))).toBe(false);
   }, 60_000);
 
-  it('deduplicates concurrent requests with the same Idempotency-Key', async () => {
-    const key = 'parallel-key-1';
+  it('deduplicates concurrent requests with identical bytes', async () => {
     const send = () =>
       request(app.getHttpServer())
         .post('/api/v1/conversions')
         .set('X-API-Key', 'test-key')
         .set('Content-Type', 'application/octet-stream')
-        .set('Idempotency-Key', key)
         .send(sample);
     const [first, second] = await Promise.all([send(), send()]);
     expect([200, 201]).toContain(first.status);

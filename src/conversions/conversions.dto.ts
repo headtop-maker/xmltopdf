@@ -1,12 +1,4 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, MaxLength } from 'class-validator';
-export class IdempotencyHeaderDto {
-  @ApiPropertyOptional({ maxLength: 128 })
-  @IsOptional()
-  @IsString()
-  @MaxLength(128)
-  'Idempotency-Key'?: string;
-}
 
 export class ConversionDocumentDto {
   @ApiProperty({ example: 'Torg2' })

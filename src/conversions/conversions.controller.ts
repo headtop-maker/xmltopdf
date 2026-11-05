@@ -2,7 +2,6 @@ import { Body, Controller, Get, Header, HttpCode, Param, Post, Req, Res, UseGuar
 import {
   ApiBody,
   ApiConsumes,
-  ApiHeader,
   ApiOperation,
   ApiProduces,
   ApiResponse,
@@ -36,11 +35,6 @@ export class ConversionsController {
   })
   @ApiConsumes('application/octet-stream', 'application/xml', 'text/xml')
   @ApiProduces('application/json')
-  @ApiHeader({
-    name: 'Idempotency-Key',
-    required: false,
-    description: 'Up to 128 characters; repeats with the same input return the same artifact',
-  })
   @ApiBody({ schema: { type: 'string', format: 'binary' }, description: 'XML document bytes' })
   @ApiResponse({ status: 201, type: ConversionResponseDto, description: 'PDF artifact created' })
   @ApiResponse({ status: 400, description: 'Empty, malformed, unsafe or undecodable XML' })
@@ -54,12 +48,10 @@ export class ConversionsController {
     @Res({ passthrough: true }) response: Response,
     @CurrentPrincipal() principal: Principal,
   ): Promise<ConversionResponseDto> {
-    const idempotencyKey = request.header('idempotency-key');
     const result = await this.conversions.convert({
       ownerId: principal.ownerId,
       body,
       contentType: request.header('content-type'),
-      idempotencyKey: idempotencyKey ?? undefined,
     });
     response.setHeader('Location', `/api/v1/conversions/${result.artifactId}`);
     return result;

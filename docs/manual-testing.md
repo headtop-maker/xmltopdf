@@ -46,7 +46,7 @@ curl -fsS http://localhost:3000/health/ready
 
 Ожидается:
 
-- в Parameters только `Idempotency-Key` (поля `documentType` нет);
+- в Parameters только тело запроса (поля `Idempotency-Key` и `documentType` отсутствуют);
 - ответ `201` с `downloadUrl`;
 - по ссылке скачивается PDF, открывается без ошибок.
 
@@ -123,17 +123,17 @@ curl -fsS http://localhost:3000/health/ready
 Допустимые остаточные отличия: блок условий заканчивается на 15–20 pt ниже эталона; у РС-74035
 на последней странице условий две строки вместо одной.
 
-## TC-08. Идемпотентность
+## TC-08. Повторная отправка
 
-1. `POST` с `Idempotency-Key: manual-1`, файл `torg2.xml`.
-2. Повторить тот же запрос.
-3. `POST` с `Idempotency-Key: manual-1`, но файл `upd-schf.xml`.
+1. `POST` файл `torg2.xml`.
+2. Повторить тот же запрос с теми же байтами.
+3. `POST` файл `upd-schf.xml`.
 
 Ожидается:
 
 - шаги 1 и 2 — `201`, одинаковый `artifactId` и `pdfSha256`;
-- шаг 3 — `409 IDEMPOTENCY_CONFLICT`;
-- без заголовка каждый запрос даёт новый `artifactId`.
+- шаг 3 — `201`, другой `artifactId`;
+- заголовок `Idempotency-Key` не нужен; если отправить его, он игнорируется.
 
 ## TC-09. Скачивание и срок жизни ссылки
 

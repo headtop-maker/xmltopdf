@@ -180,14 +180,12 @@ describe('conversion API', () => {
     expect(JSON.stringify(schemaResponse.body)).not.toContain('xml-');
   });
 
-  it('deduplicates by Idempotency-Key and conflicts on different bytes', async () => {
+  it('reuses the artifact for identical bytes and creates a new one for different bytes', async () => {
     await clearArtifacts(moduleRef);
-    const key = 'sample-key-1';
     const first = await request(app.getHttpServer())
       .post('/api/v1/conversions')
       .set('X-API-Key', 'test-key')
       .set('Content-Type', 'application/octet-stream')
-      .set('Idempotency-Key', key)
       .send(sample);
     expect(first.status).toBe(201);
 
@@ -195,19 +193,17 @@ describe('conversion API', () => {
       .post('/api/v1/conversions')
       .set('X-API-Key', 'test-key')
       .set('Content-Type', 'application/octet-stream')
-      .set('Idempotency-Key', key)
       .send(sample);
     expect(repeat.status).toBe(201);
     expect(repeat.body.artifactId).toBe(first.body.artifactId);
 
-    const conflict = await request(app.getHttpServer())
+    const different = await request(app.getHttpServer())
       .post('/api/v1/conversions')
       .set('X-API-Key', 'test-key')
       .set('Content-Type', 'application/xml')
-      .set('Idempotency-Key', key)
       .send(utf8Variant((text) => text));
-    expect(conflict.status).toBe(409);
-    expect(conflict.body.code).toBe('IDEMPOTENCY_CONFLICT');
+    expect(different.status).toBe(201);
+    expect(different.body.artifactId).not.toBe(first.body.artifactId);
   }, 180_000);
 
   it('reports only implemented formats and enforces the body limit', async () => {

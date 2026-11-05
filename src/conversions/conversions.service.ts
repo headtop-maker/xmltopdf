@@ -32,7 +32,6 @@ export interface ConvertInput {
   readonly ownerId: string;
   readonly body: unknown;
   readonly contentType: string | undefined;
-  readonly idempotencyKey?: string;
 }
 
 interface Prepared {
@@ -80,10 +79,6 @@ export class ConversionsService {
     if (input.body.length > this.config.limits.maxBodyBytes) {
       throw errors.limit(`The request body exceeds ${this.config.limits.maxBodyBytes} bytes`);
     }
-    if (input.idempotencyKey !== undefined && input.idempotencyKey.length > 128) {
-      throw new AppError(400, 'VALIDATION_ERROR', 'Idempotency-Key must not exceed 128 characters');
-    }
-
     const decoded = decodeXmlBytes(input.body, this.config.limits.maxDecodedBytes);
     const parsed = this.parser.parse(decoded.text);
     let goodsRows = 0;
@@ -101,16 +96,20 @@ export class ConversionsService {
     const adapter = this.adapters.get(descriptor);
 
     const sourceSha256 = sha256Hex(input.body);
+    const layoutVariant =
+      descriptor.family === 'UniversalTransferDocument' && process.env.UPD_SABY_LAYOUT === 'true' ? 'upd-saby-draft' : 'default';
     const fingerprint = sha256Hex(
       [
         sourceSha256,
         descriptor.id,
         adapter.templateVersion,
+        layoutVariant,
         RENDER_PROFILE,
         this.config.appVersion,
       ].join('|'),
     );
-    const idempotencyKeyHash = input.idempotencyKey ? sha256Hex(input.idempotencyKey) : undefined;
+    // Content-based idempotency: identical XML and print parameters reuse the same artifact.
+    const idempotencyKeyHash = sha256Hex(`content|${fingerprint}`);
     const flightKey = `${input.ownerId}:${idempotencyKeyHash ?? ''}`;
 
     const prepared: Prepared = {
@@ -126,37 +125,22 @@ export class ConversionsService {
       startedAt,
     };
 
-    if (idempotencyKeyHash) {
-      const existing = this.artifacts.findIdempotent(input.ownerId, idempotencyKeyHash);
-      if (existing) {
-        if (existing.fingerprint !== fingerprint) {
-          throw new AppError(
-            409,
-            'IDEMPOTENCY_CONFLICT',
-            'This Idempotency-Key was already used with different input or print parameters',
-          );
-        }
-        const artifact = this.artifacts.getOwned(existing.artifactId, input.ownerId);
-        return this.buildResponse(artifact);
-      }
-      const pending = this.inFlight.get(flightKey);
-      if (pending) {
-        if (pending.fingerprint !== fingerprint) {
-          throw new AppError(409, 'REQUEST_IN_PROGRESS', 'A concurrent request with this Idempotency-Key is in flight');
-        }
-        const artifactId = await pending.promise;
-        return this.buildResponse(this.artifacts.getOwned(artifactId, input.ownerId));
-      }
+    const existing = this.artifacts.findIdempotent(input.ownerId, idempotencyKeyHash);
+    if (existing) {
+      return this.buildResponse(this.artifacts.getOwned(existing.artifactId, input.ownerId));
+    }
+    const pending = this.inFlight.get(flightKey);
+    if (pending) {
+      const artifactId = await pending.promise;
+      return this.buildResponse(this.artifacts.getOwned(artifactId, input.ownerId));
     }
 
     const work = this.runConversion(prepared).then((artifact) => artifact.id);
-    if (idempotencyKeyHash) {
-      this.inFlight.set(flightKey, { promise: work, fingerprint });
-      const cleanup = (): void => {
-        this.inFlight.delete(flightKey);
-      };
-      work.then(cleanup, cleanup);
-    }
+    this.inFlight.set(flightKey, { promise: work, fingerprint });
+    const cleanup = (): void => {
+      this.inFlight.delete(flightKey);
+    };
+    work.then(cleanup, cleanup);
 
     const artifactId = await work;
     return this.buildResponse(this.artifacts.getOwned(artifactId, input.ownerId));

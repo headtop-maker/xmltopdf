@@ -129,6 +129,23 @@ describe('UPD title 0 conversions', () => {
     expect(missingResponse.body.code).toBe('UNSUPPORTED_FUNCTION');
   }, 120_000);
 
+  it('renders the one-page Saby layout when UPD_SABY_LAYOUT is enabled', async () => {
+    const previous = process.env.UPD_SABY_LAYOUT;
+    process.env.UPD_SABY_LAYOUT = 'true';
+    try {
+      const response = await convert(fixtures.schfdop);
+      expect(response.status).toBe(201);
+      expect(response.body.pageCount).toBe(1);
+      const text = pdfText(await download(response.body));
+      expect(text).toContain('Приложение N 1');
+      expect(text).toContain('Счет-фактура');
+      expect(text).not.toContain('Подпись не проверялась');
+    } finally {
+      if (previous === undefined) delete process.env.UPD_SABY_LAYOUT;
+      else process.env.UPD_SABY_LAYOUT = previous;
+    }
+  }, 180_000);
+
   it('reports arithmetic mismatches as warnings and prints the source values unchanged', async () => {
     const broken = asUtf8(fixtures.schfdop).replace('СтТовБезНДС="7790.24"', 'СтТовБезНДС="7800.00"');
     const response = await convert(Buffer.from(broken, 'utf8'));
