@@ -159,6 +159,8 @@ curl -fsS http://localhost:3000/health/ready
 
 ## TC-11. УПД по функциям
 
+Отдельный кейс для бланка Saby (`СЧФДОП`) — [`manual-testing-upd.md`](manual-testing-upd.md).
+
 Конвертировать `upd-schf.xml`, `upd-dop.xml`, `upd-schfdop.xml`, `upd-svrk.xml`, `upd-svzk.xml`.
 
 Ожидается:
@@ -214,4 +216,4 @@ curl -fsS http://localhost:3000/health/ready
 - [ ] наложения страниц не показывают смещения сетки больше 1 pt;
 - [ ] суммы и количества печатаются с точкой;
 - [ ] PDF открывается в просмотрщике и не содержит подписных утверждений;
-- [ ] тесты `npm test` зелёные (60 тестов).
+- [ ] тесты `npm test` зелёные (66 тестов).
