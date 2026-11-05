@@ -338,10 +338,10 @@ table.items tr.totals td { font-weight: normal; }
 
   <div class="abs" style="left:14pt;top:406pt;width:395pt">
     <div>Товар (груз) передал/услуги, результаты работ, права сдал</div>
-    <div style="position:relative;height:9.3pt;margin-top:2pt">
-      <span style="position:absolute;left:63.6pt;width:84pt;border-bottom:0.7pt solid #000;height:12pt"></span>
-      <span style="position:absolute;left:205.9pt;width:84pt;border-bottom:0.7pt solid #000;height:12pt"></span>
-      <span style="position:absolute;left:292.5pt;width:110pt;border-bottom:0.7pt solid #000;height:12pt;font-size:7pt;text-align:left;line-height:11pt;white-space:nowrap">${transfer?.person?.fio ? e(transfer.person.fio) : ''}</span>
+    <div style="position:relative;height:11.5pt;margin-top:2pt">
+      <span style="position:absolute;left:63.6pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
+      <span style="position:absolute;left:205.9pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
+      <span style="position:absolute;left:292.5pt;width:110pt;border-bottom:0.7pt solid #000;height:9.5pt;font-size:7pt;text-align:left;line-height:8pt;white-space:nowrap">${transfer?.person?.fio ? e(transfer.person.fio) : ''}</span>
     </div>
     <div style="position:relative;height:6pt;font-size:6pt">
       <span style="position:absolute;left:63.6pt">(должность)</span>
@@ -356,10 +356,10 @@ table.items tr.totals td { font-weight: normal; }
   </div>
   <div class="abs" style="left:420pt;top:406pt;width:395pt">
     <div>Товар (груз) получил/услуги, результаты работ, права принял</div>
-    <div style="position:relative;height:9.3pt;margin-top:2pt">
-      <span style="position:absolute;left:61.2pt;width:84pt;border-bottom:0.7pt solid #000;height:12pt"></span>
-      <span style="position:absolute;left:196pt;width:84pt;border-bottom:0.7pt solid #000;height:12pt"></span>
-      <span style="position:absolute;left:321.6pt;width:92pt;border-bottom:0.7pt solid #000;height:12pt"></span>
+    <div style="position:relative;height:11.5pt;margin-top:2pt">
+      <span style="position:absolute;left:61.2pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
+      <span style="position:absolute;left:196pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
+      <span style="position:absolute;left:321.6pt;width:92pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
     </div>
     <div style="position:relative;height:6pt;font-size:6pt">
       <span style="position:absolute;left:61.2pt">(должность)</span>
@@ -387,10 +387,10 @@ table.items tr.totals td { font-weight: normal; }
 
   <div class="abs" style="left:14pt;top:502.1pt;width:395pt">
     <div>Ответственный за правильность оформления факта хозяйственной жизни</div>
-    <div style="position:relative;height:9.3pt;margin-top:2pt">
-      <span style="position:absolute;left:16pt;width:120pt;border-bottom:0.7pt solid #000;height:12pt;font-size:6.5pt;line-height:11pt;text-align:center;white-space:nowrap">Индивидуальный предприниматель</span>
-      <span style="position:absolute;left:205.9pt;width:84pt;border-bottom:0.7pt solid #000;height:12pt"></span>
-      <span style="position:absolute;left:292.5pt;width:110pt;border-bottom:0.7pt solid #000;height:12pt;font-size:7pt;text-align:left;line-height:11pt;white-space:nowrap">${dash(signer?.fio ?? seller?.name)}</span>
+    <div style="position:relative;height:11.5pt;margin-top:2pt">
+      <span style="position:absolute;left:16pt;width:120pt;border-bottom:0.7pt solid #000;height:9.5pt;font-size:6.5pt;line-height:8pt;text-align:center;white-space:nowrap">Индивидуальный предприниматель</span>
+      <span style="position:absolute;left:205.9pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
+      <span style="position:absolute;left:292.5pt;width:110pt;border-bottom:0.7pt solid #000;height:9.5pt;font-size:7pt;text-align:left;line-height:8pt;white-space:nowrap">${dash(signer?.fio ?? seller?.name)}</span>
     </div>
     <div style="position:relative;height:6pt;font-size:6pt">
       <span style="position:absolute;left:63.6pt">(должность)</span>
@@ -400,10 +400,10 @@ table.items tr.totals td { font-weight: normal; }
   </div>
   <div class="abs" style="left:420pt;top:502.1pt;width:395pt">
     <div>Ответственный за правильность оформления факта хозяйственной жизни</div>
-    <div style="position:relative;height:9.3pt;margin-top:2pt">
-      <span style="position:absolute;left:61.2pt;width:84pt;border-bottom:0.7pt solid #000;height:12pt"></span>
-      <span style="position:absolute;left:196pt;width:84pt;border-bottom:0.7pt solid #000;height:12pt"></span>
-      <span style="position:absolute;left:321.6pt;width:92pt;border-bottom:0.7pt solid #000;height:12pt"></span>
+    <div style="position:relative;height:11.5pt;margin-top:2pt">
+      <span style="position:absolute;left:61.2pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
+      <span style="position:absolute;left:196pt;width:84pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
+      <span style="position:absolute;left:321.6pt;width:92pt;border-bottom:0.7pt solid #000;height:9.5pt"></span>
     </div>
     <div style="position:relative;height:6pt;font-size:6pt">
       <span style="position:absolute;left:61.2pt">(должность)</span>
