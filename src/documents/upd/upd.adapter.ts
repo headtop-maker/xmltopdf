@@ -77,6 +77,7 @@ export class UpdAdapter implements PrintAdapter<UpdPrintModel> {
     return this.renderer.render(html, {
       sourceSha256: model.meta.sourceSha256,
       documentLabel: `${label} ${model.meta.number}`,
+      showPageNumber: !useSabyLayout,
     });
   }
 }

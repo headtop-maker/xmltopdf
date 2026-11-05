@@ -144,10 +144,10 @@ body { font-family: 'Tahoma', 'Liberation Sans', Arial, sans-serif; font-size: 7
 .band .upd-title { margin-bottom: 4pt; }
 .band .status { margin-top: 3pt; }
 .band .status-line { margin-top: 1.5pt; }
-.title { left: 85.3pt; top: 19.25pt; font-size: 9pt; font-weight: bold; }
-.correction { left: 85.3pt; top: 30.25pt; font-size: 7pt; }
+.title { left: 85.3pt; top: 19.75pt; font-size: 9pt; font-weight: bold; }
+.correction { left: 85.3pt; top: 31.45pt; font-size: 7pt; }
 .row-label { left: 84.5pt; font-size: 7pt; }
-.row-label.wrap { font-size: 5.2pt; line-height: 6.0pt; }
+.row-label.wrap { font-size: 4.6pt; line-height: 5.2pt; }
 .row-value { left: 230.8pt; font-size: 7pt; }
 .row-marker { left: 807pt; font-size: 6pt; text-align: right; width: 10pt; }
 .small-caption { font-size: 6pt; color: #000; }
@@ -163,8 +163,8 @@ table.items td.n { text-align: right; white-space: nowrap; }
 table.items td.name { text-align: left; }
 table.items tr.letters td { font-size: 6.5pt; text-align: center; height: 11.25pt; }
 table.items tr.totals td { height: 11.26pt; font-size: 7pt; }
-table.items tr.totals td.label { text-align: left; font-size: 7pt; }
-table.items tr.totals td.total { font-weight: bold; }
+table.items tr.totals td.label { text-align: left; font-size: 8pt; font-weight: bold; }
+table.items tr.totals td { font-weight: bold; }
 .letters-label { font-weight: normal; }
 .bottom { position: absolute; left: 14pt; width: 805.5pt; }
 .line-row { display: flex; align-items: flex-end; gap: 4pt; }
@@ -180,60 +180,61 @@ table.items tr.totals td.total { font-weight: bold; }
     <div class="status"><strong>Статус:</strong> 1 — счет-фактура<br>и передаточный<br>документ (акт)<br>2 — передаточный<br>документ (акт)</div>
   </div>
 
+  <div class="abs" style="left:400pt;top:17.5pt;width:417pt;text-align:right;font-size:6pt;line-height:7.4pt">Приложение N 1 к постановлению Правительства Российской Федерации от 26.12.2011 №1137<br>(в ред. Постановления Правительства РФ от 23.01.2026 № 26)</div>
   <div class="abs title">Счет-фактура № ${e(meta.number)} от ${dateRu(meta.date)}</div>
   <div class="abs correction">Исправление № ${dateShort(meta.correctionNumber)} от ${dateShort(meta.correctionDate)}</div>
 
-  <div class="abs row-label" style="top:40pt">Продавец</div>
-  <div class="abs row-value" style="top:40pt">${partyShort(seller)}</div>
-  <div class="abs row-marker" style="top:40pt">(2)</div>
+  <div class="abs row-label" style="top:41.3pt">Продавец</div>
+  <div class="abs row-value" style="top:41.3pt">${partyShort(seller)}</div>
+  <div class="abs row-marker" style="top:41.3pt">(2)</div>
 
-  <div class="abs row-label" style="top:49pt">Адрес</div>
-  <div class="abs row-value" style="top:49pt">${dash(seller?.address)}</div>
-  <div class="abs row-marker" style="top:49pt">(2а)</div>
+  <div class="abs row-label" style="top:50.3pt">Адрес</div>
+  <div class="abs row-value" style="top:50.3pt">${dash(seller?.address)}</div>
+  <div class="abs row-marker" style="top:50.3pt">(2а)</div>
 
-  <div class="abs row-label" style="top:58.8pt">ИНН/КПП продавца</div>
-  <div class="abs row-value" style="top:58.8pt">${partyInn(seller)}</div>
-  <div class="abs row-marker" style="top:58.8pt">(2б)</div>
+  <div class="abs row-label" style="top:60.1pt">ИНН/КПП продавца</div>
+  <div class="abs row-value" style="top:60.1pt">${partyInn(seller)}</div>
+  <div class="abs row-marker" style="top:60.1pt">(2б)</div>
 
-  <div class="abs row-label" style="top:70pt">Грузоотправитель и его адрес:</div>
-  <div class="abs row-value" style="top:70pt">${shipper ? `${e(shipper.name)}, ${e(shipper.address ?? '')}` : '-'}</div>
-  <div class="abs row-marker" style="top:70pt">(3)</div>
+  <div class="abs row-label" style="top:71.3pt">Грузоотправитель и его адрес:</div>
+  <div class="abs row-value" style="top:71.3pt">${shipper ? `${e(shipper.name)}, ${e(shipper.address ?? '')}` : '-'}</div>
+  <div class="abs row-marker" style="top:71.3pt">(3)</div>
 
-  <div class="abs row-label" style="top:80.5pt">Грузополучатель и его адрес:</div>
-  <div class="abs row-value" style="top:80.5pt">${consignee ? `${e(consignee.name)}, ${e(consignee.address ?? '')}` : '-'}</div>
-  <div class="abs row-marker" style="top:80.5pt">(4)</div>
+  <div class="abs row-label" style="top:81.8pt">Грузополучатель и его адрес:</div>
+  <div class="abs row-value" style="top:81.8pt">${consignee ? `${e(consignee.name)}, ${e(consignee.address ?? '')}` : '-'}</div>
+  <div class="abs row-marker" style="top:81.8pt">(4)</div>
 
-  <div class="abs row-label" style="top:91pt">К платежно-расчетному документу</div>
-  <div class="abs row-value" style="top:91pt">${payment ? `№ ${dash(payment.number)} от ${dash(payment.date)}` : '-'}</div>
-  <div class="abs row-marker" style="top:91pt">(5)</div>
+  <div class="abs row-label" style="top:92.3pt">К платежно-расчетному документу</div>
+  <div class="abs row-value" style="top:92.3pt">${payment ? `№ ${dash(payment.number)} от ${dash(payment.date)}` : '-'}</div>
+  <div class="abs row-marker" style="top:92.3pt">(5)</div>
 
-  <div class="abs row-label" style="top:101.5pt">Документ об отгрузке:</div>
-  <div class="abs row-value" style="top:101.5pt">${shipment ? `${e(shipment.kind ?? shipment.name ?? '')}, № ${e(shipment.number ?? '')} от ${e(shipment.date ?? '')}` : '-'}</div>
-  <div class="abs row-marker" style="top:101.5pt">(5а)</div>
+  <div class="abs row-label" style="top:102.8pt">Документ об отгрузке:</div>
+  <div class="abs row-value" style="top:102.8pt">${shipment ? `${e(shipment.kind ?? shipment.name ?? '')}, № ${e(shipment.number ?? '')} от ${e(shipment.date ?? '')}` : '-'}</div>
+  <div class="abs row-marker" style="top:102.8pt">(5а)</div>
 
-  <div class="abs row-label wrap" style="top:110pt;width:150pt">К счету-фактуре (счетам-фактурам), выставленному (выставленным) при получении оплаты, частичной оплаты в счет предстоящих поставок товаров (выполнения работ, оказания услуг), передачи имущественных прав</div>
+  <div class="abs row-label wrap" style="top:111pt;width:146pt">К счету-фактуре (счетам-фактурам), выставленному при получении оплаты, частичной оплаты в счет предстоящих поставок товаров (выполнения работ, оказания услуг), передачи имущественных прав</div>
   <div class="abs row-value" style="top:112pt">-</div>
   <div class="abs row-marker" style="top:112pt">(5б)</div>
 
-  <div class="abs row-label" style="top:130.8pt">Покупатель</div>
-  <div class="abs row-value" style="top:130.8pt">${partyShort(buyer)}</div>
-  <div class="abs row-marker" style="top:130.8pt">(6)</div>
+  <div class="abs row-label" style="top:132.1pt">Покупатель</div>
+  <div class="abs row-value" style="top:132.1pt">${partyShort(buyer)}</div>
+  <div class="abs row-marker" style="top:132.1pt">(6)</div>
 
-  <div class="abs row-label" style="top:140.5pt">Адрес</div>
-  <div class="abs row-value" style="top:140.5pt">${dash(buyer?.address)}</div>
-  <div class="abs row-marker" style="top:140.5pt">(6а)</div>
+  <div class="abs row-label" style="top:141.8pt">Адрес</div>
+  <div class="abs row-value" style="top:141.8pt">${dash(buyer?.address)}</div>
+  <div class="abs row-marker" style="top:141.8pt">(6а)</div>
 
-  <div class="abs row-label" style="top:150.3pt">ИНН/КПП покупателя</div>
-  <div class="abs row-value" style="top:150.3pt">${partyInn(buyer)}</div>
-  <div class="abs row-marker" style="top:150.3pt">(6б)</div>
+  <div class="abs row-label" style="top:151.6pt">ИНН/КПП покупателя</div>
+  <div class="abs row-value" style="top:151.6pt">${partyInn(buyer)}</div>
+  <div class="abs row-marker" style="top:151.6pt">(6б)</div>
 
-  <div class="abs row-label" style="top:160.8pt">Валюта: наименование, код</div>
-  <div class="abs row-value" style="top:160.8pt">${e(meta.currency.name ?? '')}${meta.currency.code ? `, код - ${e(meta.currency.code)}` : ''}</div>
-  <div class="abs row-marker" style="top:160.8pt">(7)</div>
+  <div class="abs row-label" style="top:162.1pt">Валюта: наименование, код</div>
+  <div class="abs row-value" style="top:162.1pt">${e(meta.currency.name ?? '')}${meta.currency.code ? `, код - ${e(meta.currency.code)}` : ''}</div>
+  <div class="abs row-marker" style="top:162.1pt">(7)</div>
 
-  <div class="abs row-label" style="top:171.3pt">Идентификатор государственного контракта, договора (соглашения) (при наличии)</div>
-  <div class="abs row-value" style="top:171.3pt">${dash(invoice.gosContractId)}</div>
-  <div class="abs row-marker" style="top:171.3pt">(8)</div>
+  <div class="abs row-label" style="top:172.6pt;width:710pt">Идентификатор государственного контракта, договора (соглашения) (при наличии)</div>
+  <div class="abs row-value" style="top:172.6pt">${invoice.gosContractId?.trim() ? e(invoice.gosContractId) : ''}</div>
+  <div class="abs row-marker" style="top:172.6pt">(8)</div>
 
   <table class="items">
     <colgroup>${TABLE_COLUMNS.map((width) => `<col style="width:${width}pt">`).join('')}</colgroup>
@@ -276,29 +277,47 @@ table.items tr.totals td.total { font-weight: bold; }
     </tbody>
   </table>
 
-  <div class="abs" style="left:16pt;top:301.8pt;width:64pt;font-size:6.6pt;line-height:8.3pt">
+  <div class="abs" style="left:16pt;top:301.8pt;width:64pt;font-size:6.4pt;line-height:7.6pt">
     Документ<br>составлен на<br><span style="display:inline-block;border-bottom:0.6pt solid #000;min-width:26pt">&nbsp;</span> листах
   </div>
 
-  <div class="abs" style="left:87.5pt;top:303.3pt;width:330pt;font-size:6.4pt;line-height:7.6pt">
+  <div class="abs" style="left:87.5pt;top:303.3pt;width:340pt;font-size:6.4pt;line-height:7.6pt">
     <div>Руководитель организации<br>или иное уполномоченное лицо</div>
-    <div class="line-row" style="margin-top:2pt"><span class="grow"></span><span style="width:120pt;border-bottom:0.6pt solid #000;height:8.5pt"></span></div>
-    <div style="display:flex;justify-content:space-between;font-size:6pt"><span>(подпись)</span><span>(ф.и.о.)</span></div>
+    <div style="position:relative;height:1pt;margin-top:2pt">
+      <span style="position:absolute;left:142pt;width:100pt;border-bottom:0.7pt solid #000"></span>
+      <span style="position:absolute;left:252pt;width:110pt;border-bottom:0.7pt solid #000"></span>
+    </div>
+    <div style="position:relative;height:6pt;font-size:5.6pt;margin-top:1pt">
+      <span style="position:absolute;left:168pt">(подпись)</span>
+      <span style="position:absolute;left:284pt">(ф.и.о.)</span>
+    </div>
   </div>
-  <div class="abs" style="left:461.9pt;top:303.3pt;width:250pt;font-size:6.4pt;line-height:7.6pt">
+  <div class="abs" style="left:461.9pt;top:303.3pt;width:340pt;font-size:6.4pt;line-height:7.6pt">
     <div>Главный бухгалтер<br>или иное уполномоченное лицо</div>
-    <div class="line-row" style="margin-top:2pt"><span class="grow"></span><span style="width:120pt;border-bottom:0.6pt solid #000;height:8.5pt"></span></div>
-    <div style="display:flex;justify-content:space-between;font-size:6pt"><span>(подпись)</span><span>(ф.и.о.)</span></div>
+    <div style="position:relative;height:1pt;margin-top:2pt">
+      <span style="position:absolute;left:142pt;width:100pt;border-bottom:0.7pt solid #000"></span>
+      <span style="position:absolute;left:252pt;width:110pt;border-bottom:0.7pt solid #000"></span>
+    </div>
+    <div style="position:relative;height:6pt;font-size:5.6pt;margin-top:1pt">
+      <span style="position:absolute;left:168pt">(подпись)</span>
+      <span style="position:absolute;left:284pt">(ф.и.о.)</span>
+    </div>
   </div>
 
-  <div class="abs" style="left:87.5pt;top:329.6pt;width:330pt;font-size:6.4pt;line-height:7.6pt">
+  <div class="abs" style="left:87.5pt;top:329.6pt;width:340pt;font-size:6.4pt;line-height:7.6pt">
     <div>Индивидуальный предприниматель<br>или иное уполномоченное лицо</div>
-    <div class="line-row" style="margin-top:2pt"><span class="grow"></span><span style="width:130pt;border-bottom:0.6pt solid #000;height:8.5pt;text-align:center;font-size:6pt">${seller?.kind === 'ИП' ? dash(signer?.fio ?? seller.name) : ''}</span></div>
-    <div style="display:flex;justify-content:space-between;font-size:6pt"><span>(подпись)</span><span>(ф.и.о.)</span></div>
+    <div style="position:relative;height:9pt;margin-top:2pt">
+      <span style="position:absolute;left:142pt;width:100pt;border-bottom:0.7pt solid #000;height:9pt"></span>
+      <span style="position:absolute;left:252pt;width:110pt;border-bottom:0.7pt solid #000;height:9pt;font-size:5.6pt;text-align:center;line-height:8pt">${seller?.kind === 'ИП' ? dash(signer?.fio ?? seller.name) : ''}</span>
+    </div>
+    <div style="position:relative;height:6pt;font-size:5.6pt;margin-top:1pt">
+      <span style="position:absolute;left:168pt">(подпись)</span>
+      <span style="position:absolute;left:284pt">(ф.и.о.)</span>
+    </div>
   </div>
   <div class="abs" style="left:461.9pt;top:337.1pt;width:300pt">
-    <div style="font-size:7pt">${seller?.kind === 'ИП' ? ogrnText(seller) : ''}</div>
-    <div style="font-size:6pt">(основной государственный регистрационный номер индивидуального предпринимателя и дата присвоения такого номера)</div>
+    <div style="font-size:6.6pt">${seller?.kind === 'ИП' ? ogrnText(seller) : ''}</div>
+    <div style="font-size:5.6pt;line-height:6.4pt;margin-top:2pt">(основной государственный регистрационный номер индивидуального предпринимателя и дата присвоения такого номера)</div>
   </div>
 
   <div class="abs" style="left:14pt;top:367.1pt;width:790pt">
