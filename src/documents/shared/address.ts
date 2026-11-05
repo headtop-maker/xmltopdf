@@ -3,6 +3,14 @@ import { joinNonEmpty } from './format';
 import { regionName } from './regions';
 import type { XmlAccessor } from './xml-access';
 
+const MUNICIPALITY_TYPES: Record<string, string> = {
+  '1': 'муниципальный район',
+  '2': 'городской округ',
+  '3': 'внутригородская территория',
+  '4': 'городское поселение',
+  '5': 'сельское поселение',
+};
+
 export function readAddress(accessor: XmlAccessor, address: XmlNode | undefined): string | undefined {
   if (!address) return undefined;
 
@@ -47,6 +55,41 @@ export function readAddress(accessor: XmlAccessor, address: XmlNode | undefined)
         ? `Страна ${countryCode}`
         : undefined;
     return prefix ? `${prefix}, ${text}` : text;
+  }
+
+  const garAddress = address.child('АдрГАР');
+  if (garAddress) {
+    const index = accessor.attr(garAddress, 'Индекс');
+    const region = accessor.text(garAddress.child('НаимРегион'));
+    const districtNode = garAddress.child('МуниципРайон');
+    const district = districtNode
+      ? joinNonEmpty([
+          MUNICIPALITY_TYPES[accessor.attr(districtNode, 'ВидКод') ?? ''] ?? '',
+          accessor.attr(districtNode, 'Наим'),
+        ], ' ')
+      : undefined;
+    const localityNode = garAddress.child('НаселенПункт');
+    const locality = localityNode
+      ? joinNonEmpty([accessor.attr(localityNode, 'Вид'), accessor.attr(localityNode, 'Наим')], ' ')
+      : undefined;
+    const planningNode = garAddress.child('ЭлПланСтруктур');
+    const planning = planningNode
+      ? joinNonEmpty([accessor.attr(planningNode, 'Тип'), accessor.attr(planningNode, 'Наим')], ' ')
+      : undefined;
+    const streetNode = garAddress.child('ЭлУлДорСети');
+    const street = streetNode
+      ? joinNonEmpty([accessor.attr(streetNode, 'Тип'), accessor.attr(streetNode, 'Наим')], ' ')
+      : undefined;
+    const buildingNode = garAddress.child('Здание');
+    const building = buildingNode
+      ? joinNonEmpty([accessor.attr(buildingNode, 'Тип'), accessor.attr(buildingNode, 'Номер')], ' ')
+      : undefined;
+    const flatNode = garAddress.child('ПомещКвартиры');
+    const flat = flatNode
+      ? joinNonEmpty([accessor.attr(flatNode, 'Тип'), accessor.attr(flatNode, 'Номер')], ' ')
+      : undefined;
+    const text = joinNonEmpty([index, region, district, locality, planning, street, building, flat]);
+    return text || undefined;
   }
 
   const gar = address.child('КодГАР');

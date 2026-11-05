@@ -10,6 +10,7 @@ import { UPD_BUSINESS_RULES_VERSION, validateUpdBusiness } from './upd.business'
 import { UpdMapper } from './upd.mapper';
 import type { UpdFunction, UpdPrintModel } from './upd.model';
 import { renderUpdHtml } from './upd.template';
+import { renderUpdSabyHtml } from './upd-saby.template';
 
 @Injectable()
 export class UpdAdapter implements PrintAdapter<UpdPrintModel> {
@@ -59,7 +60,10 @@ export class UpdAdapter implements PrintAdapter<UpdPrintModel> {
   }
 
   async render(model: UpdPrintModel): Promise<Buffer> {
-    const html = renderUpdHtml(model, { fontCss: this.renderer.fontStyles() });
+    const useSabyLayout = process.env.UPD_SABY_LAYOUT === 'true' && model.meta.function === 'СЧФДОП';
+    const html = useSabyLayout
+      ? renderUpdSabyHtml(model, { fontCss: this.renderer.fontStyles() })
+      : renderUpdHtml(model, { fontCss: this.renderer.fontStyles() });
     const label =
       model.meta.function === 'СЧФ'
         ? 'INVOICE'

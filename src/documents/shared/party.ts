@@ -8,6 +8,8 @@ export type PartyKind = 'ЮЛ' | 'ИП' | 'ФЛ' | 'Иностранная ор�
 export interface PartyModel {
   readonly kind: PartyKind;
   readonly name: string;
+  /** СокрНаим из XML: как контрагент называет себя в документе. */
+  readonly shortName?: string;
   readonly inn?: string;
   readonly kpp?: string;
   readonly okpo?: string;
@@ -80,6 +82,9 @@ export function readParty(accessor: XmlAccessor, participant: XmlNode): PartyMod
   }
 
   if (!party) return undefined;
+
+  const shortName = accessor.attr(participant, 'СокрНаим');
+  if (shortName) party = { ...party, shortName };
 
   const okpo = accessor.attr(participant, 'ОКПО');
   const address = readAddress(accessor, participant.child('Адрес'));
