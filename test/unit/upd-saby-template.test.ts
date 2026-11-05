@@ -103,6 +103,14 @@ describe('UPD Saby-style layout', () => {
     expect(html).not.toContain('ДОКУМЕНТ ПОДПИСАН');
   });
 
+  it('shifts the bottom block by 18 pt per additional item row', () => {
+    const second = { ...model.rows[0], number: '2', extra: { code: 'БП-00000124' } };
+    const twoRows = { ...model, rows: [model.rows[0], second] } as unknown as UpdPrintModel;
+    const twoHtml = renderUpdSabyHtml(twoRows, { fontCss: '' });
+    expect(twoHtml).toContain('top:18pt');
+    expect(twoHtml).toContain('БП-00000124');
+  });
+
   it('prints the seller short name and bank details', () => {
     expect(html).toContain('ИП Седых Н.В.');
     expect(html).toContain('в ФИЛИАЛ');

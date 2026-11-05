@@ -122,6 +122,7 @@ export function renderUpdSabyHtml(model: UpdPrintModel, options: UpdSabyOptions)
   const shipper = parties.shippers[0];
   const consignee = parties.consignees[0];
   const signer = signers[0];
+  const shift = 18 * Math.max(rows.length - 1, 0);
 
   const [transferDay, transferMonth, transferYear] = dateParts(transfer?.date);
   const payment = invoice.paymentDocuments[0];
@@ -155,14 +156,14 @@ body { font-family: 'Tahoma', 'Liberation Sans', Arial, sans-serif; font-size: 7
 table.items { position: absolute; left: 14pt; top: 190.3pt; width: 805pt; table-layout: fixed; border-collapse: collapse; }
 table.items th, table.items td { border: 0.75pt solid #000; padding: 1pt 1.5pt; vertical-align: middle; }
 table.items th { font-weight: normal; font-size: 6pt; line-height: 7.4pt; text-align: center; vertical-align: top; padding-top: 2pt; }
-table.items tr.h1 th { height: 44.8pt; }
+table.items tr.h1 th { height: 44.1pt; }
 table.items tr.h2 th { height: 25pt; }
-table.items td { font-size: 7pt; }
+table.items td { font-size: 7pt; height: 18pt; padding: 0.6pt 1.5pt; }
 table.items td.c { text-align: center; }
 table.items td.n { text-align: right; white-space: nowrap; }
 table.items td.name { text-align: left; }
 table.items tr.letters td { font-size: 6.5pt; text-align: center; height: 11.25pt; }
-table.items tr.totals td { height: 11.26pt; font-size: 7pt; }
+table.items tr.totals td { height: 11.26pt; font-size: 7pt; padding: 0.6pt 1.5pt; }
 table.items tr.totals td.label { text-align: left; font-size: 8pt; font-weight: bold; }
 table.items tr.totals td { font-weight: bold; }
 .letters-label { font-weight: normal; }
@@ -277,6 +278,7 @@ table.items tr.totals td { font-weight: bold; }
     </tbody>
   </table>
 
+  <div class="abs" style="left:0;top:${shift}pt;width:841.92pt;height:300pt">
   <div class="abs" style="left:16pt;top:301.8pt;width:64pt;font-size:6.4pt;line-height:7.6pt">
     Документ<br>составлен на<br><span style="display:inline-block;border-bottom:0.6pt solid #000;min-width:26pt">&nbsp;</span> листах
   </div>
@@ -308,7 +310,7 @@ table.items tr.totals td { font-weight: bold; }
     <div>Индивидуальный предприниматель<br>или иное уполномоченное лицо</div>
     <div style="position:relative;height:9pt;margin-top:2pt">
       <span style="position:absolute;left:142pt;width:60pt;border-bottom:0.7pt solid #000;height:9pt"></span>
-      <span style="position:absolute;left:252pt;width:70pt;border-bottom:0.7pt solid #000;height:9pt;font-size:5.6pt;text-align:center;line-height:8pt">${seller?.kind === 'ИП' ? dash(signer?.fio ?? seller.name) : ''}</span>
+      <span style="position:absolute;left:252pt;width:70pt;border-bottom:0.7pt solid #000;height:9pt;font-size:5pt;text-align:center;line-height:8pt;white-space:nowrap">${seller?.kind === 'ИП' ? dash(signer?.fio ?? seller.name) : ''}</span>
     </div>
     <div style="position:relative;height:6pt;font-size:5.6pt;margin-top:1pt">
       <span style="position:absolute;left:168pt">(подпись)</span>
@@ -373,6 +375,7 @@ table.items tr.totals td { font-weight: bold; }
   </div>
   <div class="abs" style="left:420pt;top:532.2pt;width:395pt;font-size:6pt">
     <div>Наименование экономического субъекта — составителя документа</div>
+  </div>
   </div>
 </div></body></html>`;
 }
