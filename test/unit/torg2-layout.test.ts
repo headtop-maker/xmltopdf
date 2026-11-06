@@ -42,11 +42,12 @@ describe('TORG-2 layout contract', () => {
     expect(html).toContain('font-size: 8pt');
   });
 
-  it('uses the ЭТрН column profile that matches the Saby reference grid', () => {
+  it('sizes the goods and discrepancy columns from content, not a fixed profile', () => {
     const html = render(xml);
-    expect(html).toContain('<col style="width:126.72pt">');
-    expect(html).toContain('<col style="width:46.56pt">');
-    expect(html).not.toContain('<col style="width:224.11pt">');
+    expect(html).toContain('<table class="grid goods auto">');
+    expect(html).toContain('<table class="grid discrepancies section-space auto">');
+    const goods = html.slice(html.indexOf('class="grid goods auto"'), html.indexOf('class="grid discrepancies'));
+    expect(goods).not.toContain('<colgroup>');
   });
 
   it('does not invent a conclusion, opening date or representative authority', () => {

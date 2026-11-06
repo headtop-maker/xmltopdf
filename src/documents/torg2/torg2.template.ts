@@ -63,46 +63,7 @@ function line(label: string, value = '', className = ''): string {
   return `<div class="form-line ${className}"><span class="form-label">${e(label)}</span><span class="line-value">${value}</span></div>`;
 }
 
-/**
- * Column widths observed in the approved blank. The original generator sized
- * the name columns from the content, so each document has its own profile.
- * Unknown documents fall back to the first profile.
- */
-interface ColumnProfile {
-  readonly goods: readonly number[];
-  readonly discrepancy: readonly number[];
-}
-
-const BASE_PROFILE: ColumnProfile = {
-  goods: [14.99, 224.11, 30.73, 26.24, 35.23, 23.23, 24.74, 63.71, 35.23, 32.23, 25.48, 34.48, 29.23, 29.98, 32.23, 25.49, 29.98, 29.23, 27.73, 38.98],
-  discrepancy: [14.99, 251.85, 32.23, 32.23, 27.73, 44.22, 32.23, 30.73, 27.74, 44.22, 32.23, 34.48, 29.98, 44.22, 32.23, 29.98, 27.74, 44.22],
-};
-
-const SECOND_PROFILE: ColumnProfile = {
-  goods: [14.99, 210.62, 30.73, 26.24, 35.22, 23.24, 24.74, 63.71, 35.22, 32.23, 29.99, 34.48, 29.23, 34.48, 32.23, 29.98, 29.98, 29.23, 27.73, 38.98],
-  discrepancy: [14.99, 247.35, 32.23, 32.23, 27.73, 44.23, 32.23, 30.73, 27.73, 44.22, 32.23, 34.48, 34.48, 44.22, 32.23, 29.98, 27.74, 44.22],
-};
-
-const ETRN_PROFILE: ColumnProfile = {
-  goods: [18.0, 126.72, 45.6, 30.0, 38.16, 23.28, 24.72, 64.56, 35.28, 32.16, 36.0, 38.16, 29.28, 46.56, 32.16, 36.72, 38.88, 30.0, 46.56, 40.45],
-  discrepancy: [20.16, 142.56, 36.0, 42.96, 31.68, 50.4, 36.72, 43.44, 31.44, 50.4, 36.72, 43.44, 33.6, 50.4, 36.72, 43.44, 31.44, 51.73],
-};
-
-const SHORT_PROFILE: ColumnProfile = {
-  goods: [15.74, 186.64, 30.73, 27.73, 35.23, 23.23, 24.74, 63.71, 35.23, 32.23, 32.23, 34.48, 29.23, 39.72, 32.23, 30.74, 34.47, 29.24, 36.72, 38.98],
-  discrepancy: [17.99, 211.37, 32.98, 38.97, 27.74, 44.97, 32.98, 38.98, 28.48, 44.97, 32.98, 38.98, 28.48, 45.72, 32.98, 39.73, 28.48, 46.47],
-};
-
-function resolveProfile(documentNumber: string): ColumnProfile {
-  const normalized = documentNumber.replace(/\s+/g, '').toUpperCase();
-  // The ЭТрН discrepancy act carries short item names and a wider numeric grid.
-  if (normalized.includes('ЭТРН')) return ETRN_PROFILE;
-  if (normalized.endsWith('/0108')) return SECOND_PROFILE;
-  if (normalized.includes('74035') || normalized.includes('74032')) return SHORT_PROFILE;
-  return BASE_PROFILE;
-}
-
-function colgroup(widths: readonly number[]): string {
+export function colgroup(widths: readonly number[]): string {
   return `<colgroup>${widths.map((width) => `<col style="width:${width}pt">`).join('')}</colgroup>`;
 }
 
@@ -136,7 +97,6 @@ export interface Torg2TemplateOptions {
 export function renderTorg2Html(model: Torg2PrintModel, options: Torg2TemplateOptions): string {
   const { meta, parties, basis, inspection, rows } = model;
   const exact = options.exactReference === true;
-  const profile = resolveProfile(meta.documentNumber);
   const [inspectionDay, inspectionMonth, inspectionYear] = dateParts(inspection.date);
   const accompanying = inspection.accompanyingDocuments
     .map((doc) => `${doc.name ?? ''}, ${doc.number ?? ''}, ${doc.date ?? ''}`)
@@ -283,6 +243,7 @@ h1 { font-size: 10pt; line-height: 1.575; text-align: right; text-transform: upp
 table { border-collapse: collapse; }
 .discrepancies.section-space { margin-top: 7.8pt; }
 .grid { width: 813.25pt; margin-left: -2pt; table-layout: fixed; }
+.grid.auto { table-layout: auto; }
 .grid th, .grid td { border: 0.55pt solid #111; padding: 0; vertical-align: middle; }
 .grid th { text-align: center; font-weight: normal; font-size: 8pt; line-height: 9.7pt; font-family: Tahoma, Arial, sans-serif; vertical-align: top; }
 .grid thead { display: table-row-group; }
@@ -497,8 +458,7 @@ table { border-collapse: collapse; }
 
 <section class="goods-section">
   <div class="page-label">2-я страница формы № ТОРГ-2</div>
-  <table class="grid goods">
-    ${colgroup(profile.goods)}
+  <table class="grid goods auto">
     <thead>
       <tr class="r1">
         <th rowspan="3">№<br>п/<br>п</th>
@@ -524,8 +484,7 @@ table { border-collapse: collapse; }
     </thead>
     <tbody>${goodsRows || '<tr class="data-row"><td colspan="20"></td></tr>'}</tbody>
   </table>
-  <table class="grid discrepancies section-space">
-    ${colgroup(profile.discrepancy)}
+  <table class="grid discrepancies section-space auto">
     <thead>
       <tr class="r1">
         <th rowspan="3">№<br>п/<br>п</th><th rowspan="3">Товар<br>(наименование)</th>
