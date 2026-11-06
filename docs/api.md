@@ -55,6 +55,7 @@ Swagger UI: нажмите **Authorize**, введите `X-API-Key` со зна
   "signatureProfile": "external-detached",
   "signatureStatus": "not-provided",
   "downloadUrl": "http://localhost:3000/api/v1/downloads/Gb5-PuuApHMG4iTOdKud8fxnQa_RkX2iGsXdSzv8pn8",
+  "downloadToken": "Gb5-PuuApHMG4iTOdKud8fxnQa_RkX2iGsXdSzv8pn8",
   "createdAt": "2026-11-06T07:36:04.000Z",
   "expiresAt": "2026-11-06T07:51:04.000Z",
   "warnings": [],
@@ -64,9 +65,15 @@ Swagger UI: нажмите **Authorize**, введите `X-API-Key` со зна
 
 `pdfSha256` — контроль целостности и байты для подписи, не ГОСТ-подпись.
 
+`downloadUrl` — готовая ссылка: вызывать её можно целиком. `downloadToken` — тот же токен отдельным
+полем, чтобы его было видно в Swagger и удобно передавать в `GET /api/v1/downloads/{token}`.
+Это **не** `artifactId`: `artifactId` — стабильный идентификатор документа, а токен — одноразовая
+capability-ссылка со своим TTL. Поэтому подставлять `artifactId` в путь скачивания нельзя.
+
 ## GET /api/v1/downloads/:token
 
-Отдаёт точные байты PDF по capability-token из памяти.
+Отдаёт точные байты PDF по capability-token из памяти. Токен берётся из `downloadToken` или из
+последнего сегмента `downloadUrl` ответа `POST /api/v1/conversions`.
 
 - `Content-Type: application/pdf`, `Content-Length`;
 - `Content-Disposition: attachment; filename="torg2-<pdfSha8>.pdf"`;

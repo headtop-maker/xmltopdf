@@ -3,6 +3,7 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiParam,
   ApiProduces,
   ApiResponse,
   ApiTags,
@@ -70,6 +71,13 @@ export class DownloadsController {
     description:
       'The token is a bearer capability backed by in-memory cache. Unknown, expired, evicted or post-restart ' +
       'tokens return the same 404.',
+  })
+  @ApiParam({
+    name: 'token',
+    description:
+      'Capability token from the POST response (downloadToken, or the last segment of downloadUrl). ' +
+      'This is not the artifactId.',
+    example: 'eqVhV4LJ2d5QVup-2Zr9ZLr81l4x3-Si9KpYwZAxXDI',
   })
   @ApiProduces('application/pdf')
   @ApiResponse({ status: 200, description: 'Stored PDF bytes' })

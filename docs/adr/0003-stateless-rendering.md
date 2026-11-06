@@ -10,7 +10,8 @@
 
 ## Решение
 
-- `POST /api/v1/conversions` возвращает JSON с метаданными и короткоживущим `downloadUrl`.
+- `POST /api/v1/conversions` возвращает JSON с метаданными, короткоживущим `downloadUrl`
+  и отдельным полем `downloadToken` (тот же токен, последний сегмент ссылки).
 - `GET /api/v1/downloads/{token}` отдаёт байты из in-memory кэша; токен — 32 случайных байта, TTL 15 минут.
 - PDF и XML нигде не сохраняются: ни на диске, ни в базе.
 - Одинаковые байты XML в пределах `CACHE_TTL_SECONDS` отдаются из in-memory LRU-кэша

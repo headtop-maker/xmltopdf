@@ -186,6 +186,7 @@ export class ConversionsService {
       signatureProfile: 'external-detached',
       signatureStatus: 'not-provided',
       downloadUrl: `${this.config.publicBaseUrl}/api/v1/downloads/${link.token}`,
+      downloadToken: link.token,
       createdAt: new Date().toISOString(),
       expiresAt: link.expiresAt,
       warnings: result.warnings.map((warning) => ({ ...warning })),

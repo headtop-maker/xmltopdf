@@ -66,8 +66,14 @@ export class ConversionResponseDto {
   signatureProfile!: 'external-detached';
   @ApiProperty({ example: 'not-provided' })
   signatureStatus!: 'not-provided';
-  @ApiProperty({ format: 'uri', description: 'Short-lived in-memory capability link' })
+  @ApiProperty({ format: 'uri', description: 'Short-lived in-memory capability link; the last path segment is downloadToken' })
   downloadUrl!: string;
+  @ApiProperty({
+    description:
+      'Opaque capability token to pass to GET /api/v1/downloads/{token}. ' +
+      'It is not the artifactId: the artifactId is the stable document id, while this token expires with the link.',
+  })
+  downloadToken!: string;
   @ApiProperty({ format: 'date-time' })
   createdAt!: string;
   @ApiProperty({ format: 'date-time', description: 'When the download link stops working' })

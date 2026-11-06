@@ -73,6 +73,9 @@ describe('conversion API', () => {
     );
     expect(created.body.pdfSha256).toMatch(/^[0-9a-f]{64}$/);
     expect(created.body.downloadUrl).toContain('/api/v1/downloads/');
+    expect(created.body.downloadToken).toMatch(/^[A-Za-z0-9_-]{20,100}$/);
+    expect(new URL(created.body.downloadUrl).pathname.split('/').pop()).toBe(created.body.downloadToken);
+    expect(created.body.downloadToken).not.toBe(created.body.artifactId);
     expect(Date.parse(created.body.expiresAt)).toBeGreaterThan(Date.now());
 
     const response = await download(created.body);
