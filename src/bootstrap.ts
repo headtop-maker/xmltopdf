@@ -73,6 +73,10 @@ export function configureApp(app: NestExpressApplication, config: AppConfig): vo
       .setVersion(config.appVersion)
       .addApiKey({ type: 'apiKey', in: 'header', name: 'X-API-Key' }, 'api-key')
       .addSecurityRequirements('api-key')
+      // The service can be mounted under a path prefix (production is
+      // https://ats.sine.su/xmltopdf). Without an explicit server Swagger UI
+      // resolves relative to the origin and "Try it out" misses the prefix.
+      .addServer(config.publicBaseUrl)
       .build();
     const document = SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup('docs', app, document, {
