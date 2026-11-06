@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { APP_CONFIG, type AppConfig } from '../config';
-import { ArtifactsService } from '../artifacts/artifacts.service';
+import { ConversionCacheService } from '../conversions/conversion-cache.service';
 import { DocumentRegistry } from '../document-registry/document-registry.service';
 import { PdfRendererService } from '../rendering/pdf-renderer.service';
 import { XsdValidatorService } from '../validation/xsd-validator.service';
@@ -18,7 +18,7 @@ export class HealthService {
 
   constructor(
     @Inject(APP_CONFIG) private readonly config: AppConfig,
-    private readonly artifacts: ArtifactsService,
+    private readonly cache: ConversionCacheService,
     private readonly registry: DocumentRegistry,
     private readonly xsd: XsdValidatorService,
     private readonly renderer: PdfRendererService,
@@ -27,12 +27,11 @@ export class HealthService {
   async readiness(): Promise<ReadinessReport> {
     const checks: Record<string, { ok: boolean; detail?: string }> = {};
 
-    checks.storage = { ok: true };
-    try {
-      await this.artifacts.storageStats();
-    } catch (error) {
-      checks.storage = { ok: false, detail: (error as Error).message };
-    }
+    const cache = this.cache.stats();
+    checks.cache = {
+      ok: true,
+      detail: `entries=${cache.entries}, bytes=${cache.bytes}, ttl=${cache.ttlSeconds}s`,
+    };
 
     const schemas = this.registry.all();
     checks.schemas = {

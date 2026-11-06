@@ -3,7 +3,6 @@ import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import type { INestApplication } from '@nestjs/common';
-import type { TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { binaryParser, createTestApp } from '../helpers/test-app';
@@ -27,58 +26,51 @@ function pdfText(pdf: Buffer): string {
   return result.stdout.replace(/\u00a0/g, ' ').replace(/[ \t]+/g, ' ');
 }
 
+function sendUpd(app: INestApplication, body: Buffer) {
+  return request(app.getHttpServer())
+    .post('/api/v1/conversions')
+    .set('X-API-Key', 'test-key')
+    .set('Content-Type', 'application/octet-stream')
+    .send(body);
+}
+
+async function download(app: INestApplication, body: { downloadUrl: string }): Promise<Buffer> {
+  const response = await request(app.getHttpServer())
+    .get(new URL(body.downloadUrl).pathname)
+    .buffer(true)
+    .parse(binaryParser);
+  expect(response.status).toBe(200);
+  return response.body as Buffer;
+}
+
 describe('UPD title 0 conversions', () => {
   let app: INestApplication;
-  let moduleRef: TestingModule;
   let close: () => Promise<void>;
 
   beforeAll(async () => {
-    ({ app, moduleRef, close } = await createTestApp());
+    ({ app, close } = await createTestApp());
   }, 180_000);
 
   afterAll(async () => {
     await close();
   });
 
-  async function convert(buffer: Buffer, query = '') {
-    return request(app.getHttpServer())
-      .post(`/api/v1/conversions${query}`)
-      .set('X-API-Key', 'test-key')
-      .set('Content-Type', 'application/octet-stream')
-      .send(buffer);
-  }
-
-  async function download(body: { downloadUrl: string }): Promise<Buffer> {
-    const response = await request(app.getHttpServer())
-      .get(new URL(body.downloadUrl).pathname)
-      .buffer(true)
-      .parse(binaryParser);
-    expect(response.status).toBe(200);
-    return response.body as Buffer;
+  function convert(buffer: Buffer) {
+    return sendUpd(app, buffer);
   }
 
   it('prints a СЧФДОП as a universal transfer document with invoice and shipment data', async () => {
     const response = await convert(fixtures.schfdop);
     expect(response.status).toBe(201);
-    expect(response.body.document).toMatchObject({
-      family: 'UniversalTransferDocument',
-      formatVersion: '5.03',
-      operatorVersion: 'utd970_05_03_01',
-      titleIndex: 0,
-      function: 'СЧФДОП',
-      workflowFunction: null,
-      knd: '1115131',
-    });
-    expect(response.body.validation).toMatchObject({
-      xsd: 'valid',
-      schemaRevision: 'ON_NSCHFDOPPR_1_997_01_05_03_05',
-      schemaSha256: 'f98a1ac91cb840ff341976f7636d8a98d51a43e9b1cbbf3e97386551aacdb49a',
-      business: 'passed',
-      unmappedCount: 0,
-    });
+    expect(response.body.document.family).toBe('UniversalTransferDocument');
+    expect(response.body.document.function).toBe('СЧФДОП');
+    expect(response.body.document.titleIndex).toBe(0);
+    expect(response.body.document.knd).toBe('1115131');
+    expect(response.body.validation.schemaRevision).toBe('ON_NSCHFDOPPR_1_997_01_05_03_05');
+    expect(response.body.validation.business).toBe('passed');
+    expect(response.body.validation.unmappedCount).toBe(0);
 
-    const pdf = await download(response.body);
-    const text = pdfText(pdf);
+    const text = pdfText(await download(app, response.body));
     expect(text).toContain('Универсальный передаточный документ');
     expect(text).toContain('СИНТ-01-01');
     expect(text).toContain('Иванов Иван Иванович');
@@ -99,7 +91,7 @@ describe('UPD title 0 conversions', () => {
     const response = await convert(fixtures.schf);
     expect(response.status).toBe(201);
     expect(response.body.document.function).toBe('СЧФ');
-    const text = pdfText(await download(response.body));
+    const text = pdfText(await download(app, response.body));
     expect(text).toContain('Счёт-фактура');
     expect(text).toContain('НОМЕР СЧЁТА-ФАКТУРЫ');
     expect(text).not.toContain('СВЕДЕНИЯ О ПЕРЕДАЧЕ');
@@ -110,7 +102,7 @@ describe('UPD title 0 conversions', () => {
     const response = await convert(fixtures.dop);
     expect(response.status).toBe(201);
     expect(response.body.document.function).toBe('ДОП');
-    const text = pdfText(await download(response.body));
+    const text = pdfText(await download(app, response.body));
     expect(text).toContain('Документ об отгрузке товаров');
     expect(text).toContain('СВЕДЕНИЯ О ПЕРЕДАЧЕ');
     expect(text).toContain('НОМЕР ДОКУМЕНТА');
@@ -136,7 +128,7 @@ describe('UPD title 0 conversions', () => {
       const response = await convert(fixtures.schfdop);
       expect(response.status).toBe(201);
       expect(response.body.pageCount).toBe(1);
-      const text = pdfText(await download(response.body));
+      const text = pdfText(await download(app, response.body));
       expect(text).toContain('Приложение N 1');
       expect(text).toContain('Счет-фактура');
       expect(text).not.toContain('Подпись не проверялась');
@@ -151,10 +143,8 @@ describe('UPD title 0 conversions', () => {
     const response = await convert(Buffer.from(broken, 'utf8'));
     expect(response.status).toBe(201);
     expect(response.body.validation.business).toBe('passed-with-warnings');
-    expect(
-      response.body.warnings.some((warning: { code: string }) => warning.code === 'ARITHMETIC_AMOUNT_MISMATCH'),
-    ).toBe(true);
-    const text = pdfText(await download(response.body));
+    expect(response.body.warnings.some((w: { code: string }) => w.code === 'ARITHMETIC_AMOUNT_MISMATCH')).toBe(true);
+    const text = pdfText(await download(app, response.body));
     expect(text).toContain('7 800,00');
   }, 120_000);
 });
@@ -164,36 +154,24 @@ describe('UPD commission functions', () => {
   let close: () => Promise<void>;
 
   beforeAll(async () => {
-    ({ app, close } = await createTestApp({ clean: true }));
+    ({ app, close } = await createTestApp());
   }, 180_000);
 
   afterAll(async () => {
-    await close({ clean: true });
+    await close();
   });
 
-  async function convert(file: string) {
-    return request(app.getHttpServer())
-      .post('/api/v1/conversions')
-      .set('X-API-Key', 'test-key')
-      .set('Content-Type', 'application/octet-stream')
-      .send(readFileSync(file));
-  }
-
-  async function download(body: { downloadUrl: string }): Promise<Buffer> {
-    const response = await request(app.getHttpServer())
-      .get(new URL(body.downloadUrl).pathname)
-      .buffer(true)
-      .parse(binaryParser);
-    expect(response.status).toBe(200);
-    return response.body as Buffer;
+  function convert(file: string) {
+    return sendUpd(app, readFileSync(file));
   }
 
   it('prints СвРК as a commission-sale statement, not as an invoice', async () => {
     const response = await convert('test/fixtures/upd-svrk.xml');
     expect(response.status).toBe(201);
     expect(response.body.document.function).toBe('СвРК');
-    expect(response.body.validation).toMatchObject({ business: 'passed', unmappedCount: 0 });
-    const text = pdfText(await download(response.body));
+    expect(response.body.validation.business).toBe('passed');
+    expect(response.body.validation.unmappedCount).toBe(0);
+    const text = pdfText(await download(app, response.body));
     expect(text).toContain('Сведения о факте реализации');
     expect(text).toContain('Это не счёт-фактура и не УПД');
     expect(text).toContain('Комитент (принципал)');
@@ -205,7 +183,7 @@ describe('UPD commission functions', () => {
     const response = await convert('test/fixtures/upd-svzk.xml');
     expect(response.status).toBe(201);
     expect(response.body.document.function).toBe('СвЗК');
-    const text = pdfText(await download(response.body));
+    const text = pdfText(await download(app, response.body));
     expect(text).toContain('Сведения о факте закупки');
     expect(text).toContain('Это не счёт-фактура и не УПД');
     expect(text).toContain('Комитент (принципал)');

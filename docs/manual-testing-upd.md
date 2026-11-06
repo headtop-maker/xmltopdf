@@ -25,20 +25,21 @@ UPD_SABY_LAYOUT=true npm start
 ## 2. TC-UPD-01. Конвертация и метаданные
 
 ```bash
-curl --fail-with-body \
+curl --fail-with-body -D upd.headers \
   -H "X-API-Key: $KEY" \
   -H 'Content-Type: application/octet-stream' \
   --data-binary @<путь к XML> \
-  "$BASE/api/v1/conversions" > upd.json
+  "$BASE/api/v1/conversions" -o upd.pdf
 
-python3 -c "import json;d=json.load(open('upd.json'));print(d['pageCount'],d['document'],d['validation'])"
+grep -iE 'x-page-count|x-document-family|x-document-function|x-schema-revision|x-business-status|x-unmapped-count' upd.headers
+pdfinfo upd.pdf | grep Pages
 ```
 
 Ожидается для №185:
 
 - `201`, `document.family = UniversalTransferDocument`;
-- `formatVersion = 5.03`, `titleIndex = 0`, `function = СЧФДОП`;
-- `validation.xsd = valid`, `business = passed`, `unmappedCount = 0`;
+- `document.titleIndex = 0`, `document.function = СЧФДОП`;
+- `validation.business = passed`, `unmappedCount = 0`;
 - в черновике `pageCount = 1` (обычный режим — 3).
 
 ## 3. TC-UPD-02. Шапка
@@ -145,7 +146,7 @@ pdftotext -layout upd.pdf - | grep -iE "электронно|подписан|с
 - [ ] сетка таблицы и линии подписей совпадают с эталоном в пределах 1 pt;
 - [ ] нет запрещённых элементов (печати, «электронно», штампы);
 - [ ] пустые поля остаются пустыми и сохраняют геометрию;
-- [ ] `npm test` — 66 passed.
+- [ ] `npm test` — 69 passed.
 
 ## 11. Известные ограничения
 

@@ -31,9 +31,9 @@ describe('second titles', () => {
     await close();
   });
 
-  async function convert(buffer: Buffer, query = '') {
+  function convert(buffer: Buffer) {
     return request(app.getHttpServer())
-      .post(`/api/v1/conversions${query}`)
+      .post('/api/v1/conversions')
       .set('X-API-Key', 'test-key')
       .set('Content-Type', 'application/octet-stream')
       .send(buffer);
@@ -54,10 +54,7 @@ describe('second titles', () => {
     expect(response.body.document).toMatchObject({
       family: 'Torg2',
       titleIndex: 1,
-      operatorVersion: 'torg2_05_01_01',
       knd: '1175015',
-      function: null,
-      workflowFunction: 'WithAdditionalInfo',
     });
     expect(response.body.validation).toMatchObject({
       schemaRevision: 'DP_PRIRASXDOP_1_994_02_05_01_01',
@@ -84,9 +81,8 @@ describe('second titles', () => {
     expect(response.body.document).toMatchObject({
       family: 'UniversalTransferDocument',
       titleIndex: 1,
-      function: 'СЧФДОП',
       knd: '1115132',
-      workflowFunction: null,
+      function: 'СЧФДОП',
     });
     expect(response.body.validation).toMatchObject({
       schemaRevision: 'ON_NSCHFDOPPOK_1_997_02_05_03_01',
@@ -105,5 +101,4 @@ describe('second titles', () => {
     expect(text).not.toContain('Мука пшеничная');
     expect(text).not.toContain('49 500,00');
   }, 120_000);
-
 });

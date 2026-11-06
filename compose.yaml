@@ -12,12 +12,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: "3000"
-      DATA_DIR: /app/data
       RESOURCE_DIR: /app/resources
       PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
-      # Set PUBLIC_BASE_URL in .env; links must never be derived from Host.
-    volumes:
-      - xmltopdf-data:/app/data
     read_only: true
     tmpfs:
       - /tmp:size=256m,mode=1777
@@ -32,6 +28,3 @@ services:
       timeout: 5s
       start_period: 60s
       retries: 3
-
-volumes:
-  xmltopdf-data:

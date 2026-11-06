@@ -22,14 +22,16 @@
     "load-test": "node scripts/load-test.mjs",
     "visual": "./scripts/visual-regression.sh",
     "goldens": "./scripts/visual-regression.sh --update",
-    "heavy-fixture": "node scripts/make-heavy-fixture.mjs"
+    "heavy-fixture": "node scripts/make-heavy-fixture.mjs",
+    "graph:build": ".graphify/bin/graphify extract . --code-only && .graphify/bin/graphify cluster-only . --no-label",
+    "graph:update": ".graphify/bin/graphify update .",
+    "graph:report": ".graphify/bin/graphify cluster-only . --no-label"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",
     "@nestjs/core": "^11.1.6",
     "@nestjs/platform-express": "^11.1.6",
     "@nestjs/swagger": "^11.2.0",
-    "better-sqlite3": "^12.4.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "decimal.js": "^10.6.0",
@@ -43,7 +45,6 @@
   "devDependencies": {
     "@nestjs/testing": "^11.2.8",
     "@swc/core": "^1.16.21",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/express": "^5.0.3",
     "@types/node": "^24.9.1",
     "@types/pngjs": "^6.0.5",

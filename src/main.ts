@@ -26,7 +26,6 @@ async function bootstrap(): Promise<void> {
   logger.info('service.started', {
     port: config.port,
     env: config.env,
-    publicBaseUrl: config.publicBaseUrl,
     docs: config.docsEnabled,
     version: config.appVersion,
   });

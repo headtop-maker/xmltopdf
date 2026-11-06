@@ -15,13 +15,13 @@ export interface AppConfig {
   readonly apiKeys: ReadonlyMap<string, ApiKeyRecord>;
   readonly docsEnabled: boolean;
   readonly resourceDir: string;
-  readonly dataDir: string;
   readonly schemasDir: string;
   readonly manifestsDir: string;
   readonly dictionariesDir: string;
   readonly fontsDir: string;
   readonly templatesDir: string;
-  readonly artifactTtlSeconds: number;
+  readonly cacheTtlSeconds: number;
+  readonly cacheMaxBytes: number;
   readonly downloadTokenTtlSeconds: number;
   readonly rateLimitPerMinute: number;
   readonly limits: {
@@ -124,13 +124,13 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     apiKeys,
     docsEnabled: readBool(env, 'DOCS_ENABLED', nodeEnv !== 'production'),
     resourceDir,
-    dataDir: resolveFromCwd(env.DATA_DIR ?? './data'),
     schemasDir: path.join(resourceDir, 'schemas'),
     manifestsDir: path.join(resourceDir, 'manifests'),
     dictionariesDir: path.join(resourceDir, 'dictionaries'),
     fontsDir: path.join(resourceDir, 'fonts'),
     templatesDir: path.join(resourceDir, 'templates'),
-    artifactTtlSeconds: readInt(env, 'ARTIFACT_TTL_SECONDS', 86_400),
+    cacheTtlSeconds: readInt(env, 'CACHE_TTL_SECONDS', 900),
+    cacheMaxBytes: readInt(env, 'CACHE_MAX_BYTES', 64 * 1024 * 1024),
     downloadTokenTtlSeconds: readInt(env, 'DOWNLOAD_TOKEN_TTL_SECONDS', 900),
     rateLimitPerMinute: Math.max(0, Number(env.RATE_LIMIT_PER_MINUTE ?? '300') || 0),
     limits: {

@@ -126,10 +126,6 @@ export class DocumentRegistry {
     return this.descriptors;
   }
 
-  implemented(): readonly SchemaDescriptor[] {
-    return this.descriptors.filter((d) => d.implemented);
-  }
-
   get(id: string): SchemaDescriptor {
     const found = this.byId.get(id);
     if (!found) throw new AppError(500, 'CONVERSION_FAILED', `Unknown adapter id: ${id}`);

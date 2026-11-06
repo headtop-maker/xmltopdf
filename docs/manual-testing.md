@@ -16,18 +16,16 @@ curl -fsS http://localhost:3000/health/ready
 
 Обозначения: `BASE=http://localhost:3000`, `KEY=local-test-key`.
 
-## TC-01. Готовность и справочник форматов
+## TC-01. Готовность сервиса
 
 1. `curl -i $BASE/health/ready`
-2. `curl -H "X-API-Key: $KEY" $BASE/api/v1/formats`
+2. `curl -i -H "X-API-Key: $KEY" $BASE/api/v1/formats`
 
 Ожидается:
 
 - `/health/ready` — `200`, в теле `status: "ok"` (или эквивалент), без `503`;
-- `/formats` — `200`, четыре реализованных титула: ТОРГ-2 (0 и 1), УПД (0 и 1);
-- у каждого титула заполнены `schemaRevision`, `schemaSha256`, `templateVersion`;
-- блок `signing.signatureStatus = "not-provided"`;
-- блок `limits` содержит `maxBodyBytes`, `maxGoodsRows`, `artifactTtlSeconds`.
+- в `checks` присутствуют `cache`, `schemas`, `xsdValidator`, `renderer`, `fonts`;
+- `/formats` — `404 NOT_FOUND`: справочник форматов намеренно не публикуется.
 
 ## TC-02. Авторизация
 
@@ -46,9 +44,10 @@ curl -fsS http://localhost:3000/health/ready
 
 Ожидается:
 
-- в Parameters только тело запроса (поля `Idempotency-Key` и `documentType` отсутствуют);
-- ответ `201` с `downloadUrl`;
-- по ссылке скачивается PDF, открывается без ошибок.
+- доступно тело запроса; `documentType` и `Idempotency-Key` отсутствуют;
+- ответ `201` — JSON с `downloadUrl`, `pdfSha256`, `pageCount`, `document`;
+- по `downloadUrl` скачивается PDF (`application/pdf`);
+- PDF открывается без ошибок.
 
 ## TC-04. Автоопределение типа без параметров
 
@@ -58,7 +57,7 @@ curl -fsS http://localhost:3000/health/ready
 
 Ожидается:
 
-| Файл | `document.family` | `titleIndex` | `function` |
+| Файл | `document.family` | `document.titleIndex` | `document.function` |
 | --- | --- | ---: | --- |
 | `torg2.xml` | `Torg2` | 0 | `null` |
 | `upd-schf.xml` | `UniversalTransferDocument` | 0 | `СЧФ` |
@@ -74,7 +73,7 @@ curl -fsS http://localhost:3000/health/ready
 
 Ожидается:
 
-- `201`, `validation.xsd = "valid"`, `validation.business` — `passed` или `passed-with-warnings`;
+- `201`, `pdfSha256` из 64 hex-символов, `validation.business` — `passed` или `passed-with-warnings`;
 - `pageCount = 4`, A4 landscape;
 - видны: идентификатор, реквизиты сторон, таблица событий, товарная таблица на 20 колонок,
   таблица расхождений на 18 колонок, условия приёмки, подписи;
@@ -86,8 +85,8 @@ curl -fsS http://localhost:3000/health/ready
 
 1. Конвертировать `test/fixtures/torg2-title1.xml`.
 
-Ожидается: `201`, `titleIndex = 1`, `knd = 1175015`, одна страница, есть дополнительные сведения
-продавца и ссылка на файл покупателя; таблицы товаров покупателя нет.
+Ожидается: `201`, `document.titleIndex = 1`, `document.knd = 1175015`, `pageCount = 1`,
+есть дополнительные сведения продавца и ссылка на файл покупателя; таблицы товаров покупателя нет.
 
 ## TC-07. Четыре образца заказчика (визуальная приёмка)
 
@@ -123,28 +122,31 @@ curl -fsS http://localhost:3000/health/ready
 Допустимые остаточные отличия: блок условий заканчивается на 15–20 pt ниже эталона; у РС-74035
 на последней странице условий две строки вместо одной.
 
-## TC-08. Повторная отправка
+## TC-08. Повторная отправка и кэш
 
-1. `POST` файл `torg2.xml`.
+1. `POST` файл `torg2.xml`, сохранить `artifactId` и `pdfSha256`.
 2. Повторить тот же запрос с теми же байтами.
 3. `POST` файл `upd-schf.xml`.
 
 Ожидается:
 
-- шаги 1 и 2 — `201`, одинаковый `artifactId` и `pdfSha256`;
-- шаг 3 — `201`, другой `artifactId`;
-- заголовок `Idempotency-Key` не нужен; если отправить его, он игнорируется.
+- шаг 1 — `cached: false`, шаг 2 — `cached: true`, `artifactId` и `pdfSha256` совпадают;
+- шаг 3 — новый `artifactId`, другой `pdfSha256`;
+- никаких заголовков для повторов не требуется.
 
-## TC-09. Скачивание и срок жизни ссылки
+## TC-09. Скачивание по ссылке
 
-1. Взять `downloadUrl` из ответа, скачать.
-2. Запросить `GET /api/v1/downloads/unknown-token`.
+1. Взять `downloadUrl` из ответа и скачать: `curl -OJ "$(jq -r .downloadUrl conversion.json)"`.
+2. Проверить `file`, `pdfinfo`, `sha256sum`.
+3. Запросить `GET /api/v1/downloads/unknown-token`.
+4. Дождаться `DOWNLOAD_TOKEN_TTL_SECONDS` и повторить шаг 1.
 
 Ожидается:
 
 - скачивание — `200`, `Content-Type: application/pdf`, `ETag` равен `pdfSha256`;
+- SHA-256 файла совпадает с `pdfSha256`;
 - неизвестный токен — `404 NOT_FOUND`;
-- повторное скачивание по той же ссылке в пределах 15 минут отдаёт те же байты.
+- после TTL ссылка — `404`; сам PDF можно получить только новым `POST`.
 
 ## TC-10. Ошибки входа
 
@@ -177,8 +179,8 @@ curl -fsS http://localhost:3000/health/ready
 
 1. Конвертировать `test/fixtures/upd-title1.xml`.
 
-Ожидается: `201`, `titleIndex = 1`, одна страница, ссылка на файл продавца, код итога приёмки,
-подписанты; таблицы товаров продавца нет.
+Ожидается: `201`, `document.titleIndex = 1`, `pageCount = 1`, ссылка на файл продавца,
+код итога приёмки, подписанты; таблицы товаров продавца нет.
 
 ## TC-13. Отсутствие подписных утверждений
 
@@ -187,20 +189,23 @@ curl -fsS http://localhost:3000/health/ready
 Ожидается: есть фраза «Подпись не проверялась» / «встроенной электронной подписи в PDF нет»,
 нет утверждений «подписано», номеров сертификатов и штампов оператора.
 
-## TC-14. Перезапуск и сохранность артефакта
+## TC-14. Перезапуск без сохранения файлов
 
-1. Конвертировать документ, сохранить `artifactId` и `pdfSha256`.
+1. Конвертировать документ, сохранить `pdfSha256` и `downloadUrl`.
 2. Перезапустить сервис (`docker restart` или `npm start` заново).
-3. Запросить `GET /api/v1/conversions/{artifactId}` с тем же ключом, скачать PDF.
+3. Открыть старую ссылку.
+4. Повторить `POST`.
 
-Ожидается: `200`, `pdfSha256` совпадает, байты файла не изменились.
+Ожидается: старая ссылка — `404` (токен жил в памяти); новый `POST` — `201`, `cached: false`,
+`pdfSha256` совпадает; на диске нет PDF, `data/` не создаётся.
 
-## TC-15. Чужой артефакт
+## TC-15. Отсутствие хранилища
 
-1. Создать артефакт ключом `local-test-key`.
-2. Запросить его вторым ключом (добавьте второй ключ в `API_KEYS` и перезапустите).
+1. Проверить, что ссылка ведёт только на `/api/v1/downloads/{token}`, метаданных по `artifactId` нет.
+2. Проверить `GET /api/v1/conversions/{любой-uuid}`.
+3. Проверить, что после конвертации в рабочем каталоге не появилось новых файлов PDF/XML.
 
-Ожидается: `404 NOT_FOUND` — без раскрытия существования артефакта.
+Ожидается: `/conversions/{uuid}` — `404 NOT_FOUND`; файлы не создаются; `data/` не используется.
 
 ## TC-16. Квота
 
@@ -216,4 +221,4 @@ curl -fsS http://localhost:3000/health/ready
 - [ ] наложения страниц не показывают смещения сетки больше 1 pt;
 - [ ] суммы и количества печатаются с точкой;
 - [ ] PDF открывается в просмотрщике и не содержит подписных утверждений;
-- [ ] тесты `npm test` зелёные (66 тестов).
+- [ ] тесты `npm test` зелёные (69 тестов).

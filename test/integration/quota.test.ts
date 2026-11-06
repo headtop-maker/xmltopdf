@@ -8,16 +8,16 @@ const sample = readFileSync('test/fixtures/torg2.xml');
 
 describe('owner quota', () => {
   let app: INestApplication;
-  let close: (options?: { clean?: boolean }) => Promise<void>;
+  let close: () => Promise<void>;
   const previous = process.env.RATE_LIMIT_PER_MINUTE;
 
   beforeAll(async () => {
     process.env.RATE_LIMIT_PER_MINUTE = '2';
-    ({ app, close } = await createTestApp({ clean: true }));
+    ({ app, close } = await createTestApp());
   }, 180_000);
 
   afterAll(async () => {
-    await close({ clean: true });
+    await close();
     if (previous === undefined) delete process.env.RATE_LIMIT_PER_MINUTE;
     else process.env.RATE_LIMIT_PER_MINUTE = previous;
   });

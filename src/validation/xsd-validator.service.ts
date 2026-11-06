@@ -1,7 +1,8 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { APP_CONFIG, type AppConfig } from '../config';
 import { AppError } from '../common/errors';
@@ -23,17 +24,19 @@ const STDERR_LIMIT = 64 * 1024;
 const DETAIL_LIMIT = 50;
 
 @Injectable()
-export class XsdValidatorService implements OnModuleInit {
+export class XsdValidatorService implements OnModuleInit, OnModuleDestroy {
   private available = false;
-  private readonly tmpDir: string;
+  private tmpDir = '';
 
-  constructor(@Inject(APP_CONFIG) private readonly config: AppConfig) {
-    this.tmpDir = path.join(config.dataDir, 'tmp');
-  }
+  constructor(@Inject(APP_CONFIG) private readonly config: AppConfig) {}
 
   async onModuleInit(): Promise<void> {
-    await mkdir(this.tmpDir, { recursive: true, mode: 0o700 });
+    this.tmpDir = await mkdtemp(path.join(tmpdir(), 'xmltopdf-xsd-'));
     await this.probe();
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    if (this.tmpDir) await rm(this.tmpDir, { recursive: true, force: true });
   }
 
   isAvailable(): boolean {

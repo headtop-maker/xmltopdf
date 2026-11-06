@@ -45,14 +45,14 @@ export class ConversionResponseDto {
   @ApiProperty({ format: 'uuid' })
   artifactId!: string;
   @ApiProperty({ example: 'ready' })
-  status!: string;
+  status!: 'ready';
   @ApiProperty({ type: ConversionDocumentDto })
   document!: ConversionDocumentDto;
   @ApiProperty({ type: ConversionValidationDto })
   validation!: ConversionValidationDto;
-  @ApiProperty({ description: 'SHA-256 of the exact bytes submitted by the client' })
+  @ApiProperty({ description: 'SHA-256 of the exact XML bytes submitted' })
   sourceSha256!: string;
-  @ApiProperty({ description: 'SHA-256 of the stored PDF; this is the byte sequence to sign' })
+  @ApiProperty({ description: 'SHA-256 of the PDF; this is the byte sequence to sign' })
   pdfSha256!: string;
   @ApiProperty()
   pdfSizeBytes!: number;
@@ -61,17 +61,19 @@ export class ConversionResponseDto {
   @ApiProperty()
   templateVersion!: string;
   @ApiProperty({ example: 'pdf' })
-  signingTarget!: string;
+  signingTarget!: 'pdf';
   @ApiProperty({ example: 'external-detached' })
-  signatureProfile!: string;
+  signatureProfile!: 'external-detached';
   @ApiProperty({ example: 'not-provided' })
-  signatureStatus!: string;
-  @ApiProperty({ format: 'uri' })
+  signatureStatus!: 'not-provided';
+  @ApiProperty({ format: 'uri', description: 'Short-lived in-memory capability link' })
   downloadUrl!: string;
   @ApiProperty({ format: 'date-time' })
   createdAt!: string;
-  @ApiProperty({ format: 'date-time' })
+  @ApiProperty({ format: 'date-time', description: 'When the download link stops working' })
   expiresAt!: string;
   @ApiProperty({ type: [ConversionWarningDto] })
   warnings!: ConversionWarningDto[];
+  @ApiProperty({ description: 'True when the PDF came from the in-memory cache' })
+  cached!: boolean;
 }

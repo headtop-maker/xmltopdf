@@ -3,7 +3,7 @@ import type { XmlMetadata } from '../document-registry/document-registry.service
 import type { BusinessReport } from '../validation/business-report';
 import type { ParsedXml } from '../xml-security/xml-tree';
 import type { CoverageSummary } from '../mapping/coverage';
-import type { ArtifactDocument, ArtifactWarning } from '../artifacts/artifact.types';
+import type { ArtifactDocument, ArtifactWarning } from './document.types';
 
 export interface AdapterContext {
   readonly sourceSha256: string;

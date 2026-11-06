@@ -12,3 +12,12 @@ test-output/
 
 vislib13012026/
 torg2-current.pdf
+
+.graphify/
+graphify-out/
+
+# local acceptance artifacts (manual runs)
+/sved-app/
+/demo/
+/*.pdf
+/*.xlsx

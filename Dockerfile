@@ -11,7 +11,6 @@ RUN npm run build && npm prune --omit=dev
 FROM node:24-bookworm-slim AS runtime
 ENV NODE_ENV=production \
     PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
-    DATA_DIR=/app/data \
     RESOURCE_DIR=/app/resources
 
 # libxml2-utils provides xmllint for XSD validation; DejaVu supplies Cyrillic
@@ -40,9 +39,7 @@ COPY --from=build /app/dist ./dist
 COPY resources ./resources
 
 RUN groupadd --gid 10001 app \
- && useradd --uid 10001 --gid app --home-dir /app --shell /usr/sbin/nologin app \
- && mkdir -p /app/data \
- && chown -R app:app /app/data
+ && useradd --uid 10001 --gid app --home-dir /app --shell /usr/sbin/nologin app
 
 USER app
 EXPOSE 3000

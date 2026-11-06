@@ -3,8 +3,6 @@ import { APP_CONFIG, type AppConfig } from '../config';
 import { AppError, errors } from '../common/errors';
 import { sha256Hex } from '../common/hash';
 import { logger } from '../common/logger';
-import { ArtifactsService } from '../artifacts/artifacts.service';
-import type { Artifact } from '../artifacts/artifact.types';
 import {
   DocumentRegistry,
   extractMetadata,
@@ -15,15 +13,15 @@ import { DocumentAdaptersService } from '../documents/document-adapters.service'
 import { OwnerQuotaService } from '../access/owner-quota.service';
 import type { PrintAdapter } from '../documents/adapter';
 import { PdfInspectorService } from '../rendering/pdf-inspector.service';
+import { PdfNormalizerService } from '../rendering/pdf-normalizer.service';
 import { XsdValidatorService } from '../validation/xsd-validator.service';
 import { decodeXmlBytes, type DecodedXml } from '../xml-security/encoding';
 import { XmlParserService } from '../xml-security/xml-parser.service';
 import type { ParsedXml } from '../xml-security/xml-tree';
-import type { ConversionResponseDto } from './conversions.dto';
+import { ConversionCacheService } from './conversion-cache.service';
+import { ConversionResponseDto } from './conversions.dto';
+import type { ConversionResult } from './conversion.types';
 
-export const SIGNING_TARGET = 'pdf';
-export const SIGNATURE_PROFILE = 'external-detached';
-export const SIGNATURE_STATUS = 'not-provided';
 export const RENDER_PROFILE = 'chromium-pdf-a4-landscape-v1';
 
 const ALLOWED_MEDIA_TYPES = new Set(['application/octet-stream', 'application/xml', 'text/xml']);
@@ -42,14 +40,13 @@ interface Prepared {
   readonly metadata: XmlMetadata;
   readonly descriptor: SchemaDescriptor;
   readonly adapter: PrintAdapter;
-  readonly idempotencyKeyHash?: string;
   readonly fingerprint: string;
   readonly startedAt: number;
 }
 
 @Injectable()
 export class ConversionsService {
-  private readonly inFlight = new Map<string, { promise: Promise<string>; fingerprint: string }>();
+  private readonly inFlight = new Map<string, { promise: Promise<ConversionResult> }>();
 
   constructor(
     @Inject(APP_CONFIG) private readonly config: AppConfig,
@@ -57,9 +54,10 @@ export class ConversionsService {
     private readonly registry: DocumentRegistry,
     private readonly xsd: XsdValidatorService,
     private readonly adapters: DocumentAdaptersService,
-    private readonly artifacts: ArtifactsService,
     private readonly inspector: PdfInspectorService,
+    private readonly normalizer: PdfNormalizerService,
     private readonly quota: OwnerQuotaService,
+    private readonly cache: ConversionCacheService,
   ) {}
 
   async convert(input: ConvertInput): Promise<ConversionResponseDto> {
@@ -79,6 +77,7 @@ export class ConversionsService {
     if (input.body.length > this.config.limits.maxBodyBytes) {
       throw errors.limit(`The request body exceeds ${this.config.limits.maxBodyBytes} bytes`);
     }
+
     const decoded = decodeXmlBytes(input.body, this.config.limits.maxDecodedBytes);
     const parsed = this.parser.parse(decoded.text);
     let goodsRows = 0;
@@ -97,7 +96,9 @@ export class ConversionsService {
 
     const sourceSha256 = sha256Hex(input.body);
     const layoutVariant =
-      descriptor.family === 'UniversalTransferDocument' && process.env.UPD_SABY_LAYOUT === 'true' ? 'upd-saby-draft' : 'default';
+      descriptor.family === 'UniversalTransferDocument' && process.env.UPD_SABY_LAYOUT === 'true'
+        ? 'upd-saby-draft'
+        : 'default';
     const fingerprint = sha256Hex(
       [
         sourceSha256,
@@ -108,45 +109,90 @@ export class ConversionsService {
         this.config.appVersion,
       ].join('|'),
     );
-    // Content-based idempotency: identical XML and print parameters reuse the same artifact.
-    const idempotencyKeyHash = sha256Hex(`content|${fingerprint}`);
-    const flightKey = `${input.ownerId}:${idempotencyKeyHash ?? ''}`;
+    // Identical bytes and print parameters reuse the same entry; no header is required.
+    const cacheKey = `${input.ownerId}:content:${fingerprint}`;
 
-    const prepared: Prepared = {
-      ownerId: input.ownerId,
-      raw: input.body,
-      decoded,
-      parsed,
-      metadata,
-      descriptor,
-      adapter,
-      idempotencyKeyHash,
-      fingerprint,
-      startedAt,
-    };
+    let result: ConversionResult;
+    let artifactId: string;
+    let cached = false;
 
-    const existing = this.artifacts.findIdempotent(input.ownerId, idempotencyKeyHash);
-    if (existing) {
-      return this.buildResponse(this.artifacts.getOwned(existing.artifactId, input.ownerId));
+    const entry = this.cache.get(cacheKey);
+    if (entry) {
+      result = entry.result;
+      artifactId = entry.id;
+      cached = true;
+    } else {
+      const pending = this.inFlight.get(cacheKey);
+      if (pending) {
+        result = await pending.promise;
+        const stored = this.cache.get(cacheKey);
+        if (!stored) throw new AppError(500, 'CONVERSION_FAILED', 'The cached PDF disappeared before it was linked');
+        artifactId = stored.id;
+        cached = true;
+      } else {
+        const prepared: Prepared = {
+          ownerId: input.ownerId,
+          raw: input.body,
+          decoded,
+          parsed,
+          metadata,
+          descriptor,
+          adapter,
+          fingerprint,
+          startedAt,
+        };
+        const work = this.runConversion(prepared);
+        this.inFlight.set(cacheKey, { promise: work });
+        const cleanup = (): void => {
+          this.inFlight.delete(cacheKey);
+        };
+        void work.then(cleanup, cleanup);
+        result = await work;
+        artifactId = this.cache.set(cacheKey, result);
+      }
     }
-    const pending = this.inFlight.get(flightKey);
-    if (pending) {
-      const artifactId = await pending.promise;
-      return this.buildResponse(this.artifacts.getOwned(artifactId, input.ownerId));
-    }
 
-    const work = this.runConversion(prepared).then((artifact) => artifact.id);
-    this.inFlight.set(flightKey, { promise: work, fingerprint });
-    const cleanup = (): void => {
-      this.inFlight.delete(flightKey);
-    };
-    work.then(cleanup, cleanup);
-
-    const artifactId = await work;
-    return this.buildResponse(this.artifacts.getOwned(artifactId, input.ownerId));
+    const link = this.cache.issueToken(artifactId);
+    return this.buildResponse(artifactId, result, link, cached);
   }
 
-  private async runConversion(prepared: Prepared): Promise<Artifact> {
+  download(token: string): { artifactId: string; result: ConversionResult } {
+    if (!/^[A-Za-z0-9_-]{20,100}$/.test(token)) {
+      throw errors.notFound('Download link is invalid');
+    }
+    const resolved = this.cache.resolveToken(token);
+    if (!resolved) throw errors.notFound('Download link is invalid');
+    return { artifactId: resolved.id, result: resolved.result };
+  }
+
+  private buildResponse(
+    artifactId: string,
+    result: ConversionResult,
+    link: { token: string; expiresAt: string },
+    cached: boolean,
+  ): ConversionResponseDto {
+    return {
+      artifactId,
+      status: 'ready',
+      document: result.document,
+      validation: result.validation,
+      sourceSha256: result.sourceSha256,
+      pdfSha256: result.pdfSha256,
+      pdfSizeBytes: result.pdf.length,
+      pageCount: result.pageCount,
+      templateVersion: result.templateVersion,
+      signingTarget: 'pdf',
+      signatureProfile: 'external-detached',
+      signatureStatus: 'not-provided',
+      downloadUrl: `${this.config.publicBaseUrl}/api/v1/downloads/${link.token}`,
+      createdAt: new Date().toISOString(),
+      expiresAt: link.expiresAt,
+      warnings: result.warnings.map((warning) => ({ ...warning })),
+      cached,
+    };
+  }
+
+  private async runConversion(prepared: Prepared): Promise<ConversionResult> {
     const deadline = prepared.startedAt + this.config.timeouts.conversionMs;
     const checkDeadline = (): void => {
       if (Date.now() > deadline) throw errors.timeout();
@@ -170,7 +216,10 @@ export class ConversionsService {
     const business = prepared.adapter.validateBusiness(prepared.parsed);
     if (business.status === 'failed') {
       throw new AppError(422, 'BUSINESS_VALIDATION_FAILED', 'The document failed business validation', {
-        details: business.issues.map((issue) => ({ path: issue.path, message: `${issue.code}: ${issue.message}` })),
+        details: business.issues.map((issue) => ({
+          path: issue.path,
+          message: `${issue.code}: ${issue.message}`,
+        })),
       });
     }
 
@@ -183,9 +232,11 @@ export class ConversionsService {
     }
 
     checkDeadline();
-    const pdf = prepared.adapter.renderSource
+    const rendered = prepared.adapter.renderSource
       ? await prepared.adapter.renderSource(prepared.raw, mapped.model)
       : await prepared.adapter.render(mapped.model);
+    checkDeadline();
+    const pdf = await this.normalizer.normalize(rendered);
     checkDeadline();
 
     const inspection = await this.inspector.inspect(pdf);
@@ -208,11 +259,23 @@ export class ConversionsService {
       ...business.issues.map((issue) => ({ code: issue.code, message: issue.message, path: issue.path })),
       ...mapped.warnings,
     ];
+    const pdfSha256 = sha256Hex(pdf);
 
-    const artifact = await this.artifacts.create({
-      ownerId: prepared.ownerId,
-      sourceXml: prepared.raw,
+    logger.info('conversion.completed', {
+      family: prepared.descriptor.family,
+      schemaRevision: prepared.descriptor.schemaRevision,
+      xsdMs: xsdResult.durationMs,
+      totalMs: Date.now() - prepared.startedAt,
+      pdfBytes: pdf.length,
+      pages: inspection.pageCount,
+      unmapped: mapped.coverage.unmapped,
+    });
+
+    return {
       pdf,
+      pdfSha256,
+      sourceSha256: sha256Hex(prepared.raw),
+      pageCount: inspection.pageCount,
       document: prepared.adapter.documentFor(prepared.metadata),
       validation: {
         xsd: 'valid',
@@ -224,68 +287,7 @@ export class ConversionsService {
       },
       warnings,
       templateVersion: prepared.adapter.templateVersion,
-      rendererVersion: this.config.rendererVersion,
-      businessRulesVersion: prepared.adapter.businessRulesVersion,
-      businessStatus,
-      schemaRevision: prepared.descriptor.schemaRevision,
-      schemaSha256: prepared.descriptor.schemaSha256,
-      signatureProfile: SIGNATURE_PROFILE,
-      signatureStatus: SIGNATURE_STATUS,
-      pdfVersion: inspection.pdfVersion,
-      pageCount: inspection.pageCount,
-      ttlSeconds: this.config.artifactTtlSeconds,
-    });
-
-    if (prepared.idempotencyKeyHash) {
-      this.artifacts.saveIdempotent(
-        prepared.ownerId,
-        prepared.idempotencyKeyHash,
-        prepared.fingerprint,
-        artifact.id,
-        artifact.expiresAt,
-      );
-    }
-
-    logger.info('conversion.completed', {
-      artifactId: artifact.id,
-      family: prepared.descriptor.family,
-      schemaRevision: prepared.descriptor.schemaRevision,
-      xsdMs: xsdResult.durationMs,
-      totalMs: Date.now() - prepared.startedAt,
-      pdfBytes: artifact.pdfSize,
-      pages: artifact.pageCount,
-      unmapped: mapped.coverage.unmapped,
-    });
-    return artifact;
-  }
-
-  getById(artifactId: string, ownerId: string): ConversionResponseDto {
-    return this.buildResponse(this.artifacts.getOwned(artifactId, ownerId));
-  }
-
-  async download(token: string): Promise<{ artifact: Artifact; pdf: Buffer }> {
-    return this.artifacts.resolveToken(token);
-  }
-
-  buildResponse(artifact: Artifact): ConversionResponseDto {
-    const token = this.artifacts.issueToken(artifact);
-    return {
-      artifactId: artifact.id,
-      status: 'ready',
-      document: artifact.document,
-      validation: artifact.validation,
-      sourceSha256: artifact.sourceSha256,
-      pdfSha256: artifact.pdfSha256,
-      pdfSizeBytes: artifact.pdfSize,
-      pageCount: artifact.pageCount,
-      templateVersion: artifact.templateVersion,
-      signingTarget: SIGNING_TARGET,
-      signatureProfile: artifact.signatureProfile,
-      signatureStatus: artifact.signatureStatus,
-      downloadUrl: `${this.config.publicBaseUrl}/api/v1/downloads/${token.token}`,
-      createdAt: artifact.createdAt,
-      expiresAt: artifact.expiresAt,
-      warnings: artifact.warnings.map((warning) => ({ ...warning })),
+      cacheHit: false,
     };
   }
 }

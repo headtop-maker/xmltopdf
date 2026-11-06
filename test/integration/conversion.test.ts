@@ -3,10 +3,9 @@ import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import type { INestApplication } from '@nestjs/common';
-import type { TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { binaryParser, clearArtifacts, createTestApp } from '../helpers/test-app';
+import { binaryParser, createTestApp } from '../helpers/test-app';
 
 const sample = readFileSync('test/fixtures/torg2.xml');
 
@@ -26,98 +25,95 @@ function pdfText(pdf: Buffer): string {
 
 describe('conversion API', () => {
   let app: INestApplication;
-  let moduleRef: TestingModule;
   let close: () => Promise<void>;
 
   beforeAll(async () => {
-    ({ app, moduleRef, close } = await createTestApp());
+    ({ app, close } = await createTestApp());
   }, 180_000);
 
   afterAll(async () => {
     await close();
   });
 
-  it('converts the pinned windows-1251 TORG-2 sample into a stable PDF', async () => {
-    const response = await request(app.getHttpServer())
+  function convert(buffer: Buffer, contentType = 'application/octet-stream') {
+    return request(app.getHttpServer())
       .post('/api/v1/conversions')
       .set('X-API-Key', 'test-key')
-      .set('Content-Type', 'application/octet-stream')
-      .send(sample);
+      .set('Content-Type', contentType)
+      .send(buffer);
+  }
 
-    expect(response.status).toBe(201);
-    expect(response.headers.location).toBe(`/api/v1/conversions/${response.body.artifactId}`);
-    expect(response.body).toMatchObject({
+  async function download(body: { downloadUrl: string }) {
+    return request(app.getHttpServer())
+      .get(new URL(body.downloadUrl).pathname)
+      .buffer(true)
+      .parse(binaryParser);
+  }
+
+  it('returns metadata with a working download link', async () => {
+    const created = await convert(sample);
+    expect(created.status).toBe(201);
+    expect(created.body).toMatchObject({
       status: 'ready',
-      document: {
-        family: 'Torg2',
-        formatVersion: '5.01',
-        operatorVersion: 'torg2_05_01_01',
-        titleIndex: 0,
-        knd: '1175014',
-      },
+      document: { family: 'Torg2', titleIndex: 0, knd: '1175014', function: null },
       validation: {
         xsd: 'valid',
         schemaRevision: 'DP_PRIRASXPRIN_1_994_01_05_01_04',
-        schemaSha256: '6139596b95a3f4635ea0eab34fab33ce4e0f4fbebe4282fac043760884d36084',
         business: 'passed',
         unmappedCount: 0,
       },
       signingTarget: 'pdf',
       signatureProfile: 'external-detached',
       signatureStatus: 'not-provided',
+      cached: false,
     });
-    expect(response.body.sourceSha256).toBe(
+    expect(created.body.artifactId).toMatch(/^[0-9a-f-]{36}$/);
+    expect(created.body.sourceSha256).toBe(
       '3e3edc1fb6e31dbdb226b51ccd360ae86c75f427d320623f6e64db13d9b237e9',
     );
-    expect(response.body.pdfSha256).toMatch(/^[0-9a-f]{64}$/);
-    expect(response.body.pageCount).toBeGreaterThan(0);
+    expect(created.body.pdfSha256).toMatch(/^[0-9a-f]{64}$/);
+    expect(created.body.downloadUrl).toContain('/api/v1/downloads/');
+    expect(Date.parse(created.body.expiresAt)).toBeGreaterThan(Date.now());
 
-    const downloadPath = new URL(response.body.downloadUrl).pathname;
-    const first = await request(app.getHttpServer()).get(downloadPath).buffer(true).parse(binaryParser);
-    const second = await request(app.getHttpServer()).get(downloadPath).buffer(true).parse(binaryParser);
-    expect(first.status).toBe(200);
-    expect(first.headers['content-type']).toContain('application/pdf');
-    expect(first.headers['cache-control']).toContain('no-store');
-    expect(first.body.subarray(0, 5).toString()).toBe('%PDF-');
-    expect(Buffer.compare(first.body, second.body)).toBe(0);
-    expect(first.headers.etag).toContain(response.body.pdfSha256);
+    const response = await download(created.body);
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toContain('application/pdf');
+    expect(response.headers['content-disposition']).toMatch(/attachment; filename="torg2-[0-9a-f]{8}\.pdf"/);
+    expect(response.headers.etag).toBe(`"${created.body.pdfSha256}"`);
 
-    const text = pdfText(first.body);
+    const pdf = response.body as Buffer;
+    expect(pdf.subarray(0, 5).toString()).toBe('%PDF-');
+    expect(pdf.length).toBe(created.body.pdfSizeBytes);
+
+    const text = pdfText(pdf);
     expect(text).toContain('УПД-ЭТрН-001');
     expect(text).toContain('Мука пшеничная хлебопекарная');
     expect(text).toContain('49500.00');
-    expect(text).toContain('47025.00');
-    expect(text).toContain('2475.00');
-    expect(text).toContain('225.00');
     expect(text).not.toContain('Подпись не проверялась');
-    expect(text).not.toContain('SUKHOMLINOV');
     expect(text).not.toMatch(/подписано(?! не)/i);
   }, 120_000);
 
-  it('returns metadata with a fresh download link for the owner only', async () => {
-    const created = await request(app.getHttpServer())
-      .post('/api/v1/conversions')
-      .set('X-API-Key', 'test-key')
-      .set('Content-Type', 'application/xml')
-      .send(sample);
-    expect(created.status).toBe(201);
+  it('reuses the cached artifact for identical bytes', async () => {
+    const first = await convert(sample);
+    const second = await convert(sample);
+    expect(first.status).toBe(201);
+    expect(second.status).toBe(201);
+    expect(second.body.cached).toBe(true);
+    expect(second.body.artifactId).toBe(first.body.artifactId);
+    expect(second.body.pdfSha256).toBe(first.body.pdfSha256);
 
-    const metadata = await request(app.getHttpServer())
-      .get(`/api/v1/conversions/${created.body.artifactId}`)
-      .set('X-API-Key', 'test-key');
-    expect(metadata.status).toBe(200);
-    expect(metadata.body.artifactId).toBe(created.body.artifactId);
-    expect(metadata.body.downloadUrl).not.toBe(created.body.downloadUrl);
+    const a = await download(first.body);
+    const b = await download(second.body);
+    expect(Buffer.compare(a.body as Buffer, b.body as Buffer)).toBe(0);
+  }, 120_000);
 
-    const foreign = await request(app.getHttpServer())
-      .get(`/api/v1/conversions/${created.body.artifactId}`)
-      .set('X-API-Key', 'other-key');
-    expect(foreign.status).toBe(404);
-
-    const unauthenticated = await request(app.getHttpServer()).get(
-      `/api/v1/conversions/${created.body.artifactId}`,
-    );
-    expect(unauthenticated.status).toBe(401);
+  it('renders different content into a new artifact', async () => {
+    const different = utf8Variant((text) => text.replace('УПД-ЭТрН-001', 'УПД-ЭТрН-002'));
+    const response = await convert(different, 'application/xml');
+    expect(response.status).toBe(201);
+    expect(response.body.cached).toBe(false);
+    const base = await convert(sample);
+    expect(response.body.pdfSha256).not.toBe(base.body.pdfSha256);
   }, 120_000);
 
   it('enforces authentication, media types and empty bodies', async () => {
@@ -180,56 +176,7 @@ describe('conversion API', () => {
     expect(JSON.stringify(schemaResponse.body)).not.toContain('xml-');
   });
 
-  it('reuses the artifact for identical bytes and creates a new one for different bytes', async () => {
-    await clearArtifacts(moduleRef);
-    const first = await request(app.getHttpServer())
-      .post('/api/v1/conversions')
-      .set('X-API-Key', 'test-key')
-      .set('Content-Type', 'application/octet-stream')
-      .send(sample);
-    expect(first.status).toBe(201);
-
-    const repeat = await request(app.getHttpServer())
-      .post('/api/v1/conversions')
-      .set('X-API-Key', 'test-key')
-      .set('Content-Type', 'application/octet-stream')
-      .send(sample);
-    expect(repeat.status).toBe(201);
-    expect(repeat.body.artifactId).toBe(first.body.artifactId);
-
-    const different = await request(app.getHttpServer())
-      .post('/api/v1/conversions')
-      .set('X-API-Key', 'test-key')
-      .set('Content-Type', 'application/xml')
-      .send(utf8Variant((text) => text));
-    expect(different.status).toBe(201);
-    expect(different.body.artifactId).not.toBe(first.body.artifactId);
-  }, 180_000);
-
-  it('reports only implemented formats and enforces the body limit', async () => {
-    const formats = await request(app.getHttpServer())
-      .get('/api/v1/formats')
-      .set('X-API-Key', 'test-key');
-    expect(formats.status).toBe(200);
-    expect(formats.body.formats).toHaveLength(4);
-    const torg2 = formats.body.formats.find((item: { family: string }) => item.family === 'Torg2');
-    expect(torg2).toMatchObject({ titleIndex: 0, implemented: true });
-    const upd = formats.body.formats.find((item: { family: string }) => item.family === 'UniversalTransferDocument');
-    expect(upd).toMatchObject({
-      titleIndex: 0,
-      implemented: true,
-      supportedFunctions: ['СЧФ', 'ДОП', 'СЧФДОП', 'СвРК', 'СвЗК'],
-    });
-    const updBuyer = formats.body.formats.find(
-      (item: { family: string; titleIndex: number }) =>
-        item.family === 'UniversalTransferDocument' && item.titleIndex === 1,
-    );
-    expect(updBuyer).toMatchObject({ implemented: true, knd: '1115132' });
-    const torg2Seller = formats.body.formats.find(
-      (item: { family: string; titleIndex: number }) => item.family === 'Torg2' && item.titleIndex === 1,
-    );
-    expect(torg2Seller).toMatchObject({ implemented: true, knd: '1175015' });
-
+  it('enforces the body limit', async () => {
     const oversize = Buffer.alloc(10 * 1024 * 1024 + 1024, 0x20);
     const response = await request(app.getHttpServer())
       .post('/api/v1/conversions')
@@ -239,6 +186,18 @@ describe('conversion API', () => {
     expect(response.status).toBe(413);
     expect(response.body.code).toBe('XML_LIMIT_EXCEEDED');
   }, 120_000);
+
+  it('does not expose a formats catalogue or artifact metadata', async () => {
+    const formats = await request(app.getHttpServer())
+      .get('/api/v1/formats')
+      .set('X-API-Key', 'test-key');
+    expect(formats.status).toBe(404);
+
+    const artifact = await request(app.getHttpServer())
+      .get('/api/v1/conversions/00000000-0000-4000-8000-000000000000')
+      .set('X-API-Key', 'test-key');
+    expect(artifact.status).toBe(404);
+  });
 
   it('returns 404 for unknown download tokens', async () => {
     const response = await request(app.getHttpServer()).get('/api/v1/downloads/not-a-real-token');

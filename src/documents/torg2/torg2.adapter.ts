@@ -1,6 +1,6 @@
 import { Injectable, Optional } from '@nestjs/common';
 import { DocumentRegistry, type SchemaDescriptor, type XmlMetadata } from '../../document-registry/document-registry.service';
-import type { ArtifactDocument } from '../../artifacts/artifact.types';
+import type { ArtifactDocument } from '../document.types';
 import { FieldLabelsService } from '../../mapping/field-labels.service';
 import type { ParsedXml } from '../../xml-security/xml-tree';
 import type { BusinessReport } from '../../validation/business-report';
