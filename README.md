@@ -49,6 +49,27 @@ curl -fsS http://localhost:3000/health/ready
 проверяет `xmllint`, схемы, шрифты и renderer; в контейнере сконвертированы все четыре титула (ТОРГ-2 0/1,
 УПД 0/1). Контейнер работает без тома данных: PDF не сохраняется на диск.
 
+## Продакшен
+
+Сервис живёт на общем хосте `ats.sine.su` (`46.23.98.143`) рядом с ATS CRM, BugRadar и UPD OCR.
+Каталог на сервере — `/opt/xmltopdf`, наружу открыт только `https://ats.sine.su/xmltopdf/*`:
+маршрут объявлен в Caddyfile проекта `ats-crm-api` (`handle_path` срезает префикс), своего порта
+на хосте контейнер не публикует и ходит в сеть `ats-crm-api_default`.
+
+Хост — 1 vCPU и ~2 GiB RAM на все сервисы, поэтому образ собирается локально под `linux/amd64`
+и передаётся на сервер архивом: `npm ci`, `apt` и установка Chromium на самом хосте не запускаются.
+Развёртывание:
+
+```bash
+PROD_SSH_HOST=ats.sine.su ./scripts/deploy-prod.sh
+```
+
+Скрипт собирает образ, заливает его, обновляет `compose.yaml` и проверяет
+`https://ats.sine.su/xmltopdf/health/ready`. Серверный `.env` (с `API_KEYS` и
+`PUBLIC_BASE_URL=https://ats.sine.su/xmltopdf`) скрипт не трогает — он создаётся один раз по образцу
+`.env.example`. Ресурсы ограничены в `deploy/compose.prod.yaml`: `mem_limit: 1g`, `cpus: 0.8`,
+`MAX_CONCURRENT_RENDERS=1`, ротация логов 10m × 3.
+
 Ключ берётся из окружения (значение — из `API_KEYS` в `.env`, файл не коммитится):
 
 ```bash
