@@ -61,7 +61,9 @@ function partyInn(party: PartyModel | undefined): string {
 
 function partyBank(party: PartyModel | undefined): string {
   const bank = party?.bank?.trim();
-  if (!bank) return '-';
+  // The blank keeps this line empty when the source carries no bank details;
+  // a dash at the page edge reads as a stray mark.
+  if (!bank) return '';
   // "р/с 4080..., БАНК, БИК ..., к/с ..." -> "р/с 4080... в БАНК, БИК ..., к/с ..."
   return e(bank.replace(/^(р\/с\s+\d+),\s*/, '$1 в '));
 }

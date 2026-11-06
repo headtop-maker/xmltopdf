@@ -126,6 +126,11 @@ describe('UPD Saby-style layout', () => {
     expect(html).toContain('left:425.5pt;top:446pt');
   });
 
+  it('leaves the bank line empty when the party has no bank details', () => {
+    expect(html).toContain('left:420pt;top:481pt;width:395pt;font-size:7pt"></div>');
+    expect(html).not.toContain('left:420pt;top:481pt;width:395pt;font-size:7pt">-</div>');
+  });
+
   it('prints the seller short name and bank details', () => {
     expect(html).toContain('ИП Седых Н.В.');
     expect(html).toContain('в ФИЛИАЛ');
