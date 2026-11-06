@@ -84,6 +84,16 @@ describe('UPD Saby-style layout', () => {
     expect(html).not.toContain('Страница');
   });
 
+  it('prints status 1 for СЧФДОП and status 2 for ДОП on the same blank', () => {
+    expect(html).toContain('<span class="status-box">1</span>');
+    const dop = { ...model, meta: { ...model.meta, function: 'ДОП' } } as unknown as UpdPrintModel;
+    const dopHtml = renderUpdSabyHtml(dop, { fontCss: '' });
+    expect(dopHtml).toContain('<span class="status-box">2</span>');
+    expect(dopHtml).toContain('Счет-фактура № 262 от 31 октября 2026 г.');
+    expect(dopHtml).toContain('<strong>1</strong> – счет-фактура');
+    expect(dopHtml).toContain('<strong>2</strong> – передаточный');
+  });
+
   it('uses the 16 reference columns with the given widths', () => {
     expect((html.match(/<col style="width:/g) ?? []).length).toBe(16);
     for (const width of ['65.27pt', '16.51pt', '139.54pt', '80.28pt']) {

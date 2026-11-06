@@ -60,7 +60,8 @@ export class UpdAdapter implements PrintAdapter<UpdPrintModel> {
   }
 
   async render(model: UpdPrintModel): Promise<Buffer> {
-    const useSabyLayout = process.env.UPD_SABY_LAYOUT === 'true' && model.meta.function === 'СЧФДОП';
+    const sabyEligible = model.meta.function === 'СЧФДОП' || model.meta.function === 'ДОП';
+    const useSabyLayout = process.env.UPD_SABY_LAYOUT === 'true' && sabyEligible;
     const html = useSabyLayout
       ? renderUpdSabyHtml(model, { fontCss: this.renderer.fontStyles() })
       : renderUpdHtml(model, { fontCss: this.renderer.fontStyles() });

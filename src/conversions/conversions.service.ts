@@ -95,10 +95,11 @@ export class ConversionsService {
     const adapter = this.adapters.get(descriptor);
 
     const sourceSha256 = sha256Hex(input.body);
-    const layoutVariant =
-      descriptor.family === 'UniversalTransferDocument' && process.env.UPD_SABY_LAYOUT === 'true'
-        ? 'upd-saby-draft'
-        : 'default';
+    const sabyLayout =
+      descriptor.id === 'utd970_05_03_01_title0' &&
+      process.env.UPD_SABY_LAYOUT === 'true' &&
+      (metadata.documentFunction === 'СЧФДОП' || metadata.documentFunction === 'ДОП');
+    const layoutVariant = sabyLayout ? 'upd-saby-draft' : 'default';
     const fingerprint = sha256Hex(
       [
         sourceSha256,

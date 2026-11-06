@@ -138,6 +138,25 @@ describe('UPD title 0 conversions', () => {
     }
   }, 180_000);
 
+  it('prints a ДОП on the Saby blank with status 2', async () => {
+    const previous = process.env.UPD_SABY_LAYOUT;
+    process.env.UPD_SABY_LAYOUT = 'true';
+    try {
+      const response = await convert(fixtures.dop);
+      expect(response.status).toBe(201);
+      expect(response.body.pageCount).toBe(1);
+      const text = pdfText(await download(app, response.body));
+      expect(text).toContain('Статус: 2');
+      expect(text).not.toContain('Статус: 1');
+      expect(text).toContain('1 – счет-фактура');
+      expect(text).toContain('2 – передаточный');
+      expect(text).toContain('Счет-фактура');
+    } finally {
+      if (previous === undefined) delete process.env.UPD_SABY_LAYOUT;
+      else process.env.UPD_SABY_LAYOUT = previous;
+    }
+  }, 180_000);
+
   it('reports arithmetic mismatches as warnings and prints the source values unchanged', async () => {
     const broken = asUtf8(fixtures.schfdop).replace('СтТовБезНДС="7790.24"', 'СтТовБезНДС="7800.00"');
     const response = await convert(Buffer.from(broken, 'utf8'));

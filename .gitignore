@@ -8,6 +8,8 @@ coverage/
 test-output/
 *.log
 .DS_Store
+.idea/
+*.iml
 .docker/
 
 vislib13012026/

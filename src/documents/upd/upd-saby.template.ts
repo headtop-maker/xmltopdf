@@ -121,6 +121,9 @@ export function renderUpdSabyHtml(model: UpdPrintModel, options: UpdSabyOptions)
   const consignee = parties.consignees[0];
   const signer = signers[0];
   const shift = 18 * Math.max(rows.length - 1, 0);
+  // The status is not an XML attribute: ФНС derives it from Документ/@Функция.
+  // Saby prints 1 for СЧФДОП and 2 for ДОП on the same blank.
+  const status = meta.function === 'СЧФДОП' ? '1' : meta.function === 'ДОП' ? '2' : '';
 
   const [transferDay, transferMonth, transferYear] = dateParts(transfer?.date);
   const payment = invoice.paymentDocuments[0];
@@ -180,7 +183,7 @@ table.items tr.totals td { font-weight: normal; }
 <body><div class="page">
   <div class="band">
     <div class="upd-title">Универсальный<br>передаточный<br>документ</div>
-    <div class="status-row"><strong>Статус:</strong><span class="status-box">1</span></div>
+    <div class="status-row"><strong>Статус:</strong><span class="status-box">${status}</span></div>
     <div class="status-text"><strong>1</strong> – счет-фактура<br>и передаточный<br>документ (акт)<br><strong>2</strong> – передаточный<br>документ (акт)</div>
   </div>
 
