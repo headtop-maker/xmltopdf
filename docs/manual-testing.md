@@ -12,9 +12,10 @@ curl -fsS http://localhost:3000/health/ready
 ```
 
 Требуется `pdftotext` (poppler) для проверки текста и любая программа просмотра PDF.
-Локальный ключ по умолчанию: `local-test-key`, owner — `local-owner`.
+Ключ и owner задаются в `.env` (`API_KEYS=<key>:<ownerId>`); `.env` не коммитится.
+В примерах используется `$API_KEY` — экспортируйте его из окружения, не вписывайте в документы.
 
-Обозначения: `BASE=http://localhost:3000`, `KEY=local-test-key`.
+Обозначения: `BASE=http://localhost:3000`, `KEY="${API_KEY:?Set API_KEY}"`.
 
 ## TC-01. Готовность сервиса
 
@@ -39,7 +40,7 @@ curl -fsS http://localhost:3000/health/ready
 ## TC-03. Swagger UI
 
 1. Открыть `$BASE/docs`.
-2. **Authorize** → `api-key` → `local-test-key`.
+2. **Authorize** → `api-key` → значение `$API_KEY`.
 3. `POST /api/v1/conversions` → **Try it out** → выбрать `test/fixtures/torg2.xml` → **Execute**.
 
 Ожидается:

@@ -49,11 +49,17 @@ curl -fsS http://localhost:3000/health/ready
 проверяет `xmllint`, схемы, шрифты и renderer; в контейнере сконвертированы все четыре титула (ТОРГ-2 0/1,
 УПД 0/1). Контейнер работает без тома данных: PDF не сохраняется на диск.
 
+Ключ берётся из окружения (значение — из `API_KEYS` в `.env`, файл не коммитится):
+
+```bash
+export API_KEY="$(sed -n 's/^API_KEYS=\([^:]*\):.*/\1/p' .env)"
+```
+
 Конвертация образца:
 
 ```bash
 curl --fail-with-body \
-  -H 'X-API-Key: local-test-key' \
+  -H "X-API-Key: $API_KEY" \
   -H 'Content-Type: application/octet-stream' \
   --data-binary @test/fixtures/torg2.xml \
   -o conversion.json \
@@ -69,7 +75,7 @@ jq '{artifactId, pageCount, pdfSha256, expiresAt}' conversion.json
 
 ```bash
 curl --fail-with-body \
-  -H 'X-API-Key: local-test-key' \
+  -H "X-API-Key: $API_KEY" \
   -H 'Content-Type: application/octet-stream' \
   --data-binary @test/fixtures/upd-schfdop.xml \
   -o upd.json \

@@ -1,7 +1,7 @@
 # HTTP API
 
 Контракт сервиса «XML → PDF». Машинная версия: `GET /openapi.json`, интерактивная — `GET /docs`.
-Swagger UI: нажмите **Authorize**, введите `X-API-Key` (локально `local-test-key`).
+Swagger UI: нажмите **Authorize**, введите `X-API-Key` со значением из `API_KEYS` (в окружении — `$API_KEY`).
 
 Все защищённые методы требуют `X-API-Key`. Без него — `401 UNAUTHORIZED`. Скачивание по токену
 ключ не требует: токен сам является правом доступа.

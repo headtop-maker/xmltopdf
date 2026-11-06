@@ -101,7 +101,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   const apiKeys = parseApiKeys(env.API_KEYS);
   if (apiKeys.size === 0) {
     throw new Error(
-      'API_KEYS is required (for example "local-test-key:local-owner"). ' +
+      'API_KEYS is required (for example "<key>:<ownerId>"). ' +
         'The service never starts without authentication configured.',
     );
   }

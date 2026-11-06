@@ -7,7 +7,11 @@ const [fixture, concurrencyRaw, requestsRaw, baseUrlArg] = process.argv.slice(2)
 const concurrency = Number(concurrencyRaw ?? 1);
 const requests = Number(requestsRaw ?? 10);
 const baseUrl = baseUrlArg ?? process.env.BASE_URL ?? 'http://localhost:3000';
-const apiKey = process.env.API_KEY ?? 'local-test-key';
+const apiKey = process.env.API_KEY;
+if (!apiKey) {
+  console.error('Set API_KEY (the key from API_KEYS) before running the load test.');
+  process.exit(1);
+}
 
 if (!fixture || !Number.isInteger(concurrency) || concurrency < 1 || !Number.isInteger(requests)) {
   console.error('usage: load-test.mjs <fixture> <concurrency> <requests> [baseUrl]');

@@ -43,7 +43,7 @@
 ```bash
 # один документ
 npm run build && npm start
-curl -H 'X-API-Key: local-test-key' -H 'Content-Type: application/octet-stream' \
+curl -H "X-API-Key: $API_KEY" -H 'Content-Type: application/octet-stream' \
   --data-binary @test/fixtures/torg2.xml -o conversion.json \
   http://localhost:3000/api/v1/conversions
 curl -o torg2.pdf "$(jq -r .downloadUrl conversion.json)"

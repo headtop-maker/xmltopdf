@@ -8,7 +8,7 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://localhost:3000}"
-API_KEY="${API_KEY:-local-test-key}"
+API_KEY="${API_KEY:?Set API_KEY (the key from API_KEYS)}"
 IMAGE="${IMAGE:-xmltopdf:local}"
 OUT="${OUT:-test-output/visual/current}"
 UPDATE="${1:-}"

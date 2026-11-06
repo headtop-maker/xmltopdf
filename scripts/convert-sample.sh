@@ -4,7 +4,7 @@
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://localhost:3000}"
-API_KEY="${API_KEY:-local-test-key}"
+API_KEY="${API_KEY:?Set API_KEY (the key from API_KEYS)}"
 FIXTURE="${1:-test/fixtures/torg2.xml}"
 OUT_DIR="${OUT_DIR:-test-output}"
 

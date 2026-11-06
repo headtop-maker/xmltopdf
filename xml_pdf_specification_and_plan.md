@@ -541,7 +541,7 @@ cp .env.example .env
 docker compose up --build -d
 curl -fsS http://localhost:3000/health/ready
 curl --fail-with-body \
-  -H 'X-API-Key: local-test-key' \
+  -H "X-API-Key: $API_KEY" \
   -H 'Content-Type: application/octet-stream' \
   -H 'Accept: application/json' \
   --data-binary @test/fixtures/torg2.xml \
