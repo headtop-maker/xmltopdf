@@ -341,7 +341,7 @@ table.items tr.totals td { font-weight: normal; }
   <div class="abs" style="left:481.2pt;top:427.35pt;font-size:6pt">(должность)</div>
   <div class="abs" style="left:616pt;top:427.35pt;font-size:6pt">(подпись)</div>
   <div class="abs" style="left:741.6pt;top:427.35pt;font-size:6pt">(ф.и.о.)</div>
-  <div class="abs" style="left:420pt;top:436.05pt;font-size:7pt;white-space:nowrap">Дата получения (приемки)</div>
+  <div class="abs" style="left:426.3pt;top:436.05pt;font-size:7pt;white-space:nowrap">Дата получения (приемки)</div>
   <div class="abs" style="left:593.6pt;top:436.05pt;font-size:7pt;white-space:nowrap">« &nbsp;&nbsp; » ____________ 20__ г.</div>
 
   <div class="abs" style="left:17pt;top:446pt;width:360pt;font-size:7pt">Иные сведения об отгрузке, передаче</div>

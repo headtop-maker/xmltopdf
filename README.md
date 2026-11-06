@@ -224,7 +224,7 @@ resources/
 ## Тесты
 
 ```bash
-npm test                              # 71 тест: unit + integration (реальный Chromium, реальные XSD)
+npm test                              # 72 теста: unit + integration (реальный Chromium, реальные XSD)
 npm run test:e2e                      # интеграционный набор
 ./scripts/convert-sample.sh           # прогон образца ТОРГ-2
 node scripts/verify-sample.mjs test-output/generated.txt

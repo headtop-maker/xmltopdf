@@ -121,6 +121,11 @@ describe('UPD Saby-style layout', () => {
     expect(twoHtml).toContain('БП-00000124');
   });
 
+  it('aligns the receive date label with the reference column', () => {
+    expect(html).toContain('left:426.3pt;top:436.05pt;font-size:7pt;white-space:nowrap">Дата получения (приемки)');
+    expect(html).toContain('left:425.5pt;top:446pt');
+  });
+
   it('prints the seller short name and bank details', () => {
     expect(html).toContain('ИП Седых Н.В.');
     expect(html).toContain('в ФИЛИАЛ');
