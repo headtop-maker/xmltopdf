@@ -333,7 +333,7 @@ table.items tr.totals td { font-weight: normal; }
   <div class="abs row-marker" style="top:71.3pt">(3)</div>
 
   <div class="abs row-label" style="top:81.8pt">Грузополучатель и его адрес:</div>
-  <div class="abs row-value hv" style="top:81.8pt">${consignee ? `${partyShort(consignee)}, ${e(consignee.address ?? '')}` : '-'}</div>
+  <div class="abs row-value hv bold" style="top:81.8pt">${consignee ? `${partyShort(consignee)}, ${e(consignee.address ?? '')}` : '-'}</div>
   <div class="abs row-marker" style="top:81.8pt">(4)</div>
 
   <div class="abs row-label" style="top:92.3pt">К платежно-расчетному документу</div>
@@ -387,11 +387,11 @@ table.items tr.totals td { font-weight: normal; }
         <th rowspan="2">Сумма налога,<br>предъявляемая<br>покупателю</th>
         <th rowspan="2">Стоимость<br>товаров<br>(работ, услуг),<br>имущественных<br>прав с<br>налогом - всего</th>
         <th colspan="2">Страна происхож-<br>дения товара</th>
-        <th rowspan="2">Регистрационный номер декларации на товары или регистрационный номер партии товара, подлежащего прослеживаемости</th>
+        <th rowspan="2" style="hyphens:none">Регистрационный<br>номер декларации на<br>товары или<br>регистрационный<br>номер партии товара,<br>подлежащего<br>прослеживаемости</th>
       </tr>
       <tr class="h2">
         <th>код</th>
-        <th>условное<br>обозначение<br>(национальное)</th>
+        <th style="hyphens:none">условное<br>обозначе-<br>ние (нацио-<br>нальное)</th>
         <th>Цифровой<br>код</th>
         <th>Краткое<br>наименование</th>
       </tr>
@@ -444,17 +444,17 @@ table.items tr.totals td { font-weight: normal; }
   <div class="abs" style="left:318.61pt;top:53.85pt;width:120pt;font-size:5.6pt;text-align:center">(ф.и.о.)</div>
 
   <div class="abs" style="left:466.4pt;top:36.5pt;font-size:6.6pt">${sellerIsIp ? ogrnText(seller) : ''}</div>
-  <div class="abs" style="left:459.8pt;top:51.8pt;width:354.8pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:464.14pt;top:51.65pt;width:358.61pt;border-top:0.75pt solid #000"></div>
   <div class="abs" style="left:461.9pt;top:54.6pt;font-size:5.6pt;line-height:6.4pt">(основной государственный регистрационный номер индивидуального предпринимателя и дата присвоения такого номера)</div>
 
   <div class="abs" style="left:16.25pt;top:66.55pt;font-size:7pt;white-space:nowrap">Основание передачи (сдачи)/получения приемки</div>
   <div class="abs" style="left:183.55pt;top:66.55pt;width:644.45pt;font-size:7pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${basisText(transfer)}</div>
-  <div class="abs" style="left:183.55pt;top:74.8pt;width:644.45pt;border-top:0.6pt solid #000"></div>
+  <div class="abs" style="left:183.55pt;top:73.27pt;width:644.45pt;border-top:0.6pt solid #000"></div>
   <div class="abs" style="left:461pt;top:77.7pt;font-size:6pt">(договор; доверенность и др.)</div>
 
   <div class="abs" style="left:16.25pt;top:84.56pt;font-size:7pt;white-space:nowrap">Данные о транспортировке и грузе</div>
   <div class="abs" style="left:137.04pt;top:84.56pt;width:690.96pt;font-size:6.4pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e(transfer?.transport?.description ?? '')}${transfer?.transport?.incoterms ? `, ${e(transfer.transport.incoterms)}` : ''}</div>
-  <div class="abs" style="left:137.04pt;top:92.8pt;width:690.96pt;border-top:0.6pt solid #000"></div>
+  <div class="abs" style="left:137.04pt;top:91.27pt;width:690.96pt;border-top:0.6pt solid #000"></div>
   <div class="abs" style="left:137.04pt;top:95pt;width:690.96pt;font-size:6pt;text-align:center">(транспортная накладная, поручение экспедитору, экспедиторская/складская расписка и др./масса нетто/брутто груза, если не приведены ссылки на транспортные документы, содержащие эти сведения)</div>
 
   <div class="abs" style="left:17.8pt;top:104.07pt;font-size:7pt">Товар (груз) передал/услуги, результаты работ, права сдал</div>
@@ -467,7 +467,14 @@ table.items tr.totals td { font-weight: normal; }
   <div class="abs" style="left:194.81pt;top:126.1pt;width:79.52pt;font-size:6pt;text-align:center">(подпись)</div>
   <div class="abs" style="left:293.84pt;top:126.1pt;width:120.78pt;font-size:6pt;text-align:center">(ф.и.о.)</div>
   <div class="abs" style="left:17.8pt;top:134.8pt;font-size:7pt;white-space:nowrap">Дата отгрузки, передачи (сдачи)</div>
-  <div class="abs" style="left:206pt;top:134.8pt;font-size:7pt;white-space:nowrap">« ${transferDay || '&nbsp;&nbsp;'} » ${transferMonth || '____________'} 20${transferYear || '__'} г.</div>
+  <div class="abs" style="left:207.6pt;top:134.8pt;font-size:7pt;white-space:nowrap">«</div>
+  <div class="abs" style="left:217.2pt;top:134.8pt;font-size:7pt;white-space:nowrap">${transferDay || '&nbsp;'}</div>
+  <div class="abs" style="left:230.1pt;top:134.8pt;font-size:7pt;white-space:nowrap">»</div>
+  <div class="abs" style="left:253.5pt;top:134.8pt;font-size:7pt;white-space:nowrap">${transferMonth || ''}</div>
+  <div class="abs" style="left:295.3pt;top:134.8pt;font-size:7pt;white-space:nowrap">20</div>
+  <div class="abs" style="left:308.8pt;top:134.8pt;font-size:7pt;white-space:nowrap">${transferYear || '__'}</div>
+  <div class="abs" style="left:321.6pt;top:134.8pt;font-size:7pt;white-space:nowrap">г.</div>
+  ${transferMonth ? '' : '<div class="abs" style="left:249.5pt;top:142.4pt;width:80pt;border-top:0.6pt solid #000"></div>'}
 
   <div class="abs" style="left:430.79pt;top:104.07pt;font-size:7pt">Товар (груз) получил/услуги, результаты работ, права принял</div>
   <div class="abs" style="left:428.7pt;top:116.07pt;width:159.8pt;font-size:6.4pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center">${demo ? DEMO_RECEIPT.position : ''}</div>
@@ -495,6 +502,8 @@ table.items tr.totals td { font-weight: normal; }
   <div class="abs" style="left:84pt;top:168.1pt;width:360pt;font-size:6pt">(ссылки на неотъемлемые приложения, сопутствующие документы, иные документы и т.п.)</div>
   <div class="abs" style="left:461pt;top:168.1pt;width:360pt;font-size:6pt">(информация о наличии/отсутствии претензии; ссылки на неотъемлемые приложения и другие документы и т.п.)</div>
 
+  <div class="abs" style="left:15.5pt;top:187.58pt;width:399.12pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:428.88pt;top:187.58pt;width:397.62pt;border-top:0.75pt solid #000"></div>
   <div class="abs" style="left:16.25pt;top:179.8pt;width:395pt;font-size:7pt">${partyBank(seller)}</div>
   <div class="abs" style="left:429.29pt;top:179.8pt;width:395pt;font-size:7pt">${partyBank(buyer)}</div>
   <div class="abs" style="left:16.25pt;top:189.8pt;width:395pt;font-size:6pt;text-align:center">(банковские реквизиты продавца)</div>
@@ -520,10 +529,10 @@ table.items tr.totals td { font-weight: normal; }
 
   <div class="abs" style="left:17.75pt;top:229.4pt;width:395pt;font-size:7pt;line-height:8.2pt">Наименование экономического субъекта — составителя документа (в т. ч. комиссионера/агента)</div>
   <div class="abs" style="left:17.75pt;top:238.4pt;width:395pt;font-size:7pt">${e(meta.organization ?? '')}</div>
-  <div class="abs" style="left:14pt;top:243.3pt;width:407.4pt;border-top:0.6pt solid #000"></div>
+  <div class="abs" style="left:15.5pt;top:245.46pt;width:399.12pt;border-top:0.6pt solid #000"></div>
   <div class="abs" style="left:430.79pt;top:229.4pt;width:395pt;font-size:7pt;line-height:8.2pt">Наименование экономического субъекта — составителя документа</div>
-  <div class="abs" style="left:430.79pt;top:238.4pt;width:395pt;font-size:7pt">${buyer ? partyShort(buyer) : ''}</div>
-  <div class="abs" style="left:428.7pt;top:243.3pt;width:398.5pt;border-top:0.6pt solid #000"></div>
+  <div class="abs" style="left:430.79pt;top:238.4pt;width:395pt;font-size:7pt"></div>
+  <div class="abs" style="left:428.88pt;top:243.96pt;width:397.62pt;border-top:0.6pt solid #000"></div>
   </div>
 </div></body></html>`;
 }
