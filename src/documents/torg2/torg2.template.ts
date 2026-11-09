@@ -379,8 +379,8 @@ table { border-collapse: collapse; }
 .conditions-block { break-inside: auto; margin-top: 14.7pt; }
 .conditions-block p { margin: 0; break-inside: auto; text-indent: 14.8pt; width: 390pt; }
 .cond-item { break-inside: avoid; }
-.conditions-block .cond-value { border-bottom: 0.7pt solid #111; height: 9.7pt; margin: 0 0 3.5pt 0; }
-.conditions-block p + p { margin-top: 9.7pt; }
+.conditions-block .cond-value { border-bottom: 0.7pt solid #111; height: 7.5pt; margin: 0 0 1.5pt 0; }
+.conditions-block p + p { margin-top: 0; }
 .signatures-section { break-before: page; padding-left: 2pt; }
 .signatures-section .form-line { margin-top: 2.4pt; }
 .conditions-block, .signatures-section { font-family: Arial, 'Liberation Sans', sans-serif; }
@@ -587,7 +587,7 @@ table { border-collapse: collapse; }
 
 <section class="goods-section">
   <div class="page-label">2-я страница формы № ТОРГ-2</div>
-  <table class="grid goods auto${denseGoods ? ' dense' : ''}">
+  <table class="grid goods${denseGoods ? ' dense' : ''}">${colgroup([18.74,83.2,32.23,31.48,39.72,23.99,55.47,66.7,36.73,33.73,37.48,40.47,30.73,47.97,33.73,38.23,40.48,30.73,48.72,42.72])}
     <thead>
       <tr class="r1">
         <th rowspan="3">№<br>п/<br>п</th>
@@ -613,7 +613,7 @@ table { border-collapse: collapse; }
     </thead>
     <tbody>${goodsRows || '<tr class="data-row"><td colspan="20"></td></tr>'}</tbody>
   </table>
-  <table class="grid discrepancies section-space auto${denseGoods ? ' dense' : ''}">
+  <table class="grid discrepancies section-space${denseGoods ? ' dense' : ''}">${colgroup([21.74,95.94,38.97,46.48,33.72,53.22,38.98,46.47,33.73,53.22,38.97,46.47,33.73,53.97,38.98,46.47,36.72,55.47])}
     <thead>
       <tr class="r1">
         <th rowspan="3">№<br>п/<br>п</th><th rowspan="3">Товар<br>(наименование)</th>
