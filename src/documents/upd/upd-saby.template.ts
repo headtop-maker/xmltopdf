@@ -349,7 +349,7 @@ table.items tr.totals td { font-weight: normal; }
 .sig-section { position: relative; width: 841.92pt; break-inside: avoid; border-top: 14pt solid transparent; }
 .sig-a { height: 76pt; margin-bottom: -13.25pt; }
 .sig-b { height: 48.45pt; margin-top: 3.8pt; margin-bottom: -13.25pt; }
-.sig-c { height: 173.45pt; margin-top: -0.7pt; }
+.sig-c { height: auto; margin-top: -0.7pt; }
 .bottom { position: absolute; left: 14pt; width: 805.5pt; }
 .line-row { display: flex; align-items: flex-end; gap: 4pt; }
 .line-row .grow { flex: 1; border-bottom: 0.6pt solid #000; height: 8.5pt; }
@@ -470,7 +470,6 @@ table.items tr.totals td { font-weight: normal; }
   <div class="abs" style="left:79.3pt;top:0pt;height:61.6pt;border-left:0.75pt solid #000"></div>
   <div class="abs" style="left:827.2pt;top:0pt;height:61.6pt;border-left:0.75pt solid #000"></div>
   <div class="abs" style="left:79.3pt;top:61.6pt;width:747.9pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:421.4pt;top:101.8pt;height:154.1pt;border-left:0.75pt solid #000"></div>
 
   <div class="abs" style="left:16pt;top:1.3pt;width:64pt;font-size:6.4pt;line-height:7.6pt">
     Документ<br>составлен на<br><span style="display:inline-block;border-bottom:0.6pt solid #000;min-width:26pt">${options.pageCount ?? 1}</span> листах
@@ -513,7 +512,7 @@ table.items tr.totals td { font-weight: normal; }
   <div class="abs" style="left:137.04pt;top:28.45pt;width:690.96pt;font-size:6pt;text-align:center">(транспортная накладная, поручение экспедитору, экспедиторская/складская расписка и др./масса нетто/брутто груза, если не приведены ссылки на транспортные документы, содержащие эти сведения)</div>
 
   </div>
-  <div class="sig-section sig-c">  <div class="abs" style="left:17.8pt;top:2.27pt;font-size:7pt">Товар (груз) передал/услуги, результаты работ, права сдал</div>
+  <div class="sig-section sig-c"><div style="height:154.1pt;margin-left:421.4pt;border-left:0.75pt solid #000"></div><div style="height:5.45pt"></div>  <div class="abs" style="left:17.8pt;top:2.27pt;font-size:7pt">Товар (груз) передал/услуги, результаты работ, права сдал</div>
   <div class="abs" style="left:15.5pt;top:14.27pt;width:159.8pt;font-size:6.4pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center">${transferor?.position ? e(transferor.position) : ''}</div>
   <div class="abs" style="left:296.27pt;top:14.27pt;width:115.91pt;font-size:7pt;white-space:nowrap">${transferor?.fio ? e(transferor.fio) : ''}</div>
   <div class="abs" style="left:15.5pt;top:22.14pt;width:159.8pt;border-top:0.75pt solid #000"></div>
