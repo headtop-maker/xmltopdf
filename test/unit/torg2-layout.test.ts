@@ -13,7 +13,7 @@ const parser = new XmlParserService(config);
 const labels = JSON.parse(readFileSync('resources/dictionaries/torg2-title0.json', 'utf8')) as FieldLabelSource;
 const sample = new TextDecoder('windows-1251').decode(readFileSync('test/fixtures/torg2.xml'));
 
-function render(xml: string): string {
+function render(xml: string, demoBlanks = false): string {
   const decoded = decodeXmlBytes(Buffer.from(xml, 'utf8'), config.limits.maxDecodedBytes);
   const parsed = parser.parse(decoded.text);
   const mapper = new Torg2Mapper(
@@ -26,7 +26,7 @@ function render(xml: string): string {
     1000,
   );
   const result = mapper.map(parsed);
-  return renderTorg2Html(result.model, { fontCss: '' });
+  return renderTorg2Html(result.model, { fontCss: '', demoBlanks });
 }
 
 const xml = sample.replace('encoding="windows-1251"', 'encoding="utf-8"');
@@ -86,6 +86,14 @@ describe('TORG-2 layout contract', () => {
     expect(render(stress)).toContain('class="grid goods auto dense"');
     // The reference blank keeps the larger 8 pt style.
     expect(render(xml)).not.toContain('class="grid goods auto dense"');
+  });
+
+  it('fills the paper-only blanks only in demo mode', () => {
+    const demo = render(xml, true);
+    expect(demo).toContain('Весы ВЕ-15Т');
+    expect(demo).toContain('ДП-2026/77');
+    expect(demo).toContain('Принять к учёту');
+    expect(render(xml)).not.toContain('Весы ВЕ-15Т');
   });
 
   it('preserves decimal precision and distinguishes zero from absence', () => {

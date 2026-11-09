@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PDFDocument } from 'pdf-lib';
 import { DocumentRegistry, type SchemaDescriptor, type XmlMetadata } from '../../document-registry/document-registry.service';
 import type { ArtifactDocument } from '../document.types';
 import type { ParsedXml } from '../../xml-security/xml-tree';
@@ -62,9 +63,8 @@ export class UpdAdapter implements PrintAdapter<UpdPrintModel> {
   async render(model: UpdPrintModel): Promise<Buffer> {
     const sabyEligible = model.meta.function === 'СЧФДОП' || model.meta.function === 'ДОП';
     const useSabyLayout = process.env.UPD_SABY_LAYOUT === 'true' && sabyEligible;
-    const html = useSabyLayout
-      ? renderUpdSabyHtml(model, { fontCss: this.renderer.fontStyles() })
-      : renderUpdHtml(model, { fontCss: this.renderer.fontStyles() });
+    // Test-only: DEMO_FILL_BLANKS fills the paper blanks the XML format does not carry.
+    const demoBlanks = process.env.DEMO_FILL_BLANKS === 'true';
     const label =
       model.meta.function === 'СЧФ'
         ? 'INVOICE'
@@ -75,11 +75,24 @@ export class UpdAdapter implements PrintAdapter<UpdPrintModel> {
             : model.meta.function === 'СвЗК'
               ? 'SVZK'
               : 'UPD';
-    return this.renderer.render(html, {
-      sourceSha256: model.meta.sourceSha256,
-      documentLabel: `${label} ${model.meta.number}`,
-      showPageNumber: !useSabyLayout,
-    });
+
+    const renderPdf = async (pageCount?: number): Promise<Buffer> => {
+      const html = useSabyLayout
+        ? renderUpdSabyHtml(model, { fontCss: this.renderer.fontStyles(), demoBlanks, pageCount })
+        : renderUpdHtml(model, { fontCss: this.renderer.fontStyles() });
+      return this.renderer.render(html, {
+        sourceSha256: model.meta.sourceSha256,
+        documentLabel: `${label} ${model.meta.number}`,
+        showPageNumber: !useSabyLayout,
+      });
+    };
+    let pdf = await renderPdf(1);
+    if (useSabyLayout && demoBlanks) {
+      // "Документ составлен на N листах" needs the real page count: render once more.
+      const pages = (await PDFDocument.load(pdf)).getPageCount();
+      if (pages !== 1) pdf = await renderPdf(pages);
+    }
+    return pdf;
   }
 }
 

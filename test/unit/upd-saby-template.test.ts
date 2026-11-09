@@ -146,6 +146,16 @@ describe('UPD Saby-style layout', () => {
     expect(html).not.toContain('left:420pt;top:179.2pt;width:395pt;font-size:7pt">-</div>');
   });
 
+  it('fills the paper blanks only in demo mode', () => {
+    const demo = renderUpdSabyHtml(model, { fontCss: '', demoBlanks: true, pageCount: 2 });
+    expect(demo).toContain('СИДОРОВА МАРИЯ ПЕТРОВНА');
+    expect(demo).toContain('« 24 » сентября 2026 г.');
+    expect(demo).toContain('>2</span> листах');
+    const plain = renderUpdSabyHtml(model, { fontCss: '' });
+    expect(plain).not.toContain('СИДОРОВА');
+    expect(plain).toContain('>&nbsp;</span> листах');
+  });
+
   it('prints the seller short name and bank details', () => {
     expect(html).toContain('ИП Седых Н.В.');
     expect(html).toContain('в ФИЛИАЛ');

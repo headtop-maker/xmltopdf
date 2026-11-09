@@ -1,7 +1,7 @@
 import { escapeHtml, formatMoney, formatQuantity, formatRate } from '../shared/format';
 import type { PartyModel } from '../shared/party';
 import { formatPartyForPrint } from '../shared/party-print';
-import type { Amounts, Discrepancy, GoodsRow, Torg2PrintModel } from './torg2.model';
+import type { Amounts, Discrepancy, GoodsRow, Torg2PrintModel, Torg2Signer } from './torg2.model';
 
 const e = (value: string | undefined | null): string => escapeHtml(value ?? '');
 const blank = (value: string | undefined): string => (value?.trim() ? e(value) : '');
@@ -165,17 +165,48 @@ export interface Torg2TemplateOptions {
   readonly fontCss: string;
   /** Match the approved Saby-style blank: no appendix/signature service blocks. */
   readonly exactReference?: boolean;
+  /**
+   * Test-only demo mode (DEMO_FILL_BLANKS=true): the paper blank has fields that
+   * the official TORG-2 XML format does not carry (call notice, manufacturer,
+   * contract, station, temperature, marking, weighing, sampling, decision).
+   * They are filled with fixed sample values only for layout checks.
+   */
+  readonly demoBlanks?: boolean;
 }
+
+const DEMO = {
+  call: 'телефонограмма',
+  callNumber: '17',
+  callDay: '07',
+  callMonth: '11',
+  callYear: '2026',
+  manufacturer: 'ООО "РОСТОВСКИЙ ПРОИЗВОДИТЕЛЬ", 344000, г. Ростов-на-Дону, ул. Заводская, д. 1, тел. +7 (863) 210-00-10',
+  contractNumber: 'ДП-2026/77',
+  contractDay: '01',
+  contractMonth: '09',
+  contractYear: '2026',
+  station: 'г. Ростов-на-Дону',
+  warehouse: 'Склад готовой продукции, ул. Доватора, 150',
+  temperature: '+2 … +8 °C',
+  marking: 'Маркировка нанесена, читаема, соответствует данным транспортных документов',
+  weighing: 'ООО "ЮГ-ТРАНС-ЭКСПЕДИЦИЯ", пломбы исправны, оттиски соответствуют документам',
+  sampling: 'Выборочная проверка по ГОСТ 8.579-2019, п. 5 договора поставки',
+  scales: 'Весы ВЕ-15Т, 2025 год клеймения',
+  decision: 'Принять к учёту, предъявить претензию поставщику',
+};
 
 export function renderTorg2Html(model: Torg2PrintModel, options: Torg2TemplateOptions): string {
   const { meta, parties, basis, inspection, rows } = model;
   const exact = options.exactReference === true;
+  const demo = options.demoBlanks === true;
+  const demoText = (value: string): string => (demo ? e(value) : '');
   const [inspectionDay, inspectionMonth, inspectionYear] = dateParts(inspection.date);
   const accompanying = inspection.accompanyingDocuments
     .map((doc) => `${doc.name ?? ''}, ${doc.number ?? ''}, ${doc.date ?? ''}`)
     .join('; ');
   const conclusion = model.event.conclusion?.trim();
   const [openingDay, openingMonth, openingYear] = dateParts(inspection.openingDate?.trim());
+  const [shippingDay, shippingMonth, shippingYear] = dateParts(inspection.shippingDate?.trim());
   // Dense style keeps the table inside the page instead of letting Chromium scale the page down.
   const denseGoods = goodsWidth(rows) > GOODS_COLUMN_WIDTH - 10;
   const longCharacteristics = rows.filter((row) => (row.characteristic?.length ?? 0) > 120);
@@ -220,6 +251,18 @@ ${discrepancyCells(row.shortage)}${discrepancyCells(row.surplus)}
   const positionWidth = Math.max(62.9, Math.min(130, textWidth(inspection.acceptedBy?.position, 8) + 4));
   const basisWidth = Math.max(120, 405.6 - personGap - fioWidth - positionWidth);
   const signer = model.signers[0];
+  // The blank's roles map onto the format's scope/status codes: 7 = chairman,
+  // 8 = committee member, 4 = authorised individual (shipper's representative).
+  // A chief accountant has no dedicated code, so the position text is used.
+  const chairman = model.signers.find((item) => item.scopeCode === '7');
+  const members = model.signers.filter((item) => item.scopeCode === '8');
+  const shipperRepresentative = model.signers.find((item) => item.statusCode === '4');
+  const chiefAccountant = model.signers.find((item) => /бухгалтер/i.test(item.position ?? ''));
+  const signaturePlace = (item: Torg2Signer | undefined): string =>
+    item ? e([item.position, item.organization].filter(Boolean).join(', ')) : '';
+  const signatureName = (item: Torg2Signer | undefined): string => (item?.fio ? e(item.fio) : '');
+  const member = (index: number): string =>
+    `<div class="sig-row"${index > 0 ? ' style="margin-top:11.5pt"' : ''}><span class="place">${signaturePlace(members[index])}</span><span class="sign"></span><span class="decipher">${signatureName(members[index])}</span></div>`;
   // The blank asks for the number of sheets, not for the list of attachments:
   // the list does not fit into the 76 pt field and used to overlap the signatures.
   const attachmentCount = model.attachments.length ? String(model.attachments.length) : '';
@@ -309,7 +352,7 @@ h1 { font-size: 10pt; line-height: 1.575; text-align: right; text-transform: upp
 .date-blank + .g { margin-left: 2.4pt; }
 .rule { border-top: 0.7pt solid #111; margin-top: 13.5pt; }
 .call-line { display: flex; align-items: flex-end; margin-top: 2.4pt; line-height: 9.7pt; }
-.call-line .val { flex: 1; border-bottom: 0.7pt solid #111; padding-bottom: 0.8pt; min-height: 8.5pt; }
+.call-line .val { flex: 1; border-bottom: 0.7pt solid #111; padding: 0 4pt 0.8pt; min-height: 8.5pt; text-align: center; }
 .crossline { display: flex; align-items: flex-end; margin-top: 2.4pt; line-height: 9.7pt; }
 .crossed { border-bottom: 0.7pt solid #111; padding-bottom: 0.8pt; }
 .crossline .no { margin-left: 5.5pt; }
@@ -394,7 +437,8 @@ table { border-collapse: collapse; }
 .sig-label { line-height: 9.7pt; margin-top: 2pt; }
 .sig-label { line-height: 9.7pt; margin-top: 2pt; }
 .sig-row { display: flex; gap: 4.8pt; width: 716.6pt; margin: 1.9pt 0 0 95.2pt; }
-.sig-row span { border-bottom: 0.9pt solid #111; height: 0; }
+.sig-row { align-items: flex-end; }
+.sig-row span { border-bottom: 0.9pt solid #111; display: flex; align-items: flex-end; min-height: 9.7pt; font-size: 6.8pt; line-height: 8.6pt; padding: 0 1.5pt; white-space: nowrap; overflow: hidden; }
 .sig-row .place { width: 311pt; }
 .sig-row .sign { width: 116.6pt; }
 .sig-row .decipher { width: 279.4pt; }
@@ -467,31 +511,31 @@ table { border-collapse: collapse; }
   ${inspection.certificates.length ? line('Сертификаты соответствия', inspection.certificates.map((item) => e(item)).join('; ')) : ''}
   ${parties.carrier ? line('Перевозчик', partyText(parties.carrier)) : ''}
   <div class="rule"></div>
-  <div class="call-line"><span>доставлен товар. Документ о вызове представителя</span><span class="val" style="flex:0 0 232pt"></span><span>грузоотправителя, поставщика, производителя:</span></div>
+  <div class="call-line"><span>доставлен товар. Документ о вызове представителя</span><span class="val" style="flex:0 0 232pt">${demoText(DEMO.call)}</span><span>грузоотправителя, поставщика, производителя:</span></div>
   <div class="form-caption" style="width:85pt;margin-left:494pt;font-size:7pt">(ненужное зачеркнуть)</div>
   <div class="crossline">
     <span class="crossed">телеграмма,</span>
     <span class="crossed">факс,</span>
     <span class="crossed">телефонограмма,</span>
     <span class="crossed">радиограмма</span>
-    <span class="no">№</span><span class="w w1"></span>
-    <span style="margin-left:2.4pt">от</span><span class="w w3"></span><span class="w w4"></span><span class="w w5"></span>
+    <span class="no">№</span><span class="w w1">${demoText(DEMO.callNumber)}</span>
+    <span style="margin-left:2.4pt">от</span><span class="w w3">${demoText(DEMO.callDay)}</span><span class="w w4">${demoText(DEMO.callMonth)}</span><span class="w w5">${demoText(DEMO.callYear)}</span>
     <span style="margin-left:2.4pt">г.</span>
   </div>
   <div class="form-caption" style="width:203pt;margin-left:0">(ненужное зачеркнуть)</div>
   ${line('Грузоотправитель', partyMarkup(parties.shipper), 'field-gap')}
   <div class="form-caption" style="padding-left:88pt">(наименование, адрес, номер телефона)</div>
-  ${line('Производитель', '', 'field-gap')}
+  ${line('Производитель', demoText(DEMO.manufacturer), 'field-gap')}
   <div class="form-caption" style="padding-left:74pt">(наименование, адрес, номер телефона)</div>
   ${line('Поставщик', partyMarkup(parties.seller), 'field-gap-sm seller').replace('class="form-line field-gap-sm seller"','class="form-line field-gap-sm seller" style="margin-top:1.6pt"')}
   <div class="form-caption" style="padding-left:60pt">(наименование, адрес, номер телефона)</div>
   ${line('Страховая компания', partyMarkup(parties.insurer), 'field-gap').replace('class="form-line field-gap"','class="form-line field-gap" style="margin-top:0.5pt"')}
   <div class="form-caption" style="padding-left:103pt">(наименование, адрес, номер телефона)</div>
-  <div class="form-line field-gap"><span class="form-label">Договор (контракт) на поставку товара №</span><span class="line-value"></span><span class="g">от</span><span class="date-blank" style="width:37.5pt;margin-left:2.4pt"></span><span class="date-blank" style="width:107pt;margin-left:7.2pt"></span><span class="date-blank" style="width:84pt;margin-left:7.2pt"></span><span class="g">г.</span></div>
-  <div class="form-line" style="margin-top:6.2pt"><span class="form-label">Дата отправления товара</span><span class="date-blank d1" style="margin-left:12.3pt;width:45.1pt"></span><span class="date-blank d2" style="margin-left:9.6pt;width:102.2pt"></span><span class="date-blank d3" style="margin-left:9.6pt;width:87.9pt"></span><span class="g">г.</span></div>
-  ${line('со станции (пристани, порта) отправления', '', 'field-gap-sm').replace('class="form-line field-gap-sm"','class="form-line field-gap-sm" style="margin-top:5pt"')}
+  <div class="form-line field-gap"><span class="form-label">Договор (контракт) на поставку товара №</span><span class="line-value">${demoText(DEMO.contractNumber)}</span><span class="g">от</span><span class="date-blank" style="width:37.5pt;margin-left:2.4pt">${demoText(DEMO.contractDay)}</span><span class="date-blank" style="width:107pt;margin-left:7.2pt">${demoText(DEMO.contractMonth)}</span><span class="date-blank" style="width:84pt;margin-left:7.2pt">${demoText(DEMO.contractYear)}</span><span class="g">г.</span></div>
+  <div class="form-line" style="margin-top:6.2pt"><span class="form-label">Дата отправления товара</span><span class="date-blank d1" style="margin-left:12.3pt;width:45.1pt">${shippingDay}</span><span class="date-blank d2" style="margin-left:9.6pt;width:102.2pt">${shippingMonth}</span><span class="date-blank d3" style="margin-left:9.6pt;width:87.9pt">${shippingYear}</span><span class="g">г.</span></div>
+  ${line('со станции (пристани, порта) отправления', demoText(DEMO.station), 'field-gap-sm').replace('class="form-line field-gap-sm"','class="form-line field-gap-sm" style="margin-top:5pt"')}
   <div class="form-caption" style="padding-left:172pt">(наименование)</div>
-  ${line('или со склада отправителя товара', '', 'field-gap')}
+  ${line('или со склада отправителя товара', demoText(DEMO.warehouse), 'field-gap')}
   <div class="form-caption" style="padding-left:143pt">(наименование)</div>
 </section>
 
@@ -590,12 +634,12 @@ table { border-collapse: collapse; }
   </table>
   <div class="conditions-block">
     <div class="cond-item" style="margin-bottom:4.5pt"><p>Условия хранения товара (продукции) до его вскрытия на складе получателя:</p><div class="cond-value">${blank(inspection.storageConditions)}</div></div>
-    <div class="cond-item" style="margin-bottom:4.5pt"><p>Сведения о температуре при разгрузке в вагоне (рефрижераторе и т. д.) в товаре, °C</p></div>
+    <div class="cond-item" style="margin-bottom:4.5pt"><p>Сведения о температуре при разгрузке в вагоне (рефрижераторе и т. д.) в товаре, °C</p><div class="cond-value">${demoText(DEMO.temperature)}</div></div>
     <div class="cond-item" style="margin-bottom:6.1pt"><p>Состояние тары и упаковки, маркировка мест, товара и тары в момент внешнего осмотра товара (продукции)</p><div class="cond-value">${blank(inspection.packagingState)}</div></div>
-    <div class="cond-item" style="margin-bottom:9pt"><p>Содержание наружной маркировки тары и другие данные, на основании которых можно сделать выводы о том, в чьей упаковке предъявлен товар (производителя или отправителя)</p><div class="cond-value"></div></div>
+    <div class="cond-item" style="margin-bottom:9pt"><p>Содержание наружной маркировки тары и другие данные, на основании которых можно сделать выводы о том, в чьей упаковке предъявлен товар (производителя или отправителя)</p><div class="cond-value">${demoText(DEMO.marking)}</div></div>
     <div class="cond-item" style="margin-bottom:5.3pt"><div class="form-line"><span class="form-label">Дата вскрытия тары</span><span class="date-blank d1" style="width:45.1pt">${openingDay}</span><span class="date-blank d2" style="width:102.2pt">${openingMonth}</span><span class="date-blank d3" style="width:87.9pt">${openingYear}</span><span class="g">г.</span></div></div>
-    <div class="cond-item" style="margin-bottom:9.7pt"><p>Организация, которая взвесила и опломбировала отправленный товар, исправность пломб и содержание оттисков, соответствие пломб товаросопроводительным документам</p><div class="cond-value"></div></div>
-    <div class="cond-item cond-last"><p>Порядок отбора товара (продукции) для выборочной проверки с указанием ГОСТ, особых условий поставки по договору (контракту), основание выборочной проверки</p><div class="cond-value"></div></div>
+    <div class="cond-item" style="margin-bottom:9.7pt"><p>Организация, которая взвесила и опломбировала отправленный товар, исправность пломб и содержание оттисков, соответствие пломб товаросопроводительным документам</p><div class="cond-value">${demoText(DEMO.weighing)}</div></div>
+    <div class="cond-item cond-last"><p>Порядок отбора товара (продукции) для выборочной проверки с указанием ГОСТ, особых условий поставки по договору (контракту), основание выборочной проверки</p><div class="cond-value">${demoText(DEMO.sampling)}</div></div>
   </div>
 </section>
 
@@ -606,7 +650,7 @@ table { border-collapse: collapse; }
   <div class="form-caption">(место определения количества товара (продукции))</div>
   <div class="underlined"></div>
   <p class="paragraph" style="margin-top:13.2pt;text-indent:0">Взвешивание товаров (продукции) проводилось на исправных весах, проверенных в установленном порядке. Сведение об исправности весоизмерительных приборов (тип весов, год клеймения)</p>
-  <div class="underlined" style="margin-top:9.1pt"></div>
+  <div class="underlined" style="margin-top:9.1pt">${demoText(DEMO.scales)}</div>
   ${line('Другие данные', blank(inspection.otherInfo), 'cat-line')}
   <p class="paragraph" style="margin-top:5.9pt">По остальным товарно-материальным ценностям, перечисленным в сопроводительных документах поставщика, расхождений в количестве и качестве нет.</p>
   <p class="paragraph" style="margin-top:3.6pt">Подробное описание дефектов (характер недостачи, излишков, ненадлежащего качества, брака, боя)<br>и мнение комиссии о причинах их образования</p>
@@ -614,26 +658,26 @@ table { border-collapse: collapse; }
   <div class="conclusion"><span class="conclusion-label">Заключение комиссии</span> <span>${e(conclusion || model.event.description || '')}</span></div>
   <p class="paragraph" style="margin-top:5.1pt">Члены комиссии предупреждены об ответственности за подписание акта, содержащие данные, не соответствующие действительности.</p>
   <div class="sig-label" style="margin-top:3.5pt">Председатель комиссии</div>
-  <div class="sig-row"><span class="place"></span><span class="sign"></span><span class="decipher"></span></div>
+  <div class="sig-row"><span class="place">${signaturePlace(chairman)}</span><span class="sign"></span><span class="decipher">${signatureName(chairman)}</span></div>
   <div class="sig-captions"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
   <div class="sig-label">Члены комиссии:</div>
-  <div class="sig-row"><span class="place"></span><span class="sign"></span><span class="decipher"></span></div>
-  <div class="sig-row" style="margin-top:11.5pt"><span class="place"></span><span class="sign"></span><span class="decipher"></span></div>
+  ${member(0)}
+  ${member(1)}
   <div class="sig-captions"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
-  <div class="sig-row" style="margin-top:12pt"><span class="place"></span><span class="sign"></span><span class="decipher"></span></div>
+  ${member(2)}
   <div class="sig-captions"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
   <div class="sig-label">Представитель грузоотправителя (поставщика, производителя)</div>
-  <div class="sig-row rep"><span class="place"></span><span class="sign"></span><span class="decipher"></span></div>
+  <div class="sig-row rep"><span class="place">${signaturePlace(shipperRepresentative)}</span><span class="sign"></span><span class="decipher">${signatureName(shipperRepresentative)}</span></div>
   <div class="sig-captions rep"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
-  <div class="doc-line" style="margin-top:3pt"><span>Документ, удостоверяющий полномочия</span><span class="doc-value"></span></div>
+  <div class="doc-line" style="margin-top:3pt"><span>Документ, удостоверяющий полномочия</span><span class="doc-value">${e(shipperRepresentative?.basis ?? '')}</span></div>
   <div class="doc-caption">выдан</div>
   <div class="doc-line" style="margin-top:4.5pt"><span>№</span><span class="doc-value" style="flex:0 0 73.5pt"></span><span class="doc-value" style="flex:0 0 248pt"></span><span>г.</span></div>
   <div class="doc-line" style="margin-top:5.3pt"><span>Акт с приложением на</span><span class="doc-value" style="flex:0 0 76pt">${e(attachmentCount)}</span><span>листах получил</span></div>
   <div class="sig-label" style="margin-top:5.6pt">Главный (старший) бухгалтер</div>
-  <div class="sig-row acc"><span class="sign"></span><span class="decipher"></span></div>
+  <div class="sig-row acc"><span class="sign"></span><span class="decipher">${signatureName(chiefAccountant)}</span></div>
   <div class="sig-captions acc"><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
   <div class="sig-label">Решение руководителя</div>
-  <div class="solution-line"></div>
+  <div class="solution-line">${demoText(DEMO.decision)}</div>
   ${!exact ? `<div class="disclaimer"><strong>Подписант по данным XML (не подтверждение подписи):</strong> ${e([signer?.fio, signer?.position, signer?.organization].filter(Boolean).join(', '))}.
     ${signer?.basis ? `Основание полномочий подписанта: ${e(signer.basis)}.` : ''}
     ${signer?.organizationBasis ? `Основание полномочий организации: ${e(signer.organizationBasis)}.` : ''}
