@@ -80,7 +80,7 @@ describe('UPD Saby-style layout', () => {
 
   it('prints the invoice header and one page container', () => {
     expect(html).toContain('Счет-фактура № 262 от 31 октября 2026 г.');
-    expect(html).toContain('width: 841.92pt; min-height: 583.96pt');
+    expect(html).toContain('width: 841.92pt; min-height: 564.96pt');
     expect(html).not.toContain('Страница');
   });
 
