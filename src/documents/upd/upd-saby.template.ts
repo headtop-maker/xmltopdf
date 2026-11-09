@@ -249,8 +249,15 @@ export function renderUpdSabyHtml(model: UpdPrintModel, options: UpdSabyOptions)
     ?? (sellerIsIp ? { position: 'ИП', fio: signerOfType(signers, '1')?.fio ?? seller?.name } : undefined);
   const payment = invoice.paymentDocuments[0];
   const shipment = invoice.shipmentDocuments[0];
+  // A row taller than a page cannot be kept together: let the browser split it,
+  // otherwise the tail of a very long name would be clipped away.
+  const nameColumnWidth = Math.max(60, widths[2] - 3);
+  const rowFitsPage = (row: UpdRow): boolean => {
+    const lines = Math.max(1, Math.ceil(approximateWidth(plain(row.name)) / nameColumnWidth));
+    return lines * 8.05 + 3 < 400;
+  };
   const itemRows = rows.length
-    ? rows.map((row) => `<tr>${itemCells(row)}</tr>`).join('')
+    ? rows.map((row) => `<tr${rowFitsPage(row) ? '' : ' class="split"'}>${itemCells(row)}</tr>`).join('')
     : `<tr>${Array.from({ length: 16 }, (_, index) => `<td class="${index === 2 ? 'name' : 'c'}">-</td>`).join('')}</tr>`;
 
   return `<!doctype html>
@@ -283,6 +290,7 @@ table.items { position: relative; margin: 0 0 0 14pt; width: 813.2pt; table-layo
 table.items th, table.items td { border: 0.75pt solid #000; padding: 1pt 1.5pt; vertical-align: middle; }
 table.items th { font-weight: normal; font-size: 7pt; line-height: 7.4pt; text-align: center; vertical-align: top; padding-top: 2pt; hyphens: auto; overflow-wrap: break-word; }
 table.items tr { break-inside: avoid; }
+table.items tr.split { break-inside: auto; }
 table.items tr.h1 th { height: 23.26pt; }
 table.items tr.h2 th { height: 46.51pt; }
 table.items td { font-size: 7pt; padding: 0.6pt 1.5pt; }
@@ -513,7 +521,7 @@ table.items tr.totals td { font-weight: normal; }
   <div class="abs" style="left:429.29pt;top:189.8pt;width:395pt;font-size:6pt;text-align:center">(банковские реквизиты покупателя)</div>
 
   <div class="abs" style="left:17.8pt;top:198.6pt;font-size:7pt">Ответственный за правильность оформления факта хозяйственной жизни</div>
-  <div class="abs" style="left:15.5pt;top:210.6pt;width:140.3pt;font-size:7pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center">${sellerIsIp ? 'ИП' : 'Индивидуальный предприниматель'}</div>
+  <div class="abs" style="left:15.5pt;top:210.6pt;width:140.3pt;font-size:7pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center">${sellerIsIp ? 'ИП' : (signer?.position?.trim() ? e(signer.position) : 'Руководитель организации')}</div>
   <div class="abs" style="left:282.02pt;top:210.6pt;width:132.6pt;font-size:7pt;white-space:nowrap">${dash(signer?.fio ?? seller?.name)}</div>
   <div class="abs" style="left:15.5pt;top:218.3pt;width:140.3pt;border-top:0.75pt solid #000"></div>
   <div class="abs" style="left:173.05pt;top:218.3pt;width:75.02pt;border-top:0.75pt solid #000"></div>
