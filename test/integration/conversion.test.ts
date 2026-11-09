@@ -90,7 +90,9 @@ describe('conversion API', () => {
 
     const text = pdfText(pdf);
     expect(text).toContain('УПД-ЭТрН-001');
-    expect(text).toContain('Мука пшеничная хлебопекарная');
+    // The goods column matches the SBIS width, so long names wrap inside the cell.
+    expect(text).toContain('Мука пшеничная');
+    expect(text).toContain('хлебопекарная');
     expect(text).toContain('49500.00');
     expect(text).not.toContain('Подпись не проверялась');
     expect(text).not.toMatch(/подписано(?! не)/i);

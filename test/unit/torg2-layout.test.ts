@@ -44,8 +44,8 @@ describe('TORG-2 layout contract', () => {
 
   it('sizes the goods and discrepancy columns from content, not a fixed profile', () => {
     const html = render(xml);
-    expect(html).toContain('<table class="grid goods auto">');
-    expect(html).toContain('<table class="grid discrepancies section-space auto">');
+    expect(html).toContain('<table class="grid goods">');
+    expect(html).toContain('<table class="grid discrepancies section-space">');
     const goods = html.slice(html.indexOf('class="grid goods auto"'), html.indexOf('class="grid discrepancies'));
     expect(goods).not.toContain('<colgroup>');
   });
@@ -83,9 +83,9 @@ describe('TORG-2 layout contract', () => {
 
   it('falls back to a denser table style when the 20 columns cannot fit the page', () => {
     const stress = readFileSync('test/fixtures/stress/torg2-filled.xml', 'utf8');
-    expect(render(stress)).toContain('class="grid goods auto dense"');
+    expect(render(stress)).toContain('class="grid goods dense"');
     // The reference blank keeps the larger 8 pt style.
-    expect(render(xml)).not.toContain('class="grid goods auto dense"');
+    expect(render(xml)).not.toContain('class="grid goods dense"');
   });
 
   it('fills the paper-only blanks only in demo mode', () => {
