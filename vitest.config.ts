@@ -25,6 +25,8 @@ export default defineConfig({
       DATA_DIR: './data/test',
       PUBLIC_BASE_URL: 'http://localhost:3000',
       UPD_SABY_LAYOUT: 'false',
+      // CI/dev hosts may run without user namespaces; the container keeps the sandbox on.
+      CHROMIUM_SANDBOX: 'false',
     },
   },
 });

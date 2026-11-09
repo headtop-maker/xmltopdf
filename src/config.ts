@@ -43,6 +43,8 @@ export interface AppConfig {
     readonly maxConcurrent: number;
     readonly queueLimit: number;
     readonly browserPath?: string;
+    /** Chromium's own sandbox; enabled by default, may be off on hosts without user namespaces. */
+    readonly sandbox: boolean;
   };
   readonly vislib: {
     readonly enabled: boolean;
@@ -152,6 +154,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       maxConcurrent: readInt(env, 'MAX_CONCURRENT_RENDERS', 2),
       queueLimit: readInt(env, 'RENDER_QUEUE_LIMIT', 10),
       browserPath: env.CHROMIUM_EXECUTABLE_PATH || undefined,
+      sandbox: readBool(env, 'CHROMIUM_SANDBOX', true),
     },
     vislib: {
       enabled: readBool(env, 'VISLIB_ENABLED', false),

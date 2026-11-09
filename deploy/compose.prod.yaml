@@ -16,6 +16,7 @@ services:
       PORT: "3000"
       RESOURCE_DIR: /app/resources
       PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      CHROMIUM_SANDBOX: "true"
       HOME: /tmp
       TMPDIR: /tmp
       XDG_CACHE_HOME: /tmp/.cache

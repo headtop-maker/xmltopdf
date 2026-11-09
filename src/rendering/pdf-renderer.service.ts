@@ -95,9 +95,7 @@ export class PdfRendererService implements OnModuleInit, OnModuleDestroy {
     this.launching = chromium
       .launch({
         headless: true,
-        // Keep Chromium's own sandbox: the container runs as a non-root user,
-        // so a compromised renderer cannot write to the application tree.
-        chromiumSandbox: true,
+        chromiumSandbox: this.config.renderer.sandbox,
         executablePath: this.config.renderer.browserPath,
         args: [
           '--disable-dev-shm-usage',

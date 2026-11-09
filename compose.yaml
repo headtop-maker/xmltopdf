@@ -14,6 +14,7 @@ services:
       PORT: "3000"
       RESOURCE_DIR: /app/resources
       PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      CHROMIUM_SANDBOX: "true"
       # read_only root: every writable path must live on the tmpfs
       HOME: /tmp
       TMPDIR: /tmp

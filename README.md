@@ -61,12 +61,17 @@ docker compose up --build -d
 curl -fsS http://localhost:3000/health/ready
 ```
 
-Образ проверен: контейнер работает non-root, Chromium запускается с включённым sandbox, readiness
-проверяет `xmllint`, схемы, шрифты и renderer; в контейнере сконвертированы все четыре титула (ТОРГ-2 0/1,
-УПД 0/1). Контейнер работает без тома данных: PDF не сохраняется на диск.
+Образ проверен: контейнер работает non-root с `read_only: true`, Chromium запускается с
+`chromiumSandbox: true` (`CHROMIUM_SANDBOX`, по умолчанию включён), readiness проверяет кэш, 4 схемы,
+`xmllint`, renderer и шрифты. В контейнере сконвертированы ТОРГ-2 и УПД, PDF скачаны по ссылке;
+`/tmp` — единственный writable-путь (`tmpfs`, `HOME`/`TMPDIR`/`XDG_*` указывают туда), на запрос
+временные файлы не накапливаются. PDF и токены живут в памяти процесса: после рестарта ссылки
+перестают работать, постоянного хранилища нет.
 
-Проверка production-сборки из ветки (сборка образа, запуск с `--read-only`, health, конвертации)
-описана в [`docs/reports/docker-container-check.md`](docs/reports/docker-container-check.md).
+Healthcheck в `Dockerfile` и в `compose.yaml` использует один и тот же `/health/ready`.
+Проверка production-сборки из ветки (сборка образа, запуск с `--read-only`, health, конвертации,
+скачивание PDF, очистка `/tmp`) описана в
+[`docs/reports/docker-container-check.md`](docs/reports/docker-container-check.md).
 Без `.env` с `API_KEYS` сервис не стартует — файл в образ не попадает и передаётся compose-файлом.
 
 ## Продакшен
