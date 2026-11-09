@@ -6,7 +6,7 @@
 # crypto provider, CAdES/PAdES profiles or the customer's signing process.
 set -euo pipefail
 
-PDF="${1:-docs/reports/torg2-sample-generated.pdf}"
+PDF="${1:-test/fixtures/torg2-reference.pdf}"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 

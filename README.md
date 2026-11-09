@@ -311,13 +311,10 @@ MCP-сервер `graphify` подключён к DSH, его инструмен
 - [`docs/manual-testing-upd.md`](docs/manual-testing-upd.md) — ручной тест-кейс УПД: шапка, таблица, суммы, подписи, запрещённые элементы.
 - [`docs/reports/torg2-examples-diff.md`](docs/reports/torg2-examples-diff.md) — сверка четырёх образцов
   с `all_1-4.pdf`, координаты и остаточные отличия.
-- [`docs/reports/torg2-sample-comparison.md`](docs/reports/torg2-sample-comparison.md) — прогон образца
-  и сверка с эталонным PDF.
 - [`docs/field-maps/torg2-title0.md`](docs/field-maps/torg2-title0.md) — карта XML → печатная форма ТОРГ-2.
 - [`docs/field-maps/upd-title0.md`](docs/field-maps/upd-title0.md) — карта XML → печатная форма УПД.
 - [`docs/field-maps/torg2-title1.md`](docs/field-maps/torg2-title1.md) — карта второго титула ТОРГ-2.
 - [`docs/field-maps/upd-title1.md`](docs/field-maps/upd-title1.md) — карта титула покупателя УПД.
-- [`docs/reports/upd-fixtures.md`](docs/reports/upd-fixtures.md) — прогон синтетических УПД по функциям.
 - [`docs/reports/upd-13093-alignment.md`](docs/reports/upd-13093-alignment.md) — сверка бланка Saby с эталоном
   СБИС `УП-13093`: координаты, допуски, остаточные отличия.
 - [`docs/reports/upd-variants-check.md`](docs/reports/upd-variants-check.md) — варианты: ООО-продавец,
@@ -326,9 +323,6 @@ MCP-сервер `graphify` подключён к DSH, его инструмен
   ОКПО, две строки комиссии, сетки таблиц по XLSX СБИС, интервалы страниц 3–4.
 - [`docs/reports/docker-container-check.md`](docs/reports/docker-container-check.md) — проверка
   production-образа: сборка, запуск non-root, health, конвертации.
-- [`docs/reports/upd-saby-layout-draft.md`](docs/reports/upd-saby-layout-draft.md) — исторический черновик
-  первого прохода бланка (устарел).
-- [`docs/reports/title1-fixtures.md`](docs/reports/title1-fixtures.md) — прогон вторых титулов.
 - [`docs/reports/visual-regression.md`](docs/reports/visual-regression.md) — Linux-эталоны страниц.
 - [`docs/reports/load-test.md`](docs/reports/load-test.md) — нагрузочный прогон и очередь.
 - [`docs/test-data.md`](docs/test-data.md) — какие тестовые XML/PDF лежат в `test/fixtures`, их происхождение и как получить артефакты заново.
