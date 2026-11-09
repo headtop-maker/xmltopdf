@@ -379,7 +379,7 @@ table { border-collapse: collapse; }
 .conditions-block { break-inside: auto; margin-top: 14.7pt; }
 .conditions-block p { margin: 0; break-inside: auto; text-indent: 14.8pt; width: 390pt; }
 .cond-item { break-inside: avoid; }
-.conditions-block .cond-value { border-bottom: 0.7pt solid #111; height: 7.5pt; margin: 0 0 1.5pt 0; }
+.conditions-block .cond-value { border-bottom: 0.7pt solid #111; height: 3.5pt; margin: 0; }
 .conditions-block p + p { margin-top: 0; }
 .signatures-section { break-before: page; padding-left: 2pt; }
 .signatures-section .form-line { margin-top: 2.4pt; }
@@ -633,12 +633,12 @@ table { border-collapse: collapse; }
     <tbody>${discrepancyRows || '<tr class="data-row"><td colspan="18"></td></tr>'}</tbody>
   </table>
   <div class="conditions-block">
-    <div class="cond-item" style="margin-bottom:4.5pt"><p>Условия хранения товара (продукции) до его вскрытия на складе получателя:</p><div class="cond-value">${blank(inspection.storageConditions)}</div></div>
-    <div class="cond-item" style="margin-bottom:4.5pt"><p>Сведения о температуре при разгрузке в вагоне (рефрижераторе и т. д.) в товаре, °C</p><div class="cond-value">${demoText(DEMO.temperature)}</div></div>
-    <div class="cond-item" style="margin-bottom:6.1pt"><p>Состояние тары и упаковки, маркировка мест, товара и тары в момент внешнего осмотра товара (продукции)</p><div class="cond-value">${blank(inspection.packagingState)}</div></div>
-    <div class="cond-item" style="margin-bottom:9pt"><p>Содержание наружной маркировки тары и другие данные, на основании которых можно сделать выводы о том, в чьей упаковке предъявлен товар (производителя или отправителя)</p><div class="cond-value">${demoText(DEMO.marking)}</div></div>
+    <div class="cond-item" style="margin-bottom:13.15pt"><p>Условия хранения товара (продукции) до его вскрытия на складе получателя:</p><div class="cond-value">${blank(inspection.storageConditions)}</div></div>
+    <div class="cond-item" style="margin-bottom:1.5pt"><p>Сведения о температуре при разгрузке в вагоне (рефрижераторе и т. д.) в товаре, °C</p><div class="cond-value">${demoText(DEMO.temperature)}</div></div>
+    <div class="cond-item" style="margin-bottom:5.34pt"><p>Состояние тары и упаковки, маркировка мест, товара и тары в момент внешнего осмотра товара (продукции)</p><div class="cond-value">${blank(inspection.packagingState)}</div></div>
+    <div class="cond-item" style="margin-bottom:5.98pt"><p>Содержание наружной маркировки тары и другие данные, на основании которых можно сделать выводы о том, в чьей упаковке предъявлен товар (производителя или отправителя)</p><div class="cond-value">${demoText(DEMO.marking)}</div></div>
     <div class="cond-item" style="margin-bottom:5.3pt"><div class="form-line"><span class="form-label">Дата вскрытия тары</span><span class="date-blank d1" style="width:45.1pt">${openingDay}</span><span class="date-blank d2" style="width:102.2pt">${openingMonth}</span><span class="date-blank d3" style="width:87.9pt">${openingYear}</span><span class="g">г.</span></div></div>
-    <div class="cond-item" style="margin-bottom:9.7pt"><p>Организация, которая взвесила и опломбировала отправленный товар, исправность пломб и содержание оттисков, соответствие пломб товаросопроводительным документам</p><div class="cond-value">${demoText(DEMO.weighing)}</div></div>
+    <div class="cond-item" style="margin-bottom:5.98pt"><p>Организация, которая взвесила и опломбировала отправленный товар, исправность пломб и содержание оттисков, соответствие пломб товаросопроводительным документам</p><div class="cond-value">${demoText(DEMO.weighing)}</div></div>
     <div class="cond-item cond-last"><p>Порядок отбора товара (продукции) для выборочной проверки с указанием ГОСТ, особых условий поставки по договору (контракту), основание выборочной проверки</p><div class="cond-value">${demoText(DEMO.sampling)}</div></div>
   </div>
 </section>
@@ -657,25 +657,25 @@ table { border-collapse: collapse; }
   <div class="text-block"></div>
   <div class="conclusion"><span class="conclusion-label">Заключение комиссии</span> <span>${e(conclusion || '')}${conclusion && model.event.description ? ': ' : ''}${e(model.event.description || '')}</span></div>
   <p class="paragraph" style="margin-top:5.1pt">Члены комиссии предупреждены об ответственности за подписание акта, содержащего данные, не соответствующие действительности.</p>
-  <div class="sig-label" style="margin-top:3.5pt">Председатель комиссии</div>
+  <div class="sig-label" style="margin-top:2.43pt">Председатель комиссии</div>
   <div class="sig-row"><span class="place">${signaturePlace(chairman)}</span><span class="sign"></span><span class="decipher">${signatureName(chairman)}</span></div>
   <div class="sig-captions"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
-  <div class="sig-label">Члены комиссии:</div>
+  <div class="sig-label" style="margin-top:-5.03pt">Члены комиссии:</div>
   ${member(0)}
   <div class="sig-captions"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
   ${member(1)}
   <div class="sig-captions"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
-  <div class="sig-label">Представитель грузоотправителя (поставщика, производителя)</div>
+  <div class="sig-label" style="margin-top:7.75pt">Представитель грузоотправителя (поставщика, производителя)</div>
   <div class="sig-row rep"><span class="place">${signaturePlace(shipperRepresentative)}</span><span class="sign"></span><span class="decipher">${signatureName(shipperRepresentative)}</span></div>
   <div class="sig-captions rep"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
-  <div class="doc-line" style="margin-top:3pt"><span>Документ, удостоверяющий полномочия</span><span class="doc-value">${e(shipperRepresentative?.basis ?? '')}</span></div>
+  <div class="doc-line" style="margin-top:-3pt"><span>Документ, удостоверяющий полномочия</span><span class="doc-value">${e(shipperRepresentative?.basis ?? '')}</span></div>
   <div class="doc-caption">выдан</div>
   <div class="doc-line" style="margin-top:4.5pt"><span>№</span><span class="doc-value" style="flex:0 0 73.5pt"></span><span class="doc-value" style="flex:0 0 248pt"></span><span>г.</span></div>
   <div class="doc-line" style="margin-top:5.3pt"><span>Акт с приложением на</span><span class="doc-value" style="flex:0 0 76pt">${e(attachmentCount)}</span><span>листах получил</span></div>
   <div class="sig-label" style="margin-top:5.6pt">Главный (старший) бухгалтер</div>
   <div class="sig-row acc"><span class="sign"></span><span class="decipher">${signatureName(chiefAccountant)}</span></div>
   <div class="sig-captions acc"><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
-  <div class="sig-label">Решение руководителя</div>
+  <div class="sig-label" style="margin-top:-5.27pt">Решение руководителя</div>
   <div class="solution-line">${demoText(DEMO.decision)}</div>
   ${!exact ? `<div class="disclaimer"><strong>Подписант по данным XML (не подтверждение подписи):</strong> ${e([signer?.fio, signer?.position, signer?.organization].filter(Boolean).join(', '))}.
     ${signer?.basis ? `Основание полномочий подписанта: ${e(signer.basis)}.` : ''}
