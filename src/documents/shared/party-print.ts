@@ -1,11 +1,14 @@
 import type { PartyModel } from './party';
 
 /** Presentation-only helper: party identity, address and contacts as printed lines. */
-export function formatPartyForPrint(party: PartyModel): { title: string; lines: string[] } {
+export function formatPartyForPrint(
+  party: PartyModel,
+  options: { includeOkpo?: boolean } = {},
+): { title: string; lines: string[] } {
   const registration = [
     party.inn ? `ИНН: ${party.inn}` : undefined,
     party.kpp ? `КПП: ${party.kpp}` : undefined,
-    party.okpo ? `ОКПО: ${party.okpo}` : undefined,
+    options.includeOkpo === false ? undefined : party.okpo ? `ОКПО: ${party.okpo}` : undefined,
     party.ogrn ? `${party.kind === 'ИП' ? 'ОГРНИП' : 'ОГРН'} ${party.ogrn}` : undefined,
   ]
     .filter(Boolean)

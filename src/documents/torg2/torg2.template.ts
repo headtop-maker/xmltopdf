@@ -29,13 +29,13 @@ function quantity(value: string | undefined): string {
 
 function partyText(party: PartyModel | undefined): string {
   if (!party) return '';
-  const info = formatPartyForPrint(party);
+  const info = formatPartyForPrint(party, { includeOkpo: false });
   return e([info.title, ...info.lines].filter(Boolean).join(', '));
 }
 
 function partyMarkup(party: PartyModel | undefined): string {
   if (!party) return '';
-  const info = formatPartyForPrint(party);
+  const info = formatPartyForPrint(party, { includeOkpo: false });
   return `<strong>${e(info.title)}</strong>${info.lines.length ? `, ${e(info.lines.join(', '))}` : ''}`;
 }
 
@@ -262,7 +262,7 @@ ${discrepancyCells(row.shortage)}${discrepancyCells(row.surplus)}
     item ? e([item.position, item.organization].filter(Boolean).join(', ')) : '';
   const signatureName = (item: Torg2Signer | undefined): string => (item?.fio ? e(item.fio) : '');
   const member = (index: number): string =>
-    `<div class="sig-row"${index > 0 ? ' style="margin-top:11.5pt"' : ''}><span class="place">${signaturePlace(members[index])}</span><span class="sign"></span><span class="decipher">${signatureName(members[index])}</span></div>`;
+    `<div class="sig-row"${index > 0 ? ' style="margin-top:4pt"' : ''}><span class="place">${signaturePlace(members[index])}</span><span class="sign"></span><span class="decipher">${signatureName(members[index])}</span></div>`;
   // The blank asks for the number of sheets, not for the list of attachments:
   // the list does not fit into the 76 pt field and used to overlap the signatures.
   const attachmentCount = model.attachments.length ? String(model.attachments.length) : '';
@@ -434,11 +434,11 @@ table { border-collapse: collapse; }
 .text-block { height: 9.7pt; }
 .conclusion { margin-top: -0.9pt; line-height: 9.7pt; text-indent: 14.8pt; }
 .conclusion-label { margin-right: 4.4pt; }
-.sig-label { line-height: 9.7pt; margin-top: 2pt; }
-.sig-label { line-height: 9.7pt; margin-top: 2pt; }
-.sig-row { display: flex; gap: 4.8pt; width: 716.6pt; margin: 1.9pt 0 0 95.2pt; }
+.sig-label { line-height: 9.7pt; margin-top: 1pt; }
+.sig-label { line-height: 9.7pt; margin-top: 1pt; }
+.sig-row { display: flex; gap: 4.8pt; width: 716.6pt; margin: 0.6pt 0 0 95.2pt; }
 .sig-row { align-items: flex-end; }
-.sig-row span { border-bottom: 0.9pt solid #111; display: flex; align-items: flex-end; min-height: 9.7pt; font-size: 6.8pt; line-height: 8.6pt; padding: 0 1.5pt; white-space: nowrap; overflow: hidden; }
+.sig-row span { border-bottom: 0.9pt solid #111; display: flex; align-items: flex-end; min-height: 8.6pt; font-size: 6.8pt; line-height: 8.6pt; padding: 0 1.5pt; white-space: nowrap; overflow: hidden; }
 .sig-row .place { width: 311pt; }
 .sig-row .sign { width: 116.6pt; }
 .sig-row .decipher { width: 279.4pt; }
@@ -655,16 +655,15 @@ table { border-collapse: collapse; }
   <p class="paragraph" style="margin-top:5.9pt">По остальным товарно-материальным ценностям, перечисленным в сопроводительных документах поставщика, расхождений в количестве и качестве нет.</p>
   <p class="paragraph" style="margin-top:3.6pt">Подробное описание дефектов (характер недостачи, излишков, ненадлежащего качества, брака, боя)<br>и мнение комиссии о причинах их образования</p>
   <div class="text-block"></div>
-  <div class="conclusion"><span class="conclusion-label">Заключение комиссии</span> <span>${e(conclusion || model.event.description || '')}</span></div>
+  <div class="conclusion"><span class="conclusion-label">Заключение комиссии</span> <span>${e(conclusion || '')}${conclusion && model.event.description ? ': ' : ''}${e(model.event.description || '')}</span></div>
   <p class="paragraph" style="margin-top:5.1pt">Члены комиссии предупреждены об ответственности за подписание акта, содержащие данные, не соответствующие действительности.</p>
   <div class="sig-label" style="margin-top:3.5pt">Председатель комиссии</div>
   <div class="sig-row"><span class="place">${signaturePlace(chairman)}</span><span class="sign"></span><span class="decipher">${signatureName(chairman)}</span></div>
   <div class="sig-captions"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
   <div class="sig-label">Члены комиссии:</div>
   ${member(0)}
-  ${member(1)}
   <div class="sig-captions"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
-  ${member(2)}
+  ${member(1)}
   <div class="sig-captions"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
   <div class="sig-label">Представитель грузоотправителя (поставщика, производителя)</div>
   <div class="sig-row rep"><span class="place">${signaturePlace(shipperRepresentative)}</span><span class="sign"></span><span class="decipher">${signatureName(shipperRepresentative)}</span></div>

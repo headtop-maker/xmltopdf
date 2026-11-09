@@ -75,14 +75,20 @@ export function validateTorg2Business(parsed: ParsedXml): BusinessReport {
       const amount = parseDecimal(node.getAttribute('СтоимТовНДСПрин'));
       const vat = parseDecimal(node.getAttribute('СумНДСПрин'));
 
-      if (quantity && price && amount && vat) {
-        const expected = quantity.times(price).plus(vat);
-        if (!nearlyEqual(expected, amount)) {
+      if (quantity && price && amount) {
+        // СтоимТовНДСПрин is a VAT-inclusive amount, while ЦенаПрин may already include VAT
+        // (the format does not require it to be a net price). Accept either reading and only
+        // report a mismatch when the amount matches neither.
+        const rate = rateFraction(node.getAttribute('СтавНДСПрин'));
+        const gross = quantity.times(price);
+        const netWithVat = rate ? gross.times(rate.plus(1)) : gross.plus(vat ?? 0);
+        if (!nearlyEqual(gross, amount) && !nearlyEqual(netWithVat, amount)) {
           issues.push({
             code: 'ARITHMETIC_AMOUNT_MISMATCH',
             message:
-              `${elementName}: quantity × price + VAT = ${expected.toFixed(2)} ` +
-              `but СтоимТовНДСПрин = ${amount.toFixed(2)}; the source value is printed unchanged`,
+              `${elementName}: quantity × price = ${gross.toFixed(2)} (price with VAT) or ` +
+              `${netWithVat.toFixed(2)} (price without VAT) but СтоимТовНДСПрин = ` +
+              `${amount.toFixed(2)}; the source value is printed unchanged`,
             path: `${rowPath}/${elementName}`,
           });
         }

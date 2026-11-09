@@ -117,6 +117,14 @@ describe('TORG-2 mapper and coverage', () => {
     expect(model.rows[1].surplus).toBeUndefined();
   });
 
+  it('accepts a VAT-inclusive price when the amount matches quantity × price', () => {
+    const bytes = readFileSync('test/fixtures/torg2-vat-included.xml');
+    const decoded = decodeXmlBytes(bytes, config.limits.maxDecodedBytes);
+    const report = validateTorg2Business(parser.parse(decoded.text));
+    expect(report.issues.filter((issue) => issue.code === 'ARITHMETIC_AMOUNT_MISMATCH')).toHaveLength(0);
+    expect(report.status).toBe('passed');
+  });
+
   it('reports arithmetic mismatches as warnings without changing values', () => {
     const broken = utf8Sample().replace('СтоимТовНДСПрин="49500.00"', 'СтоимТовНДСПрин="50000.00"');
     const decoded = decodeXmlBytes(Buffer.from(broken, 'utf8'), config.limits.maxDecodedBytes);
