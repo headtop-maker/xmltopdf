@@ -24,9 +24,9 @@ COPY package.json ./
 COPY --from=build /app/node_modules ./node_modules
 
 # Chromium is installed at build time and pinned by the lockfile version.
-# The container runs as a non-root user, so the Chromium sandbox stays enabled;
-# --no-sandbox is deliberately not used.
-RUN npx playwright install --with-deps chromium \
+# The binary is called explicitly (not through npx) so a missing playwright
+# dependency fails the build instead of being downloaded ad hoc.
+RUN ./node_modules/.bin/playwright install --with-deps chromium \
  && rm -rf /var/lib/apt/lists/* /tmp/*
 
 # Poppler is used by the visual-regression tooling (PDF -> PNG) and by
@@ -45,6 +45,6 @@ USER app
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-  CMD node -e "fetch('http://127.0.0.1:3000/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+  CMD node -e "fetch('http://127.0.0.1:3000/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
 CMD ["node", "dist/main.js"]

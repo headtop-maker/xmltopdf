@@ -7,11 +7,13 @@
 | Проверка | Результат |
 |---|---|
 | Сборка образа (node:24-bookworm-slim, npm ci, tsc, prune, Chromium) | успешно, образ 1.98 GB |
-| Запуск как в `compose.yaml`: `--read-only`, `tmpfs /tmp`, non-root | uid 10001, контейнер стартует |
-| `GET /health/ready` | 200 |
+| Запуск как в `compose.yaml`: `--read-only`, `tmpfs /tmp`, non-root | uid 10001, корень read-only (`ReadonlyRootfs=true`), запись в `/app` и `/app/resources` невозможна |
+| `GET /health/ready` | 200, проверяет кэш, 4 схемы, `xmllint`, renderer, шрифты |
 | Конвертация ТОРГ-2 (пример из задачи) | 201, 4 страницы, `business: passed`, `warnings: []`, 281 мс |
-| Конвертация УПД (`test/fixtures/upd-schfdop.xml`) | 201, 2 страницы, `passed`, 242 мс |
-| Chromium в контейнере | `/ms-playwright/chromium-1248`, работает без `--no-sandbox` |
+| Конвертация УПД (`test/fixtures/upd-schfdop.xml`) | 201, 1 страница, `passed`, 528 мс |
+| Скачивание обоих PDF по `downloadUrl` | 200, `application/pdf` |
+| Временные файлы после серии конвертаций | `/tmp` 400 КБ: один каталог схем `xmltopdf-xsd-*`, профиль Chromium и `playwright-artifacts-*`; на запрос ничего не накапливается |
+| Chromium в контейнере | `/ms-playwright/chromium-1248`, запускается с `chromiumSandbox: true` (проверено конвертацией) |
 | Node | v24.22.2 |
 
 ## Что нужно коллеге
