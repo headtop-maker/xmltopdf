@@ -120,7 +120,7 @@ describe('UPD Saby-style layout', () => {
     expect(twoHtml).toContain('БП-00000124');
     expect(twoHtml).toContain('<div class="signature-block">');
     expect(twoHtml).not.toContain('top:18pt');
-    expect(twoHtml).toContain('<div style="height:178.3pt"></div>');
+    expect(twoHtml).toContain('<div style="height:178.85pt"></div>');
   });
 
   it('widens numeric columns for large amounts and keeps the table width', () => {
@@ -142,14 +142,16 @@ describe('UPD Saby-style layout', () => {
   });
 
   it('leaves the bank line empty when the party has no bank details', () => {
-    expect(html).toContain('left:420pt;top:179.8pt;width:395pt;font-size:7pt"></div>');
-    expect(html).not.toContain('left:420pt;top:179.8pt;width:395pt;font-size:7pt">-</div>');
+    expect(html).toContain('left:429.29pt;top:179.8pt;width:395pt;font-size:7pt"></div>');
+    expect(html).not.toContain('left:429.29pt;top:179.8pt;width:395pt;font-size:7pt">-</div>');
   });
 
   it('fills the paper blanks only in demo mode', () => {
     const demo = renderUpdSabyHtml(model, { fontCss: '', demoBlanks: true, pageCount: 2 });
     expect(demo).toContain('СИДОРОВА МАРИЯ ПЕТРОВНА');
-    expect(demo).toContain('« 24 » сентября 2026 г.');
+    expect(demo).toContain('>24</div>');
+    expect(demo).toContain('>сентября</div>');
+    expect(demo).toContain('2026 г.</div>');
     expect(demo).toContain('>2</span> листах');
     const plain = renderUpdSabyHtml(model, { fontCss: '' });
     expect(plain).not.toContain('СИДОРОВА');
