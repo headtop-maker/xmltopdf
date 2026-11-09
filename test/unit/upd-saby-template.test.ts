@@ -96,7 +96,7 @@ describe('UPD Saby-style layout', () => {
 
   it('uses the 16 reference columns with the given widths', () => {
     expect((html.match(/<col style="width:/g) ?? []).length).toBe(16);
-    for (const width of ['65.27pt', '16.51pt', '139.54pt', '80.28pt']) {
+    for (const width of ['65.20pt', '16.50pt', '135.00pt', '81.00pt']) {
       expect(html).toContain(`width:${width}`);
     }
   });
@@ -132,18 +132,18 @@ describe('UPD Saby-style layout', () => {
     const wideHtml = renderUpdSabyHtml(wide, { fontCss: '' });
     const widths = [...wideHtml.matchAll(/<col style="width:([\d.]+)pt">/g)].map((match) => Number(match[1]));
     expect(widths).toHaveLength(16);
-    expect(widths[7]).toBeGreaterThan(39.76);
-    expect(widths.reduce((sum, value) => sum + value, 0)).toBeCloseTo(805, 1);
+    expect(widths[7]).toBeGreaterThan(40.6);
+    expect(widths.reduce((sum, value) => sum + value, 0)).toBeCloseTo(813.2, 1);
   });
 
   it('aligns the receive date label with the reference column', () => {
-    expect(html).toContain('left:426.3pt;top:134.25pt;font-size:7pt;white-space:nowrap">Дата получения (приемки)');
-    expect(html).toContain('left:425.5pt;top:144.2pt');
+    expect(html).toContain('left:430.79pt;top:134.8pt;font-size:7pt;white-space:nowrap">Дата получения (приемки)');
+    expect(html).toContain('left:430.79pt;top:145.3pt');
   });
 
   it('leaves the bank line empty when the party has no bank details', () => {
-    expect(html).toContain('left:420pt;top:179.2pt;width:395pt;font-size:7pt"></div>');
-    expect(html).not.toContain('left:420pt;top:179.2pt;width:395pt;font-size:7pt">-</div>');
+    expect(html).toContain('left:420pt;top:179.8pt;width:395pt;font-size:7pt"></div>');
+    expect(html).not.toContain('left:420pt;top:179.8pt;width:395pt;font-size:7pt">-</div>');
   });
 
   it('fills the paper blanks only in demo mode', () => {

@@ -3,6 +3,11 @@ import { joinNonEmpty } from './format';
 import { regionName } from './regions';
 import type { XmlAccessor } from './xml-access';
 
+const SETTLEMENT_TYPES: Record<string, string> = {
+  '1': 'городское поселение',
+  '2': 'сельское поселение',
+};
+
 const MUNICIPALITY_TYPES: Record<string, string> = {
   '1': 'муниципальный район',
   '2': 'городской округ',
@@ -68,6 +73,13 @@ export function readAddress(accessor: XmlAccessor, address: XmlNode | undefined)
           accessor.attr(districtNode, 'Наим'),
         ], ' ')
       : undefined;
+    const settlementNode = garAddress.child('ГородСелПоселен');
+    const settlement = settlementNode
+      ? joinNonEmpty([
+          SETTLEMENT_TYPES[accessor.attr(settlementNode, 'ВидКод') ?? ''] ?? '',
+          accessor.attr(settlementNode, 'Наим'),
+        ], ' ')
+      : undefined;
     const localityNode = garAddress.child('НаселенПункт');
     const locality = localityNode
       ? joinNonEmpty([accessor.attr(localityNode, 'Вид'), accessor.attr(localityNode, 'Наим')], ' ')
@@ -88,7 +100,7 @@ export function readAddress(accessor: XmlAccessor, address: XmlNode | undefined)
     const flat = flatNode
       ? joinNonEmpty([accessor.attr(flatNode, 'Тип'), accessor.attr(flatNode, 'Номер')], ' ')
       : undefined;
-    const text = joinNonEmpty([index, region, district, locality, planning, street, building, flat]);
+    const text = joinNonEmpty([index, region, district, settlement, locality, planning, street, building, flat]);
     return text || undefined;
   }
 
