@@ -326,7 +326,7 @@ body { font-family: 'Tahoma', 'Liberation Sans', Arial, sans-serif; font-size: 7
 .row-marker { left: 807pt; font-size: 6pt; text-align: right; width: 10pt; }
 .small-caption { font-size: 6pt; color: #000; }
 .underline { border-bottom: 0.6pt solid #000; }
-table.items { position: relative; margin: 0 0 0 14pt; width: 813.2pt; table-layout: fixed; border-collapse: collapse; }
+table.items { position: relative; margin: 0 0 -13.25pt 14pt; width: 813.2pt; table-layout: fixed; border-collapse: collapse; }
 table.items th, table.items td { border: 0.75pt solid #000; padding: 1pt 1.5pt; vertical-align: middle; }
 table.items th { font-weight: normal; font-size: 7pt; line-height: 7.4pt; text-align: center; vertical-align: top; padding-top: 2pt; hyphens: auto; overflow-wrap: break-word; }
 table.items tr { break-inside: avoid; }
@@ -346,8 +346,10 @@ table.items tr.totals { break-before: avoid; }
 table.items tr.totals td.label { text-align: left; font-size: 8pt; font-weight: bold; padding-left: 3.5pt; }
 table.items tr.totals td { font-weight: normal; }
 .letters-label { font-weight: normal; }
-.signature-wrap { break-inside: avoid; }
-.signature-block { position: relative; width: 841.92pt; height: 262pt; margin-top: 0; break-inside: avoid; }
+.sig-section { position: relative; width: 841.92pt; break-inside: avoid; border-top: 14pt solid transparent; }
+.sig-a { height: 76pt; margin-bottom: -13.25pt; }
+.sig-b { height: 48.45pt; margin-top: 3.8pt; margin-bottom: -13.25pt; }
+.sig-c { height: 173.45pt; margin-top: -0.7pt; }
 .bottom { position: absolute; left: 14pt; width: 805.5pt; }
 .line-row { display: flex; align-items: flex-end; gap: 4pt; }
 .line-row .grow { flex: 1; border-bottom: 0.6pt solid #000; height: 8.5pt; }
@@ -464,8 +466,7 @@ table.items tr.totals td { font-weight: normal; }
     </tbody>
   </table>
 
-  <div class="signature-wrap">${(options.signatureInset ?? 0) > 0 ? `<div style="height:${options.signatureInset}pt"></div>` : ''}
-  <div class="signature-block">
+  <div class="sig-section sig-a">
   <div class="abs" style="left:79.3pt;top:0pt;height:61.6pt;border-left:0.75pt solid #000"></div>
   <div class="abs" style="left:827.2pt;top:0pt;height:61.6pt;border-left:0.75pt solid #000"></div>
   <div class="abs" style="left:79.3pt;top:61.6pt;width:747.9pt;border-top:0.75pt solid #000"></div>
@@ -500,96 +501,97 @@ table.items tr.totals td { font-weight: normal; }
   <div class="abs" style="left:464.14pt;top:51.65pt;width:358.61pt;border-top:0.75pt solid #000"></div>
   <div class="abs" style="left:461.9pt;top:54.6pt;font-size:5.6pt;line-height:6.4pt">(основной государственный регистрационный номер индивидуального предпринимателя и дата присвоения такого номера)</div>
 
-  <div class="abs" style="left:16.25pt;top:66.55pt;font-size:7pt;white-space:nowrap">Основание передачи (сдачи)/получения приемки</div>
-  <div class="abs" style="left:183.55pt;top:66.55pt;width:644.45pt;font-size:7pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${basisText(transfer)}</div>
-  <div class="abs" style="left:183.55pt;top:73.88pt;width:644.45pt;border-top:0.6pt solid #000"></div>
-  <div class="abs" style="left:461pt;top:77.7pt;font-size:6pt">(договор; доверенность и др.)</div>
-
-  <div class="abs" style="left:16.25pt;top:84.56pt;font-size:7pt;white-space:nowrap">Данные о транспортировке и грузе</div>
-  <div class="abs" style="left:137.04pt;top:84.56pt;width:690.96pt;font-size:6.4pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e(transfer?.transport?.description ?? '')}${transfer?.transport?.incoterms ? `, ${e(transfer.transport.incoterms)}` : ''}</div>
-  <div class="abs" style="left:137.04pt;top:91.88pt;width:690.96pt;border-top:0.6pt solid #000"></div>
-  <div class="abs" style="left:137.04pt;top:95pt;width:690.96pt;font-size:6pt;text-align:center">(транспортная накладная, поручение экспедитору, экспедиторская/складская расписка и др./масса нетто/брутто груза, если не приведены ссылки на транспортные документы, содержащие эти сведения)</div>
-
-  <div class="abs" style="left:17.8pt;top:104.07pt;font-size:7pt">Товар (груз) передал/услуги, результаты работ, права сдал</div>
-  <div class="abs" style="left:15.5pt;top:116.07pt;width:159.8pt;font-size:6.4pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center">${transferor?.position ? e(transferor.position) : ''}</div>
-  <div class="abs" style="left:296.27pt;top:116.07pt;width:115.91pt;font-size:7pt;white-space:nowrap">${transferor?.fio ? e(transferor.fio) : ''}</div>
-  <div class="abs" style="left:15.5pt;top:123.94pt;width:159.8pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:194.81pt;top:123.94pt;width:79.52pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:293.84pt;top:123.94pt;width:120.78pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:15.5pt;top:126.1pt;width:159.8pt;font-size:6pt;text-align:center">(должность)</div>
-  <div class="abs" style="left:194.81pt;top:126.1pt;width:79.52pt;font-size:6pt;text-align:center">(подпись)</div>
-  <div class="abs" style="left:293.84pt;top:126.1pt;width:120.78pt;font-size:6pt;text-align:center">(ф.и.о.)</div>
-  <div class="abs" style="left:17.8pt;top:134.8pt;font-size:7pt;white-space:nowrap">Дата отгрузки, передачи (сдачи)</div>
-  <div class="abs" style="left:207.6pt;top:134.8pt;font-size:7pt;white-space:nowrap">«</div>
-  <div class="abs" style="left:217.2pt;top:134.8pt;font-size:7pt;white-space:nowrap">${transferDay || '&nbsp;'}</div>
-  <div class="abs" style="left:230.1pt;top:134.8pt;font-size:7pt;white-space:nowrap">»</div>
-  <div class="abs" style="left:253.5pt;top:134.8pt;font-size:7pt;white-space:nowrap">${transferMonth || ''}</div>
-  <div class="abs" style="left:295.3pt;top:134.8pt;font-size:7pt;white-space:nowrap">20</div>
-  <div class="abs" style="left:308.8pt;top:134.8pt;font-size:7pt;white-space:nowrap">${transferYear || '__'}</div>
-  <div class="abs" style="left:321.6pt;top:134.8pt;font-size:7pt;white-space:nowrap">г.</div>
-  <div class="abs" style="left:212.7pt;top:143.2pt;width:16.6pt;border-top:0.6pt solid #000"></div>
-  <div class="abs" style="left:235.4pt;top:143.2pt;width:59pt;border-top:0.6pt solid #000"></div>
-  <div class="abs" style="left:304.2pt;top:143.2pt;width:16.5pt;border-top:0.6pt solid #000"></div>
-  ${transferMonth ? '' : '<div class="abs" style="left:249.5pt;top:142.4pt;width:80pt;border-top:0.6pt solid #000"></div>'}
-
-  <div class="abs" style="left:430.79pt;top:104.07pt;font-size:7pt">Товар (груз) получил/услуги, результаты работ, права принял</div>
-  <div class="abs" style="left:428.7pt;top:116.07pt;width:159.8pt;font-size:6.4pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center">${demo ? DEMO_RECEIPT.position : ''}</div>
-  <div class="abs" style="left:706.9pt;top:116.07pt;width:119.5pt;font-size:6.4pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center">${demo ? DEMO_RECEIPT.fio : ''}</div>
-  <div class="abs" style="left:428.7pt;top:123.94pt;width:159.8pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:608pt;top:123.94pt;width:79.5pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:706.9pt;top:123.94pt;width:119.5pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:428.7pt;top:126.1pt;width:159.8pt;font-size:6pt;text-align:center">(должность)</div>
-  <div class="abs" style="left:608pt;top:126.1pt;width:79.5pt;font-size:6pt;text-align:center">(подпись)</div>
-  <div class="abs" style="left:706.9pt;top:126.1pt;width:119.5pt;font-size:6pt;text-align:center">(ф.и.о.)</div>
-  <div class="abs" style="left:430.79pt;top:134.8pt;font-size:7pt;white-space:nowrap">Дата получения (приемки)</div>
-  <div class="abs" style="left:599.6pt;top:134.8pt;font-size:7pt;white-space:nowrap">«</div>
-  <div class="abs" style="left:611.6pt;top:134.8pt;font-size:7pt;white-space:nowrap">${demo ? receiptDay : ''}</div>
-  <div class="abs" style="left:622.1pt;top:134.8pt;font-size:7pt;white-space:nowrap">»</div>
-  <div class="abs" style="left:632pt;top:134.8pt;font-size:7pt;white-space:nowrap">${demo ? receiptMonth : ''}</div>
-  <div class="abs" style="left:632pt;top:142.4pt;width:52pt;border-top:0.6pt solid #000"></div>
-  <div class="abs" style="left:687.4pt;top:134.8pt;font-size:7pt;white-space:nowrap">${demo ? `20${receiptYear}` : '20__'} г.</div>
-
-  <div class="abs" style="left:16.25pt;top:145.3pt;width:360pt;font-size:7pt">Иные сведения об отгрузке, передаче</div>
-  <div class="abs info-value" style="left:145pt;top:143.2pt;width:250pt;font-size:6.2pt">${e(infoText(transfer?.info ?? []))}</div>
-  <div class="abs" style="left:430.79pt;top:145.3pt;width:390pt;font-size:7pt">Иные сведения о получении, приемке</div>
-  <div class="abs info-value" style="left:560pt;top:143.2pt;width:253pt;font-size:6.2pt">${demo ? DEMO_RECEIPT.note : ''}</div>
-  <div class="abs" style="left:15.5pt;top:158.7pt;width:399.2pt;border-bottom:0.6pt solid #000;height:8pt"></div>
-  <div class="abs" style="left:428.7pt;top:158.7pt;width:397.7pt;border-bottom:0.6pt solid #000;height:8pt"></div>
-  <div class="abs" style="left:84pt;top:168.1pt;width:360pt;font-size:6pt">(ссылки на неотъемлемые приложения, сопутствующие документы, иные документы и т.п.)</div>
-  <div class="abs" style="left:461pt;top:168.1pt;width:360pt;font-size:6pt">(информация о наличии/отсутствии претензии; ссылки на неотъемлемые приложения и другие документы и т.п.)</div>
-
-  <div class="abs" style="left:15.5pt;top:187.58pt;width:399.12pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:428.88pt;top:187.58pt;width:397.62pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:16.25pt;top:179.8pt;width:395pt;font-size:7pt">${partyBank(seller)}</div>
-  <div class="abs" style="left:429.29pt;top:179.8pt;width:395pt;font-size:7pt">${partyBank(buyer)}</div>
-  <div class="abs" style="left:16.25pt;top:189.8pt;width:395pt;font-size:6pt;text-align:center">(банковские реквизиты продавца)</div>
-  <div class="abs" style="left:429.29pt;top:189.8pt;width:395pt;font-size:6pt;text-align:center">(банковские реквизиты покупателя)</div>
-
-  <div class="abs" style="left:17.8pt;top:198.6pt;font-size:7pt">Ответственный за правильность оформления факта хозяйственной жизни</div>
-  <div class="abs" style="left:15.5pt;top:210.6pt;width:140.3pt;font-size:7pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center">${sellerIsIp ? 'ИП' : (signer?.position?.trim() ? e(signer.position) : 'Руководитель организации')}</div>
-  <div class="abs" style="left:282.02pt;top:210.6pt;width:132.6pt;font-size:7pt;white-space:nowrap">${dash(signer?.fio ?? seller?.name)}</div>
-  <div class="abs" style="left:15.5pt;top:218.3pt;width:140.3pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:173.05pt;top:218.3pt;width:75.02pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:265.33pt;top:218.3pt;width:149.29pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:15.5pt;top:220.6pt;width:140.3pt;font-size:6pt;text-align:center">(должность)</div>
-  <div class="abs" style="left:173.05pt;top:220.6pt;width:75.02pt;font-size:6pt;text-align:center">(подпись)</div>
-  <div class="abs" style="left:265.33pt;top:220.6pt;width:149.29pt;font-size:6pt;text-align:center">(ф.и.о.)</div>
-
-  <div class="abs" style="left:430.79pt;top:198.6pt;font-size:7pt">Ответственный за правильность оформления факта хозяйственной жизни</div>
-  <div class="abs" style="left:428.7pt;top:218.3pt;width:159.8pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:608pt;top:218.3pt;width:79.5pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:706.9pt;top:218.3pt;width:119.5pt;border-top:0.75pt solid #000"></div>
-  <div class="abs" style="left:428.7pt;top:220.6pt;width:159.8pt;font-size:6pt;text-align:center">(должность)</div>
-  <div class="abs" style="left:608pt;top:220.6pt;width:79.5pt;font-size:6pt;text-align:center">(подпись)</div>
-  <div class="abs" style="left:706.9pt;top:220.6pt;width:119.5pt;font-size:6pt;text-align:center">(ф.и.о.)</div>
-
-  <div class="abs" style="left:17.75pt;top:229.4pt;width:395pt;font-size:7pt;line-height:8.2pt">Наименование экономического субъекта — составителя документа (в т. ч. комиссионера/агента)</div>
-  <div class="abs" style="left:17.75pt;top:238.4pt;width:395pt;font-size:7pt">${e(meta.organization ?? '')}</div>
-  <div class="abs" style="left:15.5pt;top:246.12pt;width:399.12pt;border-top:0.6pt solid #000"></div>
-  <div class="abs" style="left:430.79pt;top:229.4pt;width:395pt;font-size:7pt;line-height:8.2pt">Наименование экономического субъекта — составителя документа</div>
-  <div class="abs" style="left:430.79pt;top:238.4pt;width:395pt;font-size:7pt"></div>
-  <div class="abs" style="left:428.88pt;top:244.62pt;width:397.62pt;border-top:0.6pt solid #000"></div>
   </div>
+  <div class="sig-section sig-b">  <div class="abs" style="left:16.25pt;top:0.0pt;font-size:7pt;white-space:nowrap">Основание передачи (сдачи)/получения приемки</div>
+  <div class="abs" style="left:183.55pt;top:0.0pt;width:644.45pt;font-size:7pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${basisText(transfer)}</div>
+  <div class="abs" style="left:183.55pt;top:7.33pt;width:644.45pt;border-top:0.6pt solid #000"></div>
+  <div class="abs" style="left:461pt;top:11.15pt;font-size:6pt">(договор; доверенность и др.)</div>
+
+  <div class="abs" style="left:16.25pt;top:18.01pt;font-size:7pt;white-space:nowrap">Данные о транспортировке и грузе</div>
+  <div class="abs" style="left:137.04pt;top:18.01pt;width:690.96pt;font-size:6.4pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e(transfer?.transport?.description ?? '')}${transfer?.transport?.incoterms ? `, ${e(transfer.transport.incoterms)}` : ''}</div>
+  <div class="abs" style="left:137.04pt;top:25.33pt;width:690.96pt;border-top:0.6pt solid #000"></div>
+  <div class="abs" style="left:137.04pt;top:28.45pt;width:690.96pt;font-size:6pt;text-align:center">(транспортная накладная, поручение экспедитору, экспедиторская/складская расписка и др./масса нетто/брутто груза, если не приведены ссылки на транспортные документы, содержащие эти сведения)</div>
+
   </div>
+  <div class="sig-section sig-c">  <div class="abs" style="left:17.8pt;top:2.27pt;font-size:7pt">Товар (груз) передал/услуги, результаты работ, права сдал</div>
+  <div class="abs" style="left:15.5pt;top:14.27pt;width:159.8pt;font-size:6.4pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center">${transferor?.position ? e(transferor.position) : ''}</div>
+  <div class="abs" style="left:296.27pt;top:14.27pt;width:115.91pt;font-size:7pt;white-space:nowrap">${transferor?.fio ? e(transferor.fio) : ''}</div>
+  <div class="abs" style="left:15.5pt;top:22.14pt;width:159.8pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:194.81pt;top:22.14pt;width:79.52pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:293.84pt;top:22.14pt;width:120.78pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:15.5pt;top:24.3pt;width:159.8pt;font-size:6pt;text-align:center">(должность)</div>
+  <div class="abs" style="left:194.81pt;top:24.3pt;width:79.52pt;font-size:6pt;text-align:center">(подпись)</div>
+  <div class="abs" style="left:293.84pt;top:24.3pt;width:120.78pt;font-size:6pt;text-align:center">(ф.и.о.)</div>
+  <div class="abs" style="left:17.8pt;top:33.0pt;font-size:7pt;white-space:nowrap">Дата отгрузки, передачи (сдачи)</div>
+  <div class="abs" style="left:207.6pt;top:33.0pt;font-size:7pt;white-space:nowrap">«</div>
+  <div class="abs" style="left:217.2pt;top:33.0pt;font-size:7pt;white-space:nowrap">${transferDay || '&nbsp;'}</div>
+  <div class="abs" style="left:230.1pt;top:33.0pt;font-size:7pt;white-space:nowrap">»</div>
+  <div class="abs" style="left:253.5pt;top:33.0pt;font-size:7pt;white-space:nowrap">${transferMonth || ''}</div>
+  <div class="abs" style="left:295.3pt;top:33.0pt;font-size:7pt;white-space:nowrap">20</div>
+  <div class="abs" style="left:308.8pt;top:33.0pt;font-size:7pt;white-space:nowrap">${transferYear || '__'}</div>
+  <div class="abs" style="left:321.6pt;top:33.0pt;font-size:7pt;white-space:nowrap">г.</div>
+  <div class="abs" style="left:212.7pt;top:41.4pt;width:16.6pt;border-top:0.6pt solid #000"></div>
+  <div class="abs" style="left:235.4pt;top:41.4pt;width:59pt;border-top:0.6pt solid #000"></div>
+  <div class="abs" style="left:304.2pt;top:41.4pt;width:16.5pt;border-top:0.6pt solid #000"></div>
+  ${transferMonth ? '' : '<div class="abs" style="left:249.5pt;top:40.6pt;width:80pt;border-top:0.6pt solid #000"></div>'}
+
+  <div class="abs" style="left:430.79pt;top:2.27pt;font-size:7pt">Товар (груз) получил/услуги, результаты работ, права принял</div>
+  <div class="abs" style="left:428.7pt;top:14.27pt;width:159.8pt;font-size:6.4pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center">${demo ? DEMO_RECEIPT.position : ''}</div>
+  <div class="abs" style="left:706.9pt;top:14.27pt;width:119.5pt;font-size:6.4pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center">${demo ? DEMO_RECEIPT.fio : ''}</div>
+  <div class="abs" style="left:428.7pt;top:22.14pt;width:159.8pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:608pt;top:22.14pt;width:79.5pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:706.9pt;top:22.14pt;width:119.5pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:428.7pt;top:24.3pt;width:159.8pt;font-size:6pt;text-align:center">(должность)</div>
+  <div class="abs" style="left:608pt;top:24.3pt;width:79.5pt;font-size:6pt;text-align:center">(подпись)</div>
+  <div class="abs" style="left:706.9pt;top:24.3pt;width:119.5pt;font-size:6pt;text-align:center">(ф.и.о.)</div>
+  <div class="abs" style="left:430.79pt;top:33.0pt;font-size:7pt;white-space:nowrap">Дата получения (приемки)</div>
+  <div class="abs" style="left:599.6pt;top:33.0pt;font-size:7pt;white-space:nowrap">«</div>
+  <div class="abs" style="left:611.6pt;top:33.0pt;font-size:7pt;white-space:nowrap">${demo ? receiptDay : ''}</div>
+  <div class="abs" style="left:622.1pt;top:33.0pt;font-size:7pt;white-space:nowrap">»</div>
+  <div class="abs" style="left:632pt;top:33.0pt;font-size:7pt;white-space:nowrap">${demo ? receiptMonth : ''}</div>
+  <div class="abs" style="left:632pt;top:40.6pt;width:52pt;border-top:0.6pt solid #000"></div>
+  <div class="abs" style="left:687.4pt;top:33.0pt;font-size:7pt;white-space:nowrap">${demo ? `20${receiptYear}` : '20__'} г.</div>
+
+  <div class="abs" style="left:16.25pt;top:43.5pt;width:360pt;font-size:7pt">Иные сведения об отгрузке, передаче</div>
+  <div class="abs info-value" style="left:145pt;top:41.4pt;width:250pt;font-size:6.2pt">${e(infoText(transfer?.info ?? []))}</div>
+  <div class="abs" style="left:430.79pt;top:43.5pt;width:390pt;font-size:7pt">Иные сведения о получении, приемке</div>
+  <div class="abs info-value" style="left:560pt;top:41.4pt;width:253pt;font-size:6.2pt">${demo ? DEMO_RECEIPT.note : ''}</div>
+  <div class="abs" style="left:15.5pt;top:56.9pt;width:399.2pt;border-bottom:0.6pt solid #000;height:8pt"></div>
+  <div class="abs" style="left:428.7pt;top:56.9pt;width:397.7pt;border-bottom:0.6pt solid #000;height:8pt"></div>
+  <div class="abs" style="left:84pt;top:66.3pt;width:360pt;font-size:6pt">(ссылки на неотъемлемые приложения, сопутствующие документы, иные документы и т.п.)</div>
+  <div class="abs" style="left:461pt;top:66.3pt;width:360pt;font-size:6pt">(информация о наличии/отсутствии претензии; ссылки на неотъемлемые приложения и другие документы и т.п.)</div>
+
+  <div class="abs" style="left:15.5pt;top:85.78pt;width:399.12pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:428.88pt;top:85.78pt;width:397.62pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:16.25pt;top:78.0pt;width:395pt;font-size:7pt">${partyBank(seller)}</div>
+  <div class="abs" style="left:429.29pt;top:78.0pt;width:395pt;font-size:7pt">${partyBank(buyer)}</div>
+  <div class="abs" style="left:16.25pt;top:88.0pt;width:395pt;font-size:6pt;text-align:center">(банковские реквизиты продавца)</div>
+  <div class="abs" style="left:429.29pt;top:88.0pt;width:395pt;font-size:6pt;text-align:center">(банковские реквизиты покупателя)</div>
+
+  <div class="abs" style="left:17.8pt;top:96.8pt;font-size:7pt">Ответственный за правильность оформления факта хозяйственной жизни</div>
+  <div class="abs" style="left:15.5pt;top:108.8pt;width:140.3pt;font-size:7pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center">${sellerIsIp ? 'ИП' : (signer?.position?.trim() ? e(signer.position) : 'Руководитель организации')}</div>
+  <div class="abs" style="left:282.02pt;top:108.8pt;width:132.6pt;font-size:7pt;white-space:nowrap">${dash(signer?.fio ?? seller?.name)}</div>
+  <div class="abs" style="left:15.5pt;top:116.5pt;width:140.3pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:173.05pt;top:116.5pt;width:75.02pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:265.33pt;top:116.5pt;width:149.29pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:15.5pt;top:118.8pt;width:140.3pt;font-size:6pt;text-align:center">(должность)</div>
+  <div class="abs" style="left:173.05pt;top:118.8pt;width:75.02pt;font-size:6pt;text-align:center">(подпись)</div>
+  <div class="abs" style="left:265.33pt;top:118.8pt;width:149.29pt;font-size:6pt;text-align:center">(ф.и.о.)</div>
+
+  <div class="abs" style="left:430.79pt;top:96.8pt;font-size:7pt">Ответственный за правильность оформления факта хозяйственной жизни</div>
+  <div class="abs" style="left:428.7pt;top:116.5pt;width:159.8pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:608pt;top:116.5pt;width:79.5pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:706.9pt;top:116.5pt;width:119.5pt;border-top:0.75pt solid #000"></div>
+  <div class="abs" style="left:428.7pt;top:118.8pt;width:159.8pt;font-size:6pt;text-align:center">(должность)</div>
+  <div class="abs" style="left:608pt;top:118.8pt;width:79.5pt;font-size:6pt;text-align:center">(подпись)</div>
+  <div class="abs" style="left:706.9pt;top:118.8pt;width:119.5pt;font-size:6pt;text-align:center">(ф.и.о.)</div>
+
+  <div class="abs" style="left:17.75pt;top:127.6pt;width:395pt;font-size:7pt;line-height:8.2pt">Наименование экономического субъекта — составителя документа (в т. ч. комиссионера/агента)</div>
+  <div class="abs" style="left:17.75pt;top:136.6pt;width:395pt;font-size:7pt">${e(meta.organization ?? '')}</div>
+  <div class="abs" style="left:15.5pt;top:144.32pt;width:399.12pt;border-top:0.6pt solid #000"></div>
+  <div class="abs" style="left:430.79pt;top:127.6pt;width:395pt;font-size:7pt;line-height:8.2pt">Наименование экономического субъекта — составителя документа</div>
+  <div class="abs" style="left:430.79pt;top:136.6pt;width:395pt;font-size:7pt"></div>
+  <div class="abs" style="left:428.88pt;top:142.82pt;width:397.62pt;border-top:0.6pt solid #000"></div>
+  </div>  </div>
 </div></body></html>`;
 }

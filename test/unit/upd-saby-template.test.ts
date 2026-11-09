@@ -118,7 +118,7 @@ describe('UPD Saby-style layout', () => {
     const twoRows = { ...model, rows: [model.rows[0], second] } as unknown as UpdPrintModel;
     const twoHtml = renderUpdSabyHtml(twoRows, { fontCss: '' });
     expect(twoHtml).toContain('БП-00000124');
-    expect(twoHtml).toContain('<div class="signature-block">');
+    expect(twoHtml).toContain('<div class="sig-section sig-a">');
     expect(twoHtml).not.toContain('top:18pt');
     expect(twoHtml).toContain('<div style="height:178.85pt"></div>');
   });
@@ -137,13 +137,13 @@ describe('UPD Saby-style layout', () => {
   });
 
   it('aligns the receive date label with the reference column', () => {
-    expect(html).toContain('left:430.79pt;top:134.8pt;font-size:7pt;white-space:nowrap">Дата получения (приемки)');
-    expect(html).toContain('left:430.79pt;top:145.3pt');
+    expect(html).toContain('left:430.79pt;top:33.0pt;font-size:7pt;white-space:nowrap">Дата получения (приемки)');
+    expect(html).toContain('left:430.79pt;top:43.5pt;width:390pt;font-size:7pt">Иные сведения о получении, приемке');
   });
 
   it('leaves the bank line empty when the party has no bank details', () => {
-    expect(html).toContain('left:429.29pt;top:179.8pt;width:395pt;font-size:7pt"></div>');
-    expect(html).not.toContain('left:429.29pt;top:179.8pt;width:395pt;font-size:7pt">-</div>');
+    expect(html).toContain('left:429.29pt;top:78.0pt;width:395pt;font-size:7pt"></div>');
+    expect(html).not.toContain('left:429.29pt;top:78.0pt;width:395pt;font-size:7pt">-</div>');
   });
 
   it('fills the paper blanks only in demo mode', () => {
