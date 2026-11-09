@@ -76,9 +76,9 @@ export class UpdAdapter implements PrintAdapter<UpdPrintModel> {
               ? 'SVZK'
               : 'UPD';
 
-    const renderPdf = async (pageCount?: number, withFooter = false): Promise<Buffer> => {
+    const renderPdf = async (pageCount?: number, withFooter = false, signatureInset = 0): Promise<Buffer> => {
       const html = useSabyLayout
-        ? renderUpdSabyHtml(model, { fontCss: this.renderer.fontStyles(), demoBlanks, pageCount })
+        ? renderUpdSabyHtml(model, { fontCss: this.renderer.fontStyles(), demoBlanks, pageCount, signatureInset })
         : renderUpdHtml(model, { fontCss: this.renderer.fontStyles() });
       return this.renderer.render(html, {
         sourceSha256: model.meta.sourceSha256,
@@ -89,9 +89,16 @@ export class UpdAdapter implements PrintAdapter<UpdPrintModel> {
     };
     let pdf = await renderPdf(1);
     if (useSabyLayout) {
-      // "Документ составлен на N листах" and the page footer need the real page count.
-      const pages = (await PDFDocument.load(pdf)).getPageCount();
-      if (pages !== 1) pdf = await renderPdf(pages, true);
+      // The page count, the footer and the top gap of a transferred signature block
+      // all depend on the final pagination: re-render until the layout is stable.
+      let pages = (await PDFDocument.load(pdf)).getPageCount();
+      for (let attempt = 0; attempt < 2 && pages > 1; attempt += 1) {
+        const next = await renderPdf(pages, true, 14);
+        const nextPages = (await PDFDocument.load(next)).getPageCount();
+        pdf = next;
+        if (nextPages === pages) break;
+        pages = nextPages;
+      }
     }
     return pdf;
   }

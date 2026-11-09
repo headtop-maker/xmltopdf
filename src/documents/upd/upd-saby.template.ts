@@ -11,6 +11,8 @@ export interface UpdSabyOptions {
    */
   readonly demoBlanks?: boolean;
   readonly pageCount?: number;
+  /** Top gap for the signature block when it starts a fresh page (multi-page documents). */
+  readonly signatureInset?: number;
 }
 
 const DEMO_RECEIPT = {
@@ -344,6 +346,7 @@ table.items tr.totals { break-before: avoid; }
 table.items tr.totals td.label { text-align: left; font-size: 8pt; font-weight: bold; padding-left: 3.5pt; }
 table.items tr.totals td { font-weight: normal; }
 .letters-label { font-weight: normal; }
+.signature-wrap { break-inside: avoid; }
 .signature-block { position: relative; width: 841.92pt; height: 262pt; margin-top: 0; break-inside: avoid; }
 .bottom { position: absolute; left: 14pt; width: 805.5pt; }
 .line-row { display: flex; align-items: flex-end; gap: 4pt; }
@@ -461,6 +464,7 @@ table.items tr.totals td { font-weight: normal; }
     </tbody>
   </table>
 
+  <div class="signature-wrap">${(options.signatureInset ?? 0) > 0 ? `<div style="height:${options.signatureInset}pt"></div>` : ''}
   <div class="signature-block">
   <div class="abs" style="left:79.3pt;top:0pt;height:61.6pt;border-left:0.75pt solid #000"></div>
   <div class="abs" style="left:827.2pt;top:0pt;height:61.6pt;border-left:0.75pt solid #000"></div>
@@ -585,6 +589,7 @@ table.items tr.totals td { font-weight: normal; }
   <div class="abs" style="left:430.79pt;top:229.4pt;width:395pt;font-size:7pt;line-height:8.2pt">Наименование экономического субъекта — составителя документа</div>
   <div class="abs" style="left:430.79pt;top:238.4pt;width:395pt;font-size:7pt"></div>
   <div class="abs" style="left:428.88pt;top:244.62pt;width:397.62pt;border-top:0.6pt solid #000"></div>
+  </div>
   </div>
 </div></body></html>`;
 }
