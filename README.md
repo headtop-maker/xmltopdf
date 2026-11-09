@@ -207,7 +207,7 @@ src/
   document-registry/    манифест схем, определение формата по КНД/версии
   validation/           XSD через xmllint, версионированные бизнес-правила
   documents/torg2/      модель, карта полей, покрытие, шаблон
-  documents/upd/        УПД 5.03: модель, карта, шаблон; upd-saby — черновик бланка Saby
+  documents/upd/        УПД 5.03: модель, карта, шаблон; upd-saby — бланк Saby (СЧФДОП/ДОП)
   rendering/            Chromium pool, проверка готового PDF
   access/               API key → principal
   health/               readiness по кэшу, схемам, xmllint, шрифтам, renderer
