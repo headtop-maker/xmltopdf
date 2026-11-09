@@ -80,7 +80,7 @@ describe('UPD Saby-style layout', () => {
 
   it('prints the invoice header and one page container', () => {
     expect(html).toContain('Счет-фактура № 262 от 31 октября 2026 г.');
-    expect(html).toContain('width: 841.92pt; min-height: 594.96pt');
+    expect(html).toContain('width: 841.92pt; min-height: 583.96pt');
     expect(html).not.toContain('Страница');
   });
 
@@ -155,7 +155,7 @@ describe('UPD Saby-style layout', () => {
     expect(demo).toContain('>2</span> листах');
     const plain = renderUpdSabyHtml(model, { fontCss: '' });
     expect(plain).not.toContain('СИДОРОВА');
-    expect(plain).toContain('>&nbsp;</span> листах');
+    expect(plain).toContain('>1</span> листах');
   });
 
   it('prints the seller short name and bank details', () => {

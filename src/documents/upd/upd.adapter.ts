@@ -76,21 +76,22 @@ export class UpdAdapter implements PrintAdapter<UpdPrintModel> {
               ? 'SVZK'
               : 'UPD';
 
-    const renderPdf = async (pageCount?: number): Promise<Buffer> => {
+    const renderPdf = async (pageCount?: number, withFooter = false): Promise<Buffer> => {
       const html = useSabyLayout
         ? renderUpdSabyHtml(model, { fontCss: this.renderer.fontStyles(), demoBlanks, pageCount })
         : renderUpdHtml(model, { fontCss: this.renderer.fontStyles() });
       return this.renderer.render(html, {
         sourceSha256: model.meta.sourceSha256,
         documentLabel: `${label} ${model.meta.number}`,
-        showPageNumber: !useSabyLayout,
+        showPageNumber: withFooter,
+        footerLabel: `УПД № ${model.meta.number} от ${model.meta.date}`,
       });
     };
     let pdf = await renderPdf(1);
-    if (useSabyLayout && demoBlanks) {
-      // "Документ составлен на N листах" needs the real page count: render once more.
+    if (useSabyLayout) {
+      // "Документ составлен на N листах" and the page footer need the real page count.
       const pages = (await PDFDocument.load(pdf)).getPageCount();
-      if (pages !== 1) pdf = await renderPdf(pages);
+      if (pages !== 1) pdf = await renderPdf(pages, true);
     }
     return pdf;
   }

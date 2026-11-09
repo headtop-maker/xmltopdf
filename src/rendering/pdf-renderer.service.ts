@@ -19,6 +19,8 @@ export interface RenderOptions {
   readonly showSourceHash?: boolean;
   /** Page numbering footer; TORG-2 matches the approved blank without it. */
   readonly showPageNumber?: boolean;
+  /** Left part of the footer, e.g. the document name and number. */
+  readonly footerLabel?: string;
 }
 
 /**
@@ -189,9 +191,9 @@ export class PdfRendererService implements OnModuleInit, OnModuleDestroy {
         ? `<span>&middot; SHA-256 ${options.sourceSha256.slice(0, 16)}</span>`
         : '';
       const footer = `<div style="width:100%;padding:0 10mm;font-family:'DejaVu Sans',Arial,sans-serif;font-size:7.5px;color:#444;">
-        <div style="display:flex;justify-content:flex-end;gap:6px;">
-          ${hash}
-          <span>Страница <span class="pageNumber"></span> из <span class="totalPages"></span></span>
+        <div style="display:flex;justify-content:space-between;gap:6px;">
+          <span>${options.footerLabel ?? ''}</span>
+          <span>${hash} Страница <span class="pageNumber"></span> из <span class="totalPages"></span></span>
         </div>
       </div>`;
 

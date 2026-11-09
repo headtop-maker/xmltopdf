@@ -249,26 +249,63 @@ export function renderUpdSabyHtml(model: UpdPrintModel, options: UpdSabyOptions)
     ?? (sellerIsIp ? { position: 'ИП', fio: signerOfType(signers, '1')?.fio ?? seller?.name } : undefined);
   const payment = invoice.paymentDocuments[0];
   const shipment = invoice.shipmentDocuments[0];
-  // A row taller than a page cannot be kept together: let the browser split it,
-  // otherwise the tail of a very long name would be clipped away.
   const nameColumnWidth = Math.max(60, widths[2] - 3);
-  const rowFitsPage = (row: UpdRow): boolean => {
-    const lines = Math.max(1, Math.ceil(approximateWidth(plain(row.name)) / nameColumnWidth));
-    return lines * 8.05 + 3 < 400;
+  const LINE_HEIGHT = 8.05;
+  // A row taller than the printable area is split into parts by the template:
+  // the browser cannot re-flow a table row across pages, it only clips it.
+  const PART_HEIGHT = 300;
+  const linesPerPart = Math.max(4, Math.floor((PART_HEIGHT - 2) / LINE_HEIGHT));
+
+  const wrapLines = (text: string): string[] => {
+    const words = text.split(/\s+/).filter(Boolean);
+    const lines: string[] = [];
+    let current = '';
+    for (const word of words) {
+      const candidate = current ? `${current} ${word}` : word;
+      if (!current || approximateWidth(candidate) <= nameColumnWidth) current = candidate;
+      else {
+        lines.push(current);
+        current = word;
+      }
+    }
+    if (current) lines.push(current);
+    return lines;
   };
+
+  const rowHeight = (row: UpdRow): number => wrapLines(plain(row.name)).length * LINE_HEIGHT + 3;
+
+  const rowParts = (row: UpdRow): string[] => {
+    if (rowHeight(row) <= PART_HEIGHT + 20) return [`<tr>${itemCells(row)}</tr>`];
+    const lines = wrapLines(plain(row.name));
+    const parts: string[][] = [];
+    for (let i = 0; i < lines.length; i += linesPerPart) parts.push(lines.slice(i, i + linesPerPart));
+    const key = row.number || '';
+    return parts.map((part, index) => {
+      const name = index === 0
+        ? e(part.join(' '))
+        : `<span class="cont-mark">Продолжение позиции ${e(key)}</span> ${e(part.join(' '))}`;
+      if (index === 0) {
+        const cells = itemCells(row).replace(/<td class="name">[\s\S]*?<\/td>/, `<td class="name">${name}</td>`);
+        return `<tr class="part">${cells}</tr>`;
+      }
+      const empty = Array.from({ length: 16 }, (_, cell) => (cell === 2 ? `<td class="name">${name}</td>` : '<td></td>')).join('');
+      return `<tr class="part">${empty}</tr>`;
+    });
+  };
+
   const itemRows = rows.length
-    ? rows.map((row) => `<tr${rowFitsPage(row) ? '' : ' class="split"'}>${itemCells(row)}</tr>`).join('')
+    ? rows.map((row) => rowParts(row).join('')).join('')
     : `<tr>${Array.from({ length: 16 }, (_, index) => `<td class="${index === 2 ? 'name' : 'c'}">-</td>`).join('')}</tr>`;
 
   return `<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><title>УПД ${e(meta.number)}</title>
 <style>
 ${options.fontCss}
-@page { size: A4 landscape; margin: 0; }
+@page { size: A4 landscape; margin: 0 0 11pt 0; }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body { font-family: 'Tahoma', 'Liberation Sans', Arial, sans-serif; font-size: 7pt; line-height: 1.15; color: #000; }
-.page { position: relative; width: 841.92pt; min-height: 594.96pt; }
+.page { position: relative; width: 841.92pt; min-height: 583.96pt; }
 .abs { position: absolute; }
 .band { position: absolute; left: 14pt; top: 17.5pt; width: 64pt; font-size: 6.5pt; line-height: 8.5pt; border-right: 0.75pt solid #000; }
 .band .upd-title { margin-bottom: 4pt; }
@@ -290,17 +327,19 @@ table.items { position: relative; margin: 0 0 0 14pt; width: 813.2pt; table-layo
 table.items th, table.items td { border: 0.75pt solid #000; padding: 1pt 1.5pt; vertical-align: middle; }
 table.items th { font-weight: normal; font-size: 7pt; line-height: 7.4pt; text-align: center; vertical-align: top; padding-top: 2pt; hyphens: auto; overflow-wrap: break-word; }
 table.items tr { break-inside: avoid; }
-table.items tr.split { break-inside: auto; }
+table.items tr.part { break-inside: avoid; }
+.cont-mark { font-style: italic; color: #333; }
 table.items tr.h1 th { height: 23.26pt; }
 table.items tr.h2 th { height: 46.51pt; }
 table.items td { font-size: 7pt; padding: 0.6pt 1.5pt; }
 table.items td.c { text-align: center; }
 table.items td.n { text-align: right; white-space: nowrap; }
 table.items td.wrap { white-space: normal; word-break: break-all; }
-table.items td.name { text-align: left; }
+table.items td.name { text-align: left; overflow-wrap: break-word; }
 table.items tr.letters td { font-size: 6.5pt; text-align: center; height: 11.33pt; }
 table.items tr.page-top td { height: 12pt; border: none; padding: 0; }
 table.items tr.totals td { height: 11.26pt; font-size: 7pt; padding: 0.6pt 1.5pt; }
+table.items tr.totals { break-before: avoid; }
 table.items tr.totals td.label { text-align: left; font-size: 8pt; font-weight: bold; padding-left: 3.5pt; }
 table.items tr.totals td { font-weight: normal; }
 .letters-label { font-weight: normal; }
@@ -312,6 +351,7 @@ table.items tr.totals td { font-weight: normal; }
 .two-col { display: flex; gap: 8pt; }
 .two-col > div { flex: 1; }
 .signature-line { border-bottom: 0.6pt solid #000; height: 8.5pt; }
+.info-value { white-space: normal; word-break: break-word; line-height: 7.2pt; }
 </style></head>
 <body><div class="page">
   <div class="band">
@@ -427,7 +467,7 @@ table.items tr.totals td { font-weight: normal; }
   <div class="abs" style="left:421.4pt;top:101.8pt;height:154.1pt;border-left:0.75pt solid #000"></div>
 
   <div class="abs" style="left:16pt;top:1.3pt;width:64pt;font-size:6.4pt;line-height:7.6pt">
-    Документ<br>составлен на<br><span style="display:inline-block;border-bottom:0.6pt solid #000;min-width:26pt">${demo ? String(options.pageCount ?? 1) : '&nbsp;'}</span> листах
+    Документ<br>составлен на<br><span style="display:inline-block;border-bottom:0.6pt solid #000;min-width:26pt">${options.pageCount ?? 1}</span> листах
   </div>
 
   <div class="abs" style="left:87.5pt;top:2.8pt;font-size:6.4pt;line-height:7.6pt">Руководитель организации<br>или иное уполномоченное лицо</div>
@@ -505,9 +545,9 @@ table.items tr.totals td { font-weight: normal; }
   <div class="abs" style="left:687.4pt;top:134.8pt;font-size:7pt;white-space:nowrap">${demo ? `20${receiptYear}` : '20__'} г.</div>
 
   <div class="abs" style="left:16.25pt;top:145.3pt;width:360pt;font-size:7pt">Иные сведения об отгрузке, передаче</div>
-  <div class="abs" style="left:145pt;top:145.3pt;width:250pt;font-size:6.4pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e(infoText(transfer?.info ?? []))}</div>
+  <div class="abs info-value" style="left:145pt;top:143.2pt;width:250pt;font-size:6.2pt">${e(infoText(transfer?.info ?? []))}</div>
   <div class="abs" style="left:430.79pt;top:145.3pt;width:390pt;font-size:7pt">Иные сведения о получении, приемке</div>
-  <div class="abs" style="left:553pt;top:145.3pt;width:258pt;font-size:6.4pt;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${demo ? DEMO_RECEIPT.note : ''}</div>
+  <div class="abs info-value" style="left:560pt;top:143.2pt;width:253pt;font-size:6.2pt">${demo ? DEMO_RECEIPT.note : ''}</div>
   <div class="abs" style="left:15.5pt;top:158.7pt;width:399.2pt;border-bottom:0.6pt solid #000;height:8pt"></div>
   <div class="abs" style="left:428.7pt;top:158.7pt;width:397.7pt;border-bottom:0.6pt solid #000;height:8pt"></div>
   <div class="abs" style="left:84pt;top:168.1pt;width:360pt;font-size:6pt">(ссылки на неотъемлемые приложения, сопутствующие документы, иные документы и т.п.)</div>
