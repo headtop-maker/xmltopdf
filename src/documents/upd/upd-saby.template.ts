@@ -253,8 +253,9 @@ export function renderUpdSabyHtml(model: UpdPrintModel, options: UpdSabyOptions)
   const LINE_HEIGHT = 8.05;
   // A row taller than the printable area is split into parts by the template:
   // the browser cannot re-flow a table row across pages, it only clips it.
-  const PART_HEIGHT = 300;
-  const linesPerPart = Math.max(4, Math.floor((PART_HEIGHT - 2) / LINE_HEIGHT));
+  const PART_HEIGHT = 280;
+  // Reserve one line for the continuation mark on every part.
+  const linesPerPart = Math.max(4, Math.floor((PART_HEIGHT - 2) / LINE_HEIGHT) - 2);
 
   const wrapLines = (text: string): string[] => {
     const words = text.split(/\s+/).filter(Boolean);
@@ -283,7 +284,7 @@ export function renderUpdSabyHtml(model: UpdPrintModel, options: UpdSabyOptions)
     return parts.map((part, index) => {
       const name = index === 0
         ? e(part.join(' '))
-        : `<span class="cont-mark">Продолжение позиции ${e(key)}</span> ${e(part.join(' '))}`;
+        : `<div class="cont-mark">Продолжение позиции ${e(key)}</div>${e(part.join(' '))}`;
       if (index === 0) {
         const cells = itemCells(row).replace(/<td class="name">[\s\S]*?<\/td>/, `<td class="name">${name}</td>`);
         return `<tr class="part">${cells}</tr>`;
@@ -301,11 +302,11 @@ export function renderUpdSabyHtml(model: UpdPrintModel, options: UpdSabyOptions)
 <html lang="ru"><head><meta charset="utf-8"><title>УПД ${e(meta.number)}</title>
 <style>
 ${options.fontCss}
-@page { size: A4 landscape; margin: 0 0 11pt 0; }
+@page { size: A4 landscape; margin: 0 0 30pt 0; }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body { font-family: 'Tahoma', 'Liberation Sans', Arial, sans-serif; font-size: 7pt; line-height: 1.15; color: #000; }
-.page { position: relative; width: 841.92pt; min-height: 583.96pt; }
+.page { position: relative; width: 841.92pt; min-height: 564.96pt; }
 .abs { position: absolute; }
 .band { position: absolute; left: 14pt; top: 17.5pt; width: 64pt; font-size: 6.5pt; line-height: 8.5pt; border-right: 0.75pt solid #000; }
 .band .upd-title { margin-bottom: 4pt; }
@@ -328,7 +329,7 @@ table.items th, table.items td { border: 0.75pt solid #000; padding: 1pt 1.5pt; 
 table.items th { font-weight: normal; font-size: 7pt; line-height: 7.4pt; text-align: center; vertical-align: top; padding-top: 2pt; hyphens: auto; overflow-wrap: break-word; }
 table.items tr { break-inside: avoid; }
 table.items tr.part { break-inside: avoid; }
-.cont-mark { font-style: italic; color: #333; }
+.cont-mark { font-style: italic; color: #333; display: block; margin-bottom: 0.5pt; }
 table.items tr.h1 th { height: 23.26pt; }
 table.items tr.h2 th { height: 46.51pt; }
 table.items td { font-size: 7pt; padding: 0.6pt 1.5pt; }
