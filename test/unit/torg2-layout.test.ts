@@ -69,6 +69,18 @@ describe('TORG-2 layout contract', () => {
     expect(html).toContain('04.11.2026');
   });
 
+  it('prints the opening time in the timeline and the attachment count in the signature block', () => {
+    const withFields = xml
+      .replace('<ИнфДопСв>1</ИнфДопСв>', '<СвВремПрием ВскрытГруз="04.11.2026 10.30.00" /><ИнфДопСв>1</ИнфДопСв>')
+      .replace('</СодФХЖ2>', '<ПрилДок ВидПрилДок="Акт" НомерПрилДок="А-1" ДатаПрилДок="04.11.2026"/><ПрилДок ВидПрилДок="Заключение" НомерПрилДок="З-1" ДатаПрилДок="04.11.2026"/></СодФХЖ2>');
+    const html = render(withFields);
+    // The timeline cell used to stay empty because the template looked for a label the mapper never produced.
+    expect(html).toContain('04.11.2026 10.30.00');
+    // The blank asks for the number of sheets, not for a list that would overlap the signatures.
+    expect(html).toContain('doc-value" style="flex:0 0 76pt">2</span>');
+    expect(html).not.toContain('Заключение № З-1');
+  });
+
   it('preserves decimal precision and distinguishes zero from absence', () => {
     expect(formatQuantity('2.50000000001')).toBe('2,50000000001');
     expect(formatQuantity('0')).toBe('0');

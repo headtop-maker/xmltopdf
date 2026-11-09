@@ -80,7 +80,7 @@ describe('UPD Saby-style layout', () => {
 
   it('prints the invoice header and one page container', () => {
     expect(html).toContain('Счет-фактура № 262 от 31 октября 2026 г.');
-    expect(html).toContain('width: 841.92pt; height: 594.96pt');
+    expect(html).toContain('width: 841.92pt; min-height: 594.96pt');
     expect(html).not.toContain('Страница');
   });
 
@@ -113,22 +113,37 @@ describe('UPD Saby-style layout', () => {
     expect(html).not.toContain('ДОКУМЕНТ ПОДПИСАН');
   });
 
-  it('shifts the bottom block by 18 pt per additional item row', () => {
+  it('keeps the item table in flow so the signature block follows the rows', () => {
     const second = { ...model.rows[0], number: '2', extra: { code: 'БП-00000124' } };
     const twoRows = { ...model, rows: [model.rows[0], second] } as unknown as UpdPrintModel;
     const twoHtml = renderUpdSabyHtml(twoRows, { fontCss: '' });
-    expect(twoHtml).toContain('top:18pt');
     expect(twoHtml).toContain('БП-00000124');
+    expect(twoHtml).toContain('<div class="signature-block">');
+    expect(twoHtml).not.toContain('top:18pt');
+    expect(twoHtml).toContain('<div style="height:178.3pt"></div>');
+  });
+
+  it('widens numeric columns for large amounts and keeps the table width', () => {
+    const wide = {
+      ...model,
+      rows: [{ ...model.rows[0], price: '12345678.90', amountWithoutVat: '12345678.90', vatAmount: '2716049.36', amountWithVat: '15061728.26', vatRate: '22%', vatNone: false }],
+      totals: { withoutVat: '12345678.90', vat: '2716049.36', withVat: '15061728.26' },
+    } as unknown as UpdPrintModel;
+    const wideHtml = renderUpdSabyHtml(wide, { fontCss: '' });
+    const widths = [...wideHtml.matchAll(/<col style="width:([\d.]+)pt">/g)].map((match) => Number(match[1]));
+    expect(widths).toHaveLength(16);
+    expect(widths[7]).toBeGreaterThan(39.76);
+    expect(widths.reduce((sum, value) => sum + value, 0)).toBeCloseTo(805, 1);
   });
 
   it('aligns the receive date label with the reference column', () => {
-    expect(html).toContain('left:426.3pt;top:436.05pt;font-size:7pt;white-space:nowrap">Дата получения (приемки)');
-    expect(html).toContain('left:425.5pt;top:446pt');
+    expect(html).toContain('left:426.3pt;top:134.25pt;font-size:7pt;white-space:nowrap">Дата получения (приемки)');
+    expect(html).toContain('left:425.5pt;top:144.2pt');
   });
 
   it('leaves the bank line empty when the party has no bank details', () => {
-    expect(html).toContain('left:420pt;top:481pt;width:395pt;font-size:7pt"></div>');
-    expect(html).not.toContain('left:420pt;top:481pt;width:395pt;font-size:7pt">-</div>');
+    expect(html).toContain('left:420pt;top:179.2pt;width:395pt;font-size:7pt"></div>');
+    expect(html).not.toContain('left:420pt;top:179.2pt;width:395pt;font-size:7pt">-</div>');
   });
 
   it('prints the seller short name and bank details', () => {

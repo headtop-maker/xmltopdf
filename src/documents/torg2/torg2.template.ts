@@ -39,8 +39,22 @@ function partyMarkup(party: PartyModel | undefined): string {
   return `<strong>${e(info.title)}</strong>${info.lines.length ? `, ${e(info.lines.join(', '))}` : ''}`;
 }
 
+/** Rough Tahoma advance width, enough to size a form field without collisions. */
+function textWidth(value: string | undefined, fontSize: number): number {
+  let width = 0;
+  for (const character of value ?? '') {
+    if (character === ' ') width += 0.28 * fontSize;
+    else if (character >= '0' && character <= '9') width += 0.55 * fontSize;
+    else if (character === '.' || character === ',' || character === '/') width += 0.3 * fontSize;
+    else if (/[A-ZА-ЯЁ]/.test(character)) width += 0.65 * fontSize;
+    else width += 0.51 * fontSize;
+  }
+  return width;
+}
+
 function dateParts(value: string | undefined): [string, string, string] {
-  const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value ?? '');
+  // Timeline values carry a time part ("08.11.2026 11.05.00"); the blank prints the date only.
+  const match = /^(\d{2})\.(\d{2})\.(\d{4})/.exec(value ?? '');
   return match ? [match[1], match[2], match[3]] : ['', '', ''];
 }
 
@@ -111,7 +125,7 @@ export function renderTorg2Html(model: Torg2PrintModel, options: Torg2TemplateOp
     .map(
       (doc) => `<tr class="data-row">
 <td>${blank(doc.seals)}</td><td class="num">${blank(doc.places)}</td><td>${blank(doc.packaging)}</td>
-<td>${blank(doc.cargoName ?? doc.name)}</td><td>${blank(doc.unitName)}</td><td class="num">${blank(doc.unitCode)}</td>
+<td>${blank(doc.cargoName ?? [doc.name, doc.number ? `№ ${doc.number}` : '', doc.date ? `от ${doc.date}` : ''].filter(Boolean).join(' '))}</td><td>${blank(doc.unitName)}</td><td class="num">${blank(doc.unitCode)}</td>
 <td class="num">${blank(doc.massDocGross)}</td><td class="num">${blank(doc.massFactGross)}</td>
 <td class="num">${blank(doc.massDocNet)}</td><td class="num">${blank(doc.massFactNet)}</td><td>${blank(doc.additionalId)}</td>
 </tr>`,
@@ -138,10 +152,16 @@ ${discrepancyCells(row.shortage)}${discrepancyCells(row.surplus)}
 </tr>`,
     )
     .join('');
+  // The person block is a fixed 405.6 pt blank; long positions would otherwise
+  // run over the "основание полномочий" field.
+  const personGap = 4.8;
+  const fioWidth = Math.max(140.6, Math.min(210, textWidth(inspection.acceptedBy?.fio, 8) + 4));
+  const positionWidth = Math.max(62.9, Math.min(130, textWidth(inspection.acceptedBy?.position, 8) + 4));
+  const basisWidth = Math.max(120, 405.6 - personGap - fioWidth - positionWidth);
   const signer = model.signers[0];
-  const attachments = model.attachments
-    .map((doc) => `${doc.kind ?? ''} № ${doc.number ?? ''} от ${doc.date ?? ''}`)
-    .join('; ');
+  // The blank asks for the number of sheets, not for the list of attachments:
+  // the list does not fit into the 76 pt field and used to overlap the signatures.
+  const attachmentCount = model.attachments.length ? String(model.attachments.length) : '';
   const extraRows = rows.filter((row) => row.positiveDelta || row.negativeDelta || row.info.length || row.marking.kiz.length || row.marking.packaging.length || row.marking.transportPackaging);
   const longCharacteristicHtml = !exact && longCharacteristics.length
     ? `<section class="appendix"><h2>Характеристики товарных строк</h2><table class="grid">
@@ -246,7 +266,7 @@ table { border-collapse: collapse; }
 .grid.auto { table-layout: auto; }
 .grid th, .grid td { border: 0.55pt solid #111; padding: 0; vertical-align: middle; }
 .grid th { text-align: center; font-weight: normal; font-size: 8pt; line-height: 9.7pt; font-family: Tahoma, Arial, sans-serif; vertical-align: top; }
-.grid thead { display: table-row-group; }
+.grid thead { display: table-header-group; }
 .grid tbody tr { break-inside: avoid; }
 .grid .numbers td { text-align: center; font-size: 8pt; line-height: 9.7pt; }
 .grid .data-row td { font-size: 8pt; font-family: Tahoma, Arial, sans-serif; }
@@ -294,6 +314,7 @@ table { border-collapse: collapse; }
 .person-field.f1 { width: 140.6pt; }
 .person-field.f2 { width: 62.9pt; }
 .person-field.f3 { width: 197.3pt; }
+.person-field.tight { font-size: 6.6pt; white-space: nowrap; overflow: hidden; }
 .person-captions { display: flex; width: 405.6pt; font-family: Arial, sans-serif; font-size: 8pt; line-height: 9.7pt; text-align: center; }
 .person-captions .pc1 { width: 140.6pt; }
 .person-captions .pc2 { width: 62.9pt; margin-left: 2.4pt; }
@@ -425,20 +446,20 @@ table { border-collapse: collapse; }
       </tr>
       <tr class="r3"><th>начало</th><th>приостанов-<br>ление</th><th>возобновле-<br>ние</th><th>окончание</th></tr>
     </thead>
-    <tbody><tr class="data-row"><td>${blank(inspection.timeline.find((item) => item.id === 'Прибытие на место назначения')?.value)}</td><td>${blank(inspection.timeline.find((item) => item.id === 'Вскрытие вагона (транспортное средство)')?.value)}</td><td>${blank(inspection.timeline.find((item) => item.id === 'Выдача груза транспортной организацией')?.value)}</td><td>${blank(inspection.timeline.find((item) => item.id === 'Доставка на склад получателя')?.value)}</td><td></td><td>${blank(inspection.timeStart)}</td><td></td><td></td><td>${blank(inspection.timeEnd)}</td></tr></tbody>
+    <tbody><tr class="data-row"><td>${blank(inspection.timeline.find((item) => item.id === 'Прибытие на место назначения')?.value)}</td><td>${blank(inspection.timeline.find((item) => item.id === 'Вскрытие вагона (транспортного средства)')?.value)}</td><td>${blank(inspection.timeline.find((item) => item.id === 'Выдача груза транспортной организацией')?.value)}</td><td>${blank(inspection.timeline.find((item) => item.id === 'Доставка на склад получателя')?.value)}</td><td></td><td>${blank(inspection.timeStart)}</td><td></td><td></td><td>${blank(inspection.timeEnd)}</td></tr></tbody>
   </table>
   <div class="storage-note">Сведения о состоянии вагонов, автофургонов и т. д. Наличие, описание упаковочных ярлыков, пломб транспорта на отдельных местах (сертификатов, спецификаций в вагоне, контейнере) и отправительская маркировка</div>
   <div class="storage-rule"></div>
   <div class="section-space">Сведения о лице, принявшем товар (получившем груз) (в том числе на ответственное хранение)</div>
   <div class="person-line">
-    <span class="person-field f1">${blank(inspection.acceptedBy?.fio)}</span>
-    <span class="person-field f2">${blank(inspection.acceptedBy?.position)}</span>
-    <span class="person-field f3">${blank(inspection.acceptedBy?.basis)}</span>
+    <span class="person-field" style="width:${fioWidth.toFixed(1)}pt">${blank(inspection.acceptedBy?.fio)}</span>
+    <span class="person-field" style="width:${positionWidth.toFixed(1)}pt">${blank(inspection.acceptedBy?.position)}</span>
+    <span class="person-field" style="width:${basisWidth.toFixed(1)}pt">${blank(inspection.acceptedBy?.basis)}</span>
   </div>
   <div class="person-captions">
-    <span class="pc1">фамилия, имя, отчество</span>
-    <span class="pc2">должность</span>
-    <span class="pc3">основание полномочий (доверие)</span>
+    <span class="pc1" style="width:${fioWidth.toFixed(1)}pt">фамилия, имя, отчество</span>
+    <span class="pc2" style="width:${positionWidth.toFixed(1)}pt">должность</span>
+    <span class="pc3" style="width:${basisWidth.toFixed(1)}pt">основание полномочий (доверие)</span>
   </div>
   ${inspection.acceptedBy ? `<div class="small muted">${e(inspection.acceptedBy.role)}</div>` : ''}
   ${inspection.acceptedBy?.organization ? line('Уполномоченная организация', e(inspection.acceptedBy.organization)) : ''}
@@ -543,7 +564,7 @@ table { border-collapse: collapse; }
   <div class="doc-line" style="margin-top:3pt"><span>Документ, удостоверяющий полномочия</span><span class="doc-value"></span></div>
   <div class="doc-caption">выдан</div>
   <div class="doc-line" style="margin-top:4.5pt"><span>№</span><span class="doc-value" style="flex:0 0 73.5pt"></span><span class="doc-value" style="flex:0 0 248pt"></span><span>г.</span></div>
-  <div class="doc-line" style="margin-top:5.3pt"><span>Акт с приложением на</span><span class="doc-value" style="flex:0 0 76pt">${e(attachments)}</span><span>листах получил</span></div>
+  <div class="doc-line" style="margin-top:5.3pt"><span>Акт с приложением на</span><span class="doc-value" style="flex:0 0 76pt">${e(attachmentCount)}</span><span>листах получил</span></div>
   <div class="sig-label" style="margin-top:5.6pt">Главный (старший) бухгалтер</div>
   <div class="sig-row acc"><span class="sign"></span><span class="decipher"></span></div>
   <div class="sig-captions acc"><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
