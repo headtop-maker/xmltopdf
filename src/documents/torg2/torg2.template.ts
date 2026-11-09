@@ -656,7 +656,7 @@ table { border-collapse: collapse; }
   <p class="paragraph" style="margin-top:3.6pt">Подробное описание дефектов (характер недостачи, излишков, ненадлежащего качества, брака, боя)<br>и мнение комиссии о причинах их образования</p>
   <div class="text-block"></div>
   <div class="conclusion"><span class="conclusion-label">Заключение комиссии</span> <span>${e(conclusion || '')}${conclusion && model.event.description ? ': ' : ''}${e(model.event.description || '')}</span></div>
-  <p class="paragraph" style="margin-top:5.1pt">Члены комиссии предупреждены об ответственности за подписание акта, содержащие данные, не соответствующие действительности.</p>
+  <p class="paragraph" style="margin-top:5.1pt">Члены комиссии предупреждены об ответственности за подписание акта, содержащего данные, не соответствующие действительности.</p>
   <div class="sig-label" style="margin-top:3.5pt">Председатель комиссии</div>
   <div class="sig-row"><span class="place">${signaturePlace(chairman)}</span><span class="sign"></span><span class="decipher">${signatureName(chairman)}</span></div>
   <div class="sig-captions"><span class="c-place">(место работы, должность)</span><span class="c-sign">(подпись)</span><span class="c-decipher">(расшифровка подписи)</span></div>
