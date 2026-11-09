@@ -1,7 +1,7 @@
 import { escapeHtml, formatMoney, formatQuantity, formatRate } from '../shared/format';
 import type { PartyModel } from '../shared/party';
 import { formatPartyForPrint } from '../shared/party-print';
-import type { Amounts, Discrepancy, Torg2PrintModel } from './torg2.model';
+import type { Amounts, Discrepancy, GoodsRow, Torg2PrintModel } from './torg2.model';
 
 const e = (value: string | undefined | null): string => escapeHtml(value ?? '');
 const blank = (value: string | undefined): string => (value?.trim() ? e(value) : '');
@@ -102,6 +102,65 @@ function decodedCode(labels: Record<string, string>, code: string | undefined): 
   return label ? `${label} (код ${code.trim()})` : `код ${code.trim()}`;
 }
 
+/**
+ * Rough Tahoma width in points. The goods table has 20 columns: with large
+ * amounts its natural width exceeds the printable area, the table overflows
+ * and Chromium shrinks the whole page to fit. The estimate lets the template
+ * pick a slightly denser style instead of a shrunken page.
+ */
+function textWidthPt(value: string | undefined, fontSize = 8): number {
+  let width = 0;
+  for (const character of value ?? '') {
+    if (character === ' ') width += 0.28 * fontSize;
+    else if (character >= '0' && character <= '9') width += 0.55 * fontSize;
+    else if (character === '.' || character === ',' || character === '/') width += 0.3 * fontSize;
+    else if (/[A-ZА-ЯЁ]/.test(character)) width += 0.65 * fontSize;
+    else width += 0.51 * fontSize;
+  }
+  return width;
+}
+
+function longestWordWidth(value: string | undefined, fontSize = 8): number {
+  return Math.max(0, ...(value ?? '').split(/\s+/).map((word) => textWidthPt(word, fontSize)));
+}
+
+const GOODS_COLUMN_WIDTH = 813.25;
+const GOODS_CELL_PADDING = 4;
+
+function goodsWidth(rows: readonly GoodsRow[]): number {
+  const columns: { values: string[]; breakAnywhere: boolean }[] = [
+    { values: rows.map((row) => String(row.number)), breakAnywhere: false },
+    { values: rows.map((row) => row.name), breakAnywhere: false },
+    { values: rows.map((row) => row.unitName ?? ''), breakAnywhere: false },
+    { values: rows.map((row) => row.unitCode ?? ''), breakAnywhere: false },
+    { values: rows.map((row) => row.article ?? ''), breakAnywhere: true },
+    { values: rows.map((row) => row.sort ?? ''), breakAnywhere: true },
+    { values: rows.map((row) => row.code ?? ''), breakAnywhere: true },
+    { values: rows.map((row) => row.characteristic ?? ''), breakAnywhere: true },
+    { values: rows.map((row) => row.sourceLine ?? ''), breakAnywhere: false },
+    ...([0, 1, 2, 3, 4] as const).map((index) => ({
+      values: rows.map((row) =>
+        [row.byDocument, row.byFact].flatMap((block) => [block?.quantity, block?.price, block?.amountWithVat, block?.vatRate, block?.vatAmount])[index] ?? '',
+      ),
+      breakAnywhere: false,
+    })),
+    ...([0, 1, 2, 3, 4] as const).map((index) => ({
+      values: rows.map((row) =>
+        [row.byDocument, row.byFact].flatMap((block) => [block?.quantity, block?.price, block?.amountWithVat, block?.vatRate, block?.vatAmount])[index + 5] ?? '',
+      ),
+      breakAnywhere: false,
+    })),
+    { values: rows.map((row) => row.passport ?? ''), breakAnywhere: true },
+  ];
+  return columns.reduce((total, column) => {
+    const width = Math.max(
+      0,
+      ...column.values.map((value) => (column.breakAnywhere ? longestWordWidth(value) : textWidthPt(value))),
+    );
+    return total + width + GOODS_CELL_PADDING;
+  }, 0);
+}
+
 export interface Torg2TemplateOptions {
   readonly fontCss: string;
   /** Match the approved Saby-style blank: no appendix/signature service blocks. */
@@ -117,6 +176,8 @@ export function renderTorg2Html(model: Torg2PrintModel, options: Torg2TemplateOp
     .join('; ');
   const conclusion = model.event.conclusion?.trim();
   const [openingDay, openingMonth, openingYear] = dateParts(inspection.openingDate?.trim());
+  // Dense style keeps the table inside the page instead of letting Chromium scale the page down.
+  const denseGoods = goodsWidth(rows) > GOODS_COLUMN_WIDTH - 10;
   const longCharacteristics = rows.filter((row) => (row.characteristic?.length ?? 0) > 120);
   const order = basis.orderNumber || basis.orderDate
     ? `приказ, распоряжение № ${basis.orderNumber ?? ''} от ${basis.orderDate ?? ''}`
@@ -289,6 +350,9 @@ table { border-collapse: collapse; }
 .goods thead tr.numbers td { height: 14.9pt; }
 .goods th { padding: 1.13mm 0.5mm 0.7mm; }
 .goods .data-row td { padding: 0.85mm 0.7mm 0.65mm; line-height: 1.21; overflow-wrap: break-word; }
+.grid.dense .data-row td { font-size: 7.4pt; }
+.grid.dense th { font-size: 7.4pt; }
+.grid.dense .data-row td { padding-left: 0.45mm; padding-right: 0.45mm; }
 .goods .data-row td:nth-child(2) { text-align: center; }
 .discrepancies thead tr.r1 th { height: 15.3pt; }
 .discrepancies thead tr.r2 th { height: 14.9pt; }
@@ -479,7 +543,7 @@ table { border-collapse: collapse; }
 
 <section class="goods-section">
   <div class="page-label">2-я страница формы № ТОРГ-2</div>
-  <table class="grid goods auto">
+  <table class="grid goods auto${denseGoods ? ' dense' : ''}">
     <thead>
       <tr class="r1">
         <th rowspan="3">№<br>п/<br>п</th>
@@ -505,7 +569,7 @@ table { border-collapse: collapse; }
     </thead>
     <tbody>${goodsRows || '<tr class="data-row"><td colspan="20"></td></tr>'}</tbody>
   </table>
-  <table class="grid discrepancies section-space auto">
+  <table class="grid discrepancies section-space auto${denseGoods ? ' dense' : ''}">
     <thead>
       <tr class="r1">
         <th rowspan="3">№<br>п/<br>п</th><th rowspan="3">Товар<br>(наименование)</th>

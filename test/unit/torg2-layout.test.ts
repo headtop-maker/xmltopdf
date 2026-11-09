@@ -81,6 +81,13 @@ describe('TORG-2 layout contract', () => {
     expect(html).not.toContain('Заключение № З-1');
   });
 
+  it('falls back to a denser table style when the 20 columns cannot fit the page', () => {
+    const stress = readFileSync('test/fixtures/stress/torg2-filled.xml', 'utf8');
+    expect(render(stress)).toContain('class="grid goods auto dense"');
+    // The reference blank keeps the larger 8 pt style.
+    expect(render(xml)).not.toContain('class="grid goods auto dense"');
+  });
+
   it('preserves decimal precision and distinguishes zero from absence', () => {
     expect(formatQuantity('2.50000000001')).toBe('2,50000000001');
     expect(formatQuantity('0')).toBe('0');
